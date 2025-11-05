@@ -1,0 +1,550 @@
+{% extends "base.html" %}
+{% block title %}Analyze Meeting - AI Meeting Agent{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <!-- Hero Section -->
+    <div class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-3">
+            AI Meeting Analyzer
+        </h1>
+        <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+            Transform your meeting transcripts into actionable insights with AI-powered analysis
+        </p>
+    </div>
+
+    <!-- Main Analysis Form -->
+    <div class="glass-card rounded-3xl p-8 md:p-10 shadow-2xl mb-12">
+        <form action="{{ url_for('analyze') }}" method="post" class="space-y-8" id="analysisForm">
+            
+            <!-- Transcript Input -->
+            <div>
+                <label for="transcript" class="block text-lg font-semibold text-white mb-3">Meeting Transcript</label>
+                <textarea id="transcript" 
+                          name="transcript" 
+                          rows="12"
+                          class="w-full bg-black/40 border border-white/20 rounded-2xl p-5 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300 resize-none"
+                          placeholder="Paste your meeting transcript here...&#10;&#10;Example:&#10;John: We need to finalize the Q4 roadmap by next Friday.&#10;Sarah: I'll prepare the presentation slides.&#10;Mike: Let's schedule a follow-up meeting for next Tuesday.">{{ transcript or '' }}</textarea>
+            </div>
+
+            <!-- Automations Section -->
+            <div class="glass rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Automation Options
+                </h2>
+                <div class="space-y-4">
+                    
+                    <!-- Email Automation -->
+                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not current_user.team %}opacity-50{% endif %}">
+                        <label class="flex items-start gap-3 {% if current_user.team %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
+                            <input type="checkbox" 
+                                   id="send_email" 
+                                   name="send_email" 
+                                   value="true"
+                                   {% if not current_user.team %}disabled{% endif %}
+                                   class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span class="font-medium text-white">Send Summary Email to Team</span>
+                                </div>
+                                {% if not current_user.team %}
+                                    <small class="text-gray-400">(<a href="{{ url_for('team') }}" class="text-blue-400 hover:underline">Create a team first</a>)</small>
+                                {% endif %}
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Trello Automation -->
+                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not current_user.trello_credentials %}opacity-50{% endif %}">
+                        <label class="flex items-start gap-3 {% if current_user.trello_credentials %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
+                            <input type="checkbox" 
+                                   id="create_trello" 
+                                   name="create_trello" 
+                                   value="true"
+                                   {% if not current_user.trello_credentials %}disabled{% endif %}
+                                   class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <rect width="8" height="10" x="3" y="3" rx="1.5"/>
+                                        <rect width="8" height="16" x="13" y="3" rx="1.5"/>
+                                    </svg>
+                                    <span class="font-medium text-white">Create Trello Cards for Action Items</span>
+                                </div>
+                                {% if not current_user.trello_credentials %}
+                                    <small class="text-gray-400">(<a href="{{ url_for('integrations') }}" class="text-blue-400 hover:underline">Connect Trello</a>)</small>
+                                {% endif %}
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Slack Automation -->
+                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not current_user.team or not current_user.team.slack_webhook_url %}opacity-50{% endif %}">
+                        <label class="flex items-start gap-3 {% if current_user.team and current_user.team.slack_webhook_url %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
+                            <input type="checkbox" 
+                                   id="send_slack" 
+                                   name="send_slack" 
+                                   value="true"
+                                   {% if not current_user.team or not current_user.team.slack_webhook_url %}disabled{% endif %}
+                                   class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52z"/>
+                                    </svg>
+                                    <span class="font-medium text-white">Send Summary to Slack Channel</span>
+                                </div>
+                                {% if not current_user.team %}
+                                    <small class="text-gray-400">(<a href="{{ url_for('team') }}" class="text-blue-400 hover:underline">Create a team first</a>)</small>
+                                {% elif not current_user.team.slack_webhook_url %}
+                                    <small class="text-gray-400">(<a href="{{ url_for('integrations') }}" class="text-blue-400 hover:underline">Connect Slack</a>)</small>
+                                {% endif %}
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Jira Automation -->
+                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not current_user.jira_credentials %}opacity-50{% endif %}">
+                        <label class="flex items-start gap-3 {% if current_user.jira_credentials %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
+                            <input type="checkbox" 
+                                   id="create_jira" 
+                                   name="create_jira" 
+                                   value="true"
+                                   {% if not current_user.jira_credentials %}disabled{% endif %}
+                                   class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M11.571 11.513H0a5.218 5.218 0 0 0 5.232 5.215h2.13v2.057A5.215 5.215 0 0 0 12.575 24V12.518a1.005 1.005 0 0 0-1.005-1.005z"/>
+                                    </svg>
+                                    <span class="font-medium text-white">Create Jira Issues for Action Items</span>
+                                </div>
+                                {% if not current_user.jira_credentials %}
+                                    <small class="text-gray-400">(<a href="{{ url_for('integrations') }}" class="text-blue-400 hover:underline">Connect Jira</a>)</small>
+                                {% endif %}
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trello Options -->
+            {% if current_user.trello_credentials %}
+            <div id="trello-options" class="glass rounded-2xl p-6 hidden">
+                <h3 class="text-lg font-semibold text-white mb-4">Trello Configuration</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="trello-board" class="block text-sm font-medium text-gray-300 mb-2">Select Board</label>
+                        <select name="trello_board_id" id="trello-board"
+                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-blue-500 transition">
+                            <option value="">-- Select a Board --</option>
+                            {% for board in trello_boards %}
+                                <option value="{{ board.id }}">{{ board.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="trello-list" class="block text-sm font-medium text-gray-300 mb-2">Select List</label>
+                        <select name="trello_list_id" id="trello-list"
+                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-blue-500 transition">
+                            <option value="">-- Select a Board First --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Jira Options -->
+            {% if current_user.jira_credentials %}
+            <div id="jira-options" class="glass rounded-2xl p-6 hidden">
+                <h3 class="text-lg font-semibold text-white mb-4">Jira Configuration</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="jira-project" class="block text-sm font-medium text-gray-300 mb-2">Select Project</label>
+                        <select name="jira_project_key" id="jira-project"
+                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-blue-500 transition">
+                            <option value="">-- Loading Projects... --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="jira-issue-type" class="block text-sm font-medium text-gray-300 mb-2">Issue Type</label>
+                        <select name="jira_issue_type_name" id="jira-issue-type"
+                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-blue-500 transition">
+                            <option value="">-- Select Project First --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Submit Button -->
+            <button type="submit" id="analyzeBtn"
+                    class="w-full btn-primary text-white font-bold py-4 px-8 rounded-2xl text-lg relative z-10 flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                Analyze & Generate Insights
+            </button>
+        </form>
+    </div>
+
+    <!-- Analysis Results Modal -->
+    {% if analysis and not analysis.error %}
+    <div id="resultsModal" class="modal active">
+        <div class="modal-content glass-card rounded-3xl p-8 md:p-10 max-w-5xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start mb-6">
+                <h2 class="text-3xl font-bold text-white">Analysis Results</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Summary -->
+            <div class="mb-8">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">Summary</h3>
+                </div>
+                <p class="text-gray-300 leading-relaxed text-lg bg-black/20 rounded-2xl p-6">{{ analysis.summary }}</p>
+            </div>
+
+            <!-- Key Decisions -->
+            <div class="mb-8">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">Key Decisions</h3>
+                </div>
+                <ul class="space-y-3">
+                    {% for decision in analysis.decisions %}
+                    <li class="bg-black/20 rounded-xl p-5 border border-white/10 hover:border-purple-500/30 transition-colors">
+                        <div class="flex items-start gap-3">
+                            <span class="text-purple-400 text-xl">•</span>
+                            <p class="text-gray-300 flex-1">{{ decision }}</p>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Action Items -->
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">Action Items</h3>
+                </div>
+                <div class="space-y-4">
+                    {% for item in analysis.action_items %}
+                    <div class="bg-black/20 rounded-xl p-5 border border-white/10 hover:border-green-500/30 transition-colors">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-1">
+                                <strong class="text-sm text-gray-400 block mb-1">Task:</strong>
+                                <span class="text-white">{{ item.task }}</span>
+                            </div>
+                            <div>
+                                <strong class="text-sm text-gray-400 block mb-1">Assignee:</strong>
+                                <span class="inline-flex items-center px-3 py-1 bg-blue-500/20 text-blue-300 rounded-lg text-sm font-medium">
+                                    {{ item.assignee }}
+                                </span>
+                            </div>
+                            <div>
+                                <strong class="text-sm text-gray-400 block mb-1">Due Date:</strong>
+                                <span class="text-white">{{ item.due_date }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif analysis and analysis.error %}
+    <div class="glass-card rounded-2xl p-6 border-red-500/30 text-red-300" role="alert">
+        <div class="flex items-center gap-3">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+            <div>
+                <strong>Analysis Error:</strong> {{ analysis.error }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Show/hide integration options based on checkboxes
+    const trelloCheckbox = document.getElementById('create_trello');
+    const trelloOptions = document.getElementById('trello-options');
+    
+    if (trelloCheckbox && trelloOptions) {
+        trelloCheckbox.addEventListener('change', function() {
+            trelloOptions.classList.toggle('hidden', !this.checked);
+            // Disable/enable validation based on visibility
+            const trelloBoard = document.getElementById('trello-board');
+            const trelloList = document.getElementById('trello-list');
+            if (this.checked) {
+                trelloBoard.setAttribute('required', 'required');
+                trelloList.setAttribute('required', 'required');
+            } else {
+                trelloBoard.removeAttribute('required');
+                trelloList.removeAttribute('required');
+            }
+        });
+    }
+
+    const jiraCheckbox = document.getElementById('create_jira');
+    const jiraOptions = document.getElementById('jira-options');
+    
+    if (jiraCheckbox && jiraOptions) {
+        jiraCheckbox.addEventListener('change', function() {
+            jiraOptions.classList.toggle('hidden', !this.checked);
+            // Disable/enable validation based on visibility
+            const jiraProject = document.getElementById('jira-project');
+            const jiraIssueType = document.getElementById('jira-issue-type');
+            if (this.checked) {
+                jiraProject.setAttribute('required', 'required');
+                jiraIssueType.setAttribute('required', 'required');
+                if (!window.jiraProjectsLoaded) {
+                    loadJiraProjects();
+                }
+            } else {
+                jiraProject.removeAttribute('required');
+                jiraIssueType.removeAttribute('required');
+            }
+        });
+    }
+
+    // Form submission handler
+    const analysisForm = document.getElementById('analysisForm');
+    if (analysisForm) {
+        analysisForm.addEventListener('submit', function(e) {
+            const transcriptField = document.getElementById('transcript');
+            
+            // Check if transcript is empty
+            if (!transcriptField.value.trim()) {
+                e.preventDefault();
+                showToast('Please provide a meeting transcript to analyze.', 'error');
+                return false;
+            }
+            
+            // Check Trello validation
+            if (trelloCheckbox && trelloCheckbox.checked) {
+                const boardSelect = document.getElementById('trello-board');
+                const listSelect = document.getElementById('trello-list');
+                if (!boardSelect.value || !listSelect.value) {
+                    e.preventDefault();
+                    showToast('Please select both Trello board and list.', 'error');
+                    return false;
+                }
+            }
+            
+            // Check Jira validation
+            if (jiraCheckbox && jiraCheckbox.checked) {
+                const projectSelect = document.getElementById('jira-project');
+                const issueTypeSelect = document.getElementById('jira-issue-type');
+                if (!projectSelect.value || !issueTypeSelect.value) {
+                    e.preventDefault();
+                    showToast('Please select both Jira project and issue type.', 'error');
+                    return false;
+                }
+            }
+            
+            // Show loading modal
+            const loadingModal = document.getElementById('loadingModal');
+            if (loadingModal) {
+                loadingModal.classList.add('active');
+            }
+            
+            // Let form submit normally
+            return true;
+        });
+    }
+
+    // Trello board/list logic
+    const boardSelect = document.getElementById('trello-board');
+    if (boardSelect) {
+        boardSelect.addEventListener('change', function() {
+            const listSelect = document.getElementById('trello-list');
+            listSelect.innerHTML = '<option value="">Loading...</option>';
+            
+            if (this.value) {
+                fetch(`/get_lists/${this.value}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        listSelect.innerHTML = '<option value="">-- Select a List --</option>';
+                        data.forEach(list => {
+                            const option = document.createElement('option');
+                            option.value = list.id;
+                            option.textContent = list.name;
+                            listSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        listSelect.innerHTML = '<option value="">Error loading lists</option>';
+                    });
+            } else {
+                listSelect.innerHTML = '<option value="">-- Select a Board First --</option>';
+            }
+        });
+    }
+
+    // Jira project/issue type logic
+    function loadJiraProjects() {
+        const projectSelect = document.getElementById('jira-project');
+        const issueTypeSelect = document.getElementById('jira-issue-type');
+        
+        projectSelect.innerHTML = '<option value="">Loading Projects...</option>';
+        issueTypeSelect.innerHTML = '<option value="">-- Select Project First --</option>';
+        
+        fetch('/get_jira_projects')
+            .then(response => response.json())
+            .then(data => {
+                projectSelect.innerHTML = '<option value="">-- Select a Project --</option>';
+                if (data.error) {
+                    projectSelect.innerHTML = `<option value="">Error: ${data.error}</option>`;
+                } else {
+                    data.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.key;
+                        option.textContent = `${project.name} (${project.key})`;
+                        projectSelect.appendChild(option);
+                    });
+                    window.jiraProjectsLoaded = true;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                projectSelect.innerHTML = '<option value="">Network Error</option>';
+            });
+    }
+
+    const projectSelect = document.getElementById('jira-project');
+    if (projectSelect) {
+        projectSelect.addEventListener('change', function() {
+            const issueTypeSelect = document.getElementById('jira-issue-type');
+            issueTypeSelect.innerHTML = '<option value="">Loading...</option>';
+            
+            if (this.value) {
+                fetch(`/get_jira_issue_types/${this.value}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        issueTypeSelect.innerHTML = '<option value="">-- Select Issue Type --</option>';
+                        if (data.error) {
+                            issueTypeSelect.innerHTML = `<option value="">Error: ${data.error}</option>`;
+                        } else {
+                            data.forEach(issueType => {
+                                const option = document.createElement('option');
+                                option.value = issueType.name;
+                                option.textContent = issueType.name;
+                                issueTypeSelect.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        issueTypeSelect.innerHTML = '<option value="">Network Error</option>';
+                    });
+            } else {
+                issueTypeSelect.innerHTML = '<option value="">-- Select Project First --</option>';
+            }
+        });
+    }
+
+    // Modal functions
+    function closeModal() {
+        const modal = document.getElementById('resultsModal');
+        if (modal) {
+            modal.classList.remove('active');
+            // Optional: Redirect to clear URL after closing
+            window.history.pushState({}, document.title, "{{ url_for('home') }}");
+        }
+    }
+
+    // Close modal on background click
+    const modal = document.getElementById('resultsModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
+
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Typewriter effect for analysis results
+    function typeWriter(element, text, speed = 20) {
+        let i = 0;
+        element.textContent = '';
+        element.style.opacity = '1';
+        
+        function type() {
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            }
+        }
+        type();
+    }
+
+    // Apply typewriter effect to summary if modal is active
+    {% if analysis and not analysis.error %}
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide loading modal
+        const loadingModal = document.getElementById('loadingModal');
+        if (loadingModal) {
+            loadingModal.classList.remove('active');
+        }
+
+        // Apply typewriter effect to summary
+        const summaryElement = document.querySelector('.text-gray-300.leading-relaxed');
+        if (summaryElement) {
+            const originalText = summaryElement.textContent;
+            summaryElement.style.opacity = '0';
+            setTimeout(() => {
+                typeWriter(summaryElement, originalText, 15);
+            }, 300);
+        }
+
+        // Animate decisions with stagger
+        const decisions = document.querySelectorAll('.bg-black\\/20.rounded-xl.p-5');
+        decisions.forEach((decision, index) => {
+            decision.style.opacity = '0';
+            decision.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                decision.style.transition = 'all 0.5s ease-out';
+                decision.style.opacity = '1';
+                decision.style.transform = 'translateY(0)';
+            }, 500 + (index * 100));
+        });
+    });
+    {% endif %}
+</script>
+{% endblock %}

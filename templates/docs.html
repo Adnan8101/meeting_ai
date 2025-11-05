@@ -1,0 +1,524 @@
+{% extends "base.html" %}
+{% block title %}Documentation - AI Meeting Agent{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <!-- Hero Section -->
+    <div class="text-center mb-16">
+        <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">
+            Documentation
+        </h1>
+        <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+            Complete guide to understanding and using AI Meeting Agent
+        </p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="list" class="w-6 h-6 text-blue-400"></i>
+            Table of Contents
+        </h2>
+        <div class="grid md:grid-cols-2 gap-4">
+            <a href="#overview" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                1. Overview
+            </a>
+            <a href="#features" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                2. Key Features
+            </a>
+            <a href="#architecture" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                <i data-lucide="box" class="w-4 h-4"></i>
+                3. Architecture
+            </a>
+            <a href="#data-flow" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                <i data-lucide="repeat" class="w-4 h-4"></i>
+                4. Data Flow
+            </a>
+            <a href="#tech-stack" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                5. Tech Stack
+            </a>
+            <a href="#routes" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                <i data-lucide="route" class="w-4 h-4"></i>
+                6. API Routes
+            </a>
+            <a href="#integrations" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                <i data-lucide="plug" class="w-4 h-4"></i>
+                7. Integrations
+            </a>
+            <a href="#developers" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                8. Developers
+            </a>
+        </div>
+    </div>
+
+    <!-- Overview Section -->
+    <div id="overview" class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="file-text" class="w-8 h-8 text-blue-400"></i>
+            Overview
+        </h2>
+        <div class="space-y-4 text-gray-300">
+            <p class="text-lg leading-relaxed">
+                <strong class="text-white">AI Meeting Agent</strong> is an intelligent automation platform that leverages advanced AI to analyze meeting transcripts, extract actionable insights, and automatically integrate with your favorite productivity tools.
+            </p>
+            <p class="leading-relaxed">
+                The platform uses Google's Gemini AI to process natural language and identify key decisions, action items, and summaries from your meeting discussions. It then seamlessly distributes this information across your team's workflow tools.
+            </p>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-8 h-8 text-yellow-400"></i>
+            Key Features
+        </h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-black/30 rounded-xl p-6 border border-white/10 hover:border-blue-500/30 transition-all">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="brain" class="w-6 h-6 text-blue-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2">AI-Powered Analysis</h3>
+                <p class="text-gray-400">Automatically extract summaries, decisions, and action items from meeting transcripts using Google Gemini AI.</p>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-6 border border-white/10 hover:border-green-500/30 transition-all">
+                <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="users" class="w-6 h-6 text-green-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2">Team Collaboration</h3>
+                <p class="text-gray-400">Create teams, invite members, and automatically distribute meeting summaries via email.</p>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-6 border border-white/10 hover:border-purple-500/30 transition-all">
+                <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="zap" class="w-6 h-6 text-purple-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2">Multi-Platform Integration</h3>
+                <p class="text-gray-400">Connect with Trello, Slack, and Jira to automate task creation and notifications.</p>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-all">
+                <div class="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="shield-check" class="w-6 h-6 text-orange-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2">Secure & Private</h3>
+                <p class="text-gray-400">Enterprise-grade security with encrypted credentials and secure OAuth integrations.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Architecture Section -->
+    <div id="architecture" class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="box" class="w-8 h-8 text-purple-400"></i>
+            Architecture
+        </h2>
+        <div class="space-y-6 text-gray-300">
+            <div>
+                <h3 class="text-xl font-semibold text-white mb-3">System Components</h3>
+                <ul class="space-y-3 ml-6">
+                    <li class="flex items-start gap-3">
+                        <span class="text-blue-400 mt-1">•</span>
+                        <div>
+                            <strong class="text-white">Frontend Layer:</strong> Server-side rendered templates using Jinja2 with TailwindCSS for styling
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-blue-400 mt-1">•</span>
+                        <div>
+                            <strong class="text-white">Application Layer:</strong> Flask web framework handling routing, authentication, and business logic
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-blue-400 mt-1">•</span>
+                        <div>
+                            <strong class="text-white">Database Layer:</strong> SQLAlchemy ORM with SQLite (dev) or PostgreSQL (production)
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-blue-400 mt-1">•</span>
+                        <div>
+                            <strong class="text-white">AI Layer:</strong> Google Gemini 2.0 for natural language processing
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-blue-400 mt-1">•</span>
+                        <div>
+                            <strong class="text-white">Integration Layer:</strong> REST API clients for Trello, Slack, and Jira
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-6 border border-white/10 mt-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Database Schema</h3>
+                <div class="space-y-3 text-sm font-mono">
+                    <div><span class="text-blue-400">User</span> → username, email, password_hash, team_id</div>
+                    <div><span class="text-green-400">Team</span> → name, slack_webhook_url, members[]</div>
+                    <div><span class="text-purple-400">TrelloCredentials</span> → token, trello_username, user_id</div>
+                    <div><span class="text-orange-400">JiraCredentials</span> → jira_url, email, api_token, user_id</div>
+                    <div><span class="text-pink-400">TrelloCard</span> → card_id, task_description, assignee, due_date</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Flow Section -->
+    <div id="data-flow" class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="repeat" class="w-8 h-8 text-green-400"></i>
+            Data Flow
+        </h2>
+        <div class="space-y-6">
+            <div class="bg-black/30 rounded-xl p-6 border border-white/10">
+                <h3 class="text-lg font-semibold text-white mb-4">Meeting Analysis Workflow</h3>
+                <ol class="space-y-4 text-gray-300">
+                    <li class="flex gap-4">
+                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">1</span>
+                        <div>
+                            <strong class="text-white">Transcript Input:</strong> User pastes meeting transcript into the web interface
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">2</span>
+                        <div>
+                            <strong class="text-white">Automation Selection:</strong> User enables desired integrations (Trello, Slack, Jira, Email)
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">3</span>
+                        <div>
+                            <strong class="text-white">AI Processing:</strong> Gemini AI analyzes transcript and extracts structured data (summary, decisions, action items)
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">4</span>
+                        <div>
+                            <strong class="text-white">Results Display:</strong> Analysis results are rendered on the web page in a structured format
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">5</span>
+                        <div>
+                            <strong class="text-white">Automation Execution:</strong> Background tasks create Trello cards, send emails, post to Slack, and create Jira issues based on selected options
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack Section -->
+    <div id="tech-stack" class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="layers" class="w-8 h-8 text-orange-400"></i>
+            Tech Stack
+        </h2>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-white">Backend</h3>
+                <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                        Python 3.x
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                        Flask (Web Framework)
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                        SQLAlchemy (ORM)
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                        Flask-Login (Auth)
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                        Flask-Bcrypt (Password Hashing)
+                    </li>
+                </ul>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-white">Frontend</h3>
+                <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                        HTML5/CSS3
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                        TailwindCSS
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                        Jinja2 Templates
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                        Vanilla JavaScript
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                        Glassmorphism UI
+                    </li>
+                </ul>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-white">AI & Integrations</h3>
+                <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
+                        Google Gemini AI
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
+                        Trello API
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
+                        Slack Webhooks
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
+                        Jira REST API
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
+                        SMTP (Email)
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Routes Section -->
+    <div id="routes" class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="route" class="w-8 h-8 text-pink-400"></i>
+            API Routes
+        </h2>
+        <div class="space-y-4">
+            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
+                    <code class="text-gray-300">/</code>
+                </div>
+                <p class="text-gray-400 text-sm">Home page - Meeting transcript analysis interface</p>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-sm font-semibold">POST</span>
+                    <code class="text-gray-300">/analyze</code>
+                </div>
+                <p class="text-gray-400 text-sm">Analyzes transcript and executes selected automations</p>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
+                    <code class="text-gray-300">/team</code>
+                </div>
+                <p class="text-gray-400 text-sm">Team management page - View/create team and invite members</p>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
+                    <code class="text-gray-300">/integrations</code>
+                </div>
+                <p class="text-gray-400 text-sm">Integration management - Connect/disconnect Trello, Slack, and Jira</p>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
+                    <code class="text-gray-300">/get_lists/&lt;board_id&gt;</code>
+                </div>
+                <p class="text-gray-400 text-sm">Fetch Trello lists for a specific board (JSON response)</p>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
+                    <code class="text-gray-300">/get_jira_projects</code>
+                </div>
+                <p class="text-gray-400 text-sm">Fetch all Jira projects for authenticated user (JSON response)</p>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-lg text-sm font-semibold">AUTH</span>
+                    <code class="text-gray-300">/login, /register, /logout</code>
+                </div>
+                <p class="text-gray-400 text-sm">Authentication routes for user management</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Integrations Section -->
+    <div id="integrations" class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="plug" class="w-8 h-8 text-blue-400"></i>
+            Integration Details
+        </h2>
+        <div class="space-y-6">
+            <div class="bg-black/30 rounded-xl p-6 border border-white/10">
+                <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                        <rect width="8" height="10" x="3" y="3" rx="1.5" fill="currentColor"/>
+                        <rect width="8" height="16" x="13" y="3" rx="1.5" fill="currentColor"/>
+                    </svg>
+                    Trello
+                </h3>
+                <p class="text-gray-400 mb-3">Automatically creates cards for each action item with assignee and due date information.</p>
+                <ul class="space-y-2 text-gray-300 text-sm">
+                    <li>• Uses OAuth 1.0a for secure authentication</li>
+                    <li>• Stores user tokens encrypted in database</li>
+                    <li>• Allows board and list selection per analysis</li>
+                </ul>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-6 border border-white/10">
+                <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313z"/>
+                    </svg>
+                    Slack
+                </h3>
+                <p class="text-gray-400 mb-3">Posts formatted meeting summaries to a designated Slack channel using Incoming Webhooks.</p>
+                <ul class="space-y-2 text-gray-300 text-sm">
+                    <li>• Uses Incoming Webhooks (no OAuth required)</li>
+                    <li>• Rich message formatting with Slack Block Kit</li>
+                    <li>• Team-level integration (not user-level)</li>
+                </ul>
+            </div>
+
+            <div class="bg-black/30 rounded-xl p-6 border border-white/10">
+                <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.571 11.513H0a5.218 5.218 0 0 0 5.232 5.215h2.13v2.057A5.215 5.215 0 0 0 12.575 24V12.518a1.005 1.005 0 0 0-1.005-1.005zm5.723-5.756H24a5.218 5.218 0 0 0-5.231-5.214h-2.105V2.6A5.214 5.214 0 0 0 11.456 0v11.507a1.005 1.005 0 0 0 1.006 1.005h4.832z"/>
+                    </svg>
+                    Jira
+                </h3>
+                <p class="text-gray-400 mb-3">Creates issues for action items in specified Jira projects with custom issue types.</p>
+                <ul class="space-y-2 text-gray-300 text-sm">
+                    <li>• Uses Jira Cloud REST API with API tokens</li>
+                    <li>• Dynamic project and issue type selection</li>
+                    <li>• Supports multiple Jira instances per user</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Developers Section -->
+    <div id="developers" class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+            <i data-lucide="users" class="w-8 h-8 text-purple-400"></i>
+            Development Team
+        </h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl p-6 border border-blue-500/20 text-center hover:border-blue-500/50 transition-all">
+                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-white">
+                    <i data-lucide="code" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Hamza Sayyad</h3>
+                <p class="text-blue-400 font-semibold mb-3">Frontend Developer</p>
+                <div class="flex flex-wrap justify-center gap-2 text-gray-400 text-xs">
+                    <span class="px-2 py-1 bg-blue-500/20 rounded-lg">HTML/CSS</span>
+                    <span class="px-2 py-1 bg-blue-500/20 rounded-lg">JavaScript</span>
+                    <span class="px-2 py-1 bg-blue-500/20 rounded-lg">UI/UX</span>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20 text-center hover:border-purple-500/50 transition-all">
+                <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-white">
+                    <i data-lucide="server" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Hasan Shaikh</h3>
+                <p class="text-purple-400 font-semibold mb-3">Backend Developer</p>
+                <div class="flex flex-wrap justify-center gap-2 text-gray-400 text-xs">
+                    <span class="px-2 py-1 bg-purple-500/20 rounded-lg">Python</span>
+                    <span class="px-2 py-1 bg-purple-500/20 rounded-lg">Flask</span>
+                    <span class="px-2 py-1 bg-purple-500/20 rounded-lg">AI/ML</span>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20 text-center hover:border-green-500/50 transition-all">
+                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-white">
+                    <i data-lucide="database" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Ujjval Shrivastav</h3>
+                <p class="text-green-400 font-semibold mb-3">Cloud & Database Architect</p>
+                <div class="flex flex-wrap justify-center gap-2 text-gray-400 text-xs">
+                    <span class="px-2 py-1 bg-green-500/20 rounded-lg">PostgreSQL</span>
+                    <span class="px-2 py-1 bg-green-500/20 rounded-lg">Cloud</span>
+                    <span class="px-2 py-1 bg-green-500/20 rounded-lg">DevOps</span>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-2xl p-6 border border-orange-500/20 text-center hover:border-orange-500/50 transition-all">
+                <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-white">
+                    <i data-lucide="cloud" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Rahul Rathod</h3>
+                <p class="text-orange-400 font-semibold mb-3">Cloud & Database Architect</p>
+                <div class="flex flex-wrap justify-center gap-2 text-gray-400 text-xs">
+                    <span class="px-2 py-1 bg-orange-500/20 rounded-lg">Database</span>
+                    <span class="px-2 py-1 bg-orange-500/20 rounded-lg">Cloud</span>
+                    <span class="px-2 py-1 bg-orange-500/20 rounded-lg">Infrastructure</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center bg-black/30 rounded-xl p-6 border border-white/10">
+            <div class="flex items-center justify-center gap-2 mb-3">
+                <i data-lucide="graduation-cap" class="w-6 h-6 text-blue-400"></i>
+                <h3 class="text-xl font-semibold text-white">L.R. Tiwari College of Engineering</h3>
+            </div>
+            <p class="text-gray-400">This project was developed as part of our academic curriculum, showcasing the integration of modern web technologies with artificial intelligence.</p>
+        </div>
+    </div>
+
+    <!-- Back to Top -->
+    <div class="text-center">
+        <a href="#" class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors px-6 py-3 glass rounded-xl hover:bg-white/10">
+            <i data-lucide="arrow-up" class="w-5 h-5"></i>
+            Back to Top
+        </a>
+    </div>
+</div>
+
+<style>
+    /* Smooth scrolling for anchor links */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Fix text colors in dark mode */
+    body:not(.light-mode) .text-gray-300,
+    body:not(.light-mode) .text-gray-400 {
+        color: rgba(209, 213, 219, 0.9) !important;
+    }
+    
+    body:not(.light-mode) .text-white {
+        color: rgba(255, 255, 255, 0.95) !important;
+    }
+</style>
+
+<script>
+    // Initialize Lucide icons when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

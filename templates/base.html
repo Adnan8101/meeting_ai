@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Meeting Agent{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Apple-inspired Design System */
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        :root {
+            --space-black: #1d1d1f;
+            --space-gray: #86868b;
+            --apple-blue: #0071e3;
+            --apple-white: #f5f5f7;
+        }
+
+        /* Dark Theme (Default) */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            color: var(--apple-white);
+            position: relative;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Light Theme */
+        body.light-mode {
+            background: #ffffff;
+            color: #1d1d1f;
+        }
+
+        body.light-mode h1, body.light-mode h2, body.light-mode h3,
+        body.light-mode h4, body.light-mode h5, body.light-mode h6,
+        body.light-mode p, body.light-mode span, body.light-mode div, body.light-mode label {
+            color: #1d1d1f;
+        }
+
+        body.light-mode .text-white { color: #1d1d1f !important; }
+        body.light-mode .text-gray-300, body.light-mode .text-gray-400 { color: #6e6e73 !important; }
+        body.light-mode .text-gray-500 { color: #86868b !important; }
+
+        /* Light mode inputs */
+        body.light-mode input, body.light-mode textarea, body.light-mode select {
+            background: #f5f5f7 !important;
+            color: #1d1d1f !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+        }
+
+        body.light-mode input::placeholder, body.light-mode textarea::placeholder {
+            color: #86868b !important;
+        }
+
+        /* Animated gradient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at top, rgba(0, 113, 227, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(10, 132, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom left, rgba(0, 113, 227, 0.08) 0%, transparent 50%);
+            animation: gradientShift 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        body.light-mode::before {
+            background: 
+                radial-gradient(ellipse at top, rgba(0, 113, 227, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(10, 132, 255, 0.05) 0%, transparent 50%);
+        }
+
+        /* Glass morphism cards */
+        .glass-card {
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .glass {
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        body.light-mode .glass {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        /* Premium Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
+            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 113, 227, 0.5);
+            background: linear-gradient(135deg, #0077ed 0%, #007aff 100%);
+        }
+
+        /* Fade in animation */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .toast {
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideInRight 0.3s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-weight: 500;
+        }
+
+        .toast.success {
+            background: rgba(52, 199, 89, 0.2);
+            border-color: rgba(52, 199, 89, 0.4);
+        }
+
+        .toast.error {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: rgba(255, 59, 48, 0.4);
+        }
+
+        .toast.warning {
+            background: rgba(255, 159, 10, 0.2);
+            border-color: rgba(255, 159, 10, 0.4);
+        }
+
+        .toast.info {
+            background: rgba(0, 113, 227, 0.2);
+            border-color: rgba(0, 113, 227, 0.4);
+        }
+
+        body.light-mode .toast {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            color: #1d1d1f;
+        }
+
+        body.light-mode .toast.success {
+            background: rgba(52, 199, 89, 0.15);
+            border-color: rgba(52, 199, 89, 0.3);
+        }
+
+        body.light-mode .toast.error {
+            background: rgba(255, 59, 48, 0.15);
+            border-color: rgba(255, 59, 48, 0.3);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+
+        .toast.removing {
+            animation: slideOutRight 0.3s ease-out forwards;
+        }
+
+        /* Navigation Bar */
+        .nav-blur {
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .nav-blur {
+            background: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(180deg);
+        }
+
+        body.light-mode .theme-toggle {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .btn-primary {
+            color: #ffffff !important;
+        }
+
+        body.light-mode a {
+            color: var(--apple-blue);
+        }
+
+        body.light-mode .text-blue-400, body.light-mode .text-blue-300 {
+            color: var(--apple-blue) !important;
+        }
+
+        body.light-mode .bg-blue-500\/20 { background: rgba(0, 113, 227, 0.1) !important; }
+        body.light-mode .bg-green-500\/20 { background: rgba(52, 199, 89, 0.1) !important; }
+        body.light-mode .bg-purple-500\/20 { background: rgba(175, 82, 222, 0.1) !important; }
+        body.light-mode .bg-black\/20, body.light-mode .bg-black\/40 { background: rgba(0, 0, 0, 0.05) !important; }
+        body.light-mode .border-white\/10, body.light-mode .border-white\/20 { border-color: rgba(0, 0, 0, 0.1) !important; }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            z-index: 40;
+        }
+
+        .mobile-menu.active {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        body.light-mode .mobile-menu {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Checkbox Styling */
+        input[type="checkbox"] {
+            accent-color: #0071e3;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* SVG Icon Colors in Dark Mode */
+        svg {
+            flex-shrink: 0;
+        }
+
+        /* Automation Options Styling */
+        .automation-option {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .automation-option:hover:not(.opacity-50) {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .automation-option.opacity-50 {
+            opacity: 0.4;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* Fix checkbox and label colors in dark mode */
+        .automation-option label {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .automation-option .font-medium {
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+
+        .automation-option small {
+            color: rgba(156, 163, 175, 0.8) !important;
+        }
+
+        .automation-option small a {
+            color: rgba(10, 132, 255, 0.9) !important;
+        }
+
+        body.light-mode .automation-option {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .automation-option:hover:not(.opacity-50) {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .automation-option label {
+            color: #1d1d1f !important;
+        }
+
+        body.light-mode .automation-option .font-medium {
+            color: #1d1d1f !important;
+        }
+
+        /* Icon Colors */
+        .text-green-400 { color: #34c759 !important; }
+        .text-blue-400 { color: #0a84ff !important; }
+        .text-blue-500 { color: #0071e3 !important; }
+        .text-purple-400 { color: #af52de !important; }
+        .text-yellow-400 { color: #ffd60a !important; }
+        .text-red-400 { color: #ff453a !important; }
+
+        body.light-mode .text-green-400 { color: #28a745 !important; }
+        body.light-mode .text-blue-400 { color: #007aff !important; }
+        body.light-mode .text-blue-500 { color: #0071e3 !important; }
+        body.light-mode .text-purple-400 { color: #af52de !important; }
+        body.light-mode .text-yellow-400 { color: #ffcc00 !important; }
+        body.light-mode .text-red-400 { color: #ff3b30 !important; }
+
+        /* Link hover in light mode */
+        body.light-mode a:hover {
+            color: #005bb5 !important;
+        }
+
+        /* Small text styling */
+        small {
+            font-size: 0.875rem;
+        }
+
+        body.light-mode small {
+            color: #6e6e73 !important;
+        }
+
+        /* Form select styling */
+        select option {
+            background: #1d1d1f;
+            color: #f5f5f7;
+        }
+
+        body.light-mode select option {
+            background: #ffffff;
+            color: #1d1d1f;
+        }
+
+        /* Loading Modal Styles */
+        .loading-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-modal.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(0, 113, 227, 0.2);
+            border-top-color: #0071e3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .loading-subtext {
+            font-size: 1rem;
+            color: #86868b;
+            margin-bottom: 8px;
+        }
+
+        .estimated-time {
+            font-size: 0.875rem;
+            color: #0a84ff;
+            font-weight: 500;
+        }
+
+        /* Typewriter Effect */
+        .typewriter {
+            overflow: hidden;
+            white-space: pre-wrap;
+            animation: typing 0.05s steps(1, end);
+        }
+
+        @keyframes typing {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin: 20px auto 0;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0071e3, #0a84ff);
+            animation: progress 15s ease-in-out;
+            border-radius: 2px;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 95%; }
+        }
+    </style>
+</head>
+<body class="antialiased relative">
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="loading-modal">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyzing Meeting Transcript</div>
+            <div class="loading-subtext">AI is processing your meeting data...</div>
+            <div class="estimated-time">Estimated time: 10-15 seconds</div>
+            <div class="progress-bar">
+                <div class="progress-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="nav-blur sticky top-0 z-50 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-16">
+                <a href="{{ url_for('home') if current_user.is_authenticated else url_for('login') }}" 
+                   class="text-xl font-semibold text-white hover:text-blue-400 transition-colors duration-300 flex items-center gap-2">
+                    <i data-lucide="zap" class="w-6 h-6"></i>
+                    AI Meeting Agent
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-1">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('home') }}" class="nav-link text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                            <i data-lucide="home" class="w-4 h-4 inline mr-1"></i>
+                            Analyze
+                        </a>
+                        <a href="{{ url_for('team') }}" class="nav-link text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                            <i data-lucide="users" class="w-4 h-4 inline mr-1"></i>
+                            Team
+                        </a>
+                        <a href="{{ url_for('integrations') }}" class="nav-link text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                            <i data-lucide="plug" class="w-4 h-4 inline mr-1"></i>
+                            Integrations
+                        </a>
+                        <a href="{{ url_for('docs') }}" class="nav-link text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                            <i data-lucide="book-open" class="w-4 h-4 inline mr-1"></i>
+                            Docs
+                        </a>
+                        <button onclick="toggleTheme()" class="theme-toggle ml-2" aria-label="Toggle theme">
+                            <i data-lucide="sun" class="sun-icon w-5 h-5 text-yellow-400" style="display: none;"></i>
+                            <i data-lucide="moon" class="moon-icon w-5 h-5 text-blue-400"></i>
+                        </button>
+                        <a href="{{ url_for('logout') }}" class="bg-red-600/80 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ml-2 flex items-center gap-2">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            Logout
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="nav-link text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                            <i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i>
+                            Login
+                        </a>
+                        <a href="{{ url_for('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i>
+                            Sign Up
+                        </a>
+                        <a href="{{ url_for('docs') }}" class="nav-link text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                            <i data-lucide="book-open" class="w-4 h-4 inline mr-1"></i>
+                            Docs
+                        </a>
+                        <button onclick="toggleTheme()" class="theme-toggle ml-2" aria-label="Toggle theme">
+                            <i data-lucide="sun" class="sun-icon w-5 h-5 text-yellow-400" style="display: none;"></i>
+                            <i data-lucide="moon" class="moon-icon w-5 h-5 text-blue-400"></i>
+                        </button>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-white p-2">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="mobile-menu">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('home') }}" class="block text-white hover:bg-white/10 px-4 py-3 rounded-lg mb-2">
+                    <i data-lucide="home" class="w-4 h-4 inline mr-2"></i>
+                    Analyze
+                </a>
+                <a href="{{ url_for('team') }}" class="block text-white hover:bg-white/10 px-4 py-3 rounded-lg mb-2">
+                    <i data-lucide="users" class="w-4 h-4 inline mr-2"></i>
+                    Team
+                </a>
+                <a href="{{ url_for('integrations') }}" class="block text-white hover:bg-white/10 px-4 py-3 rounded-lg mb-2">
+                    <i data-lucide="plug" class="w-4 h-4 inline mr-2"></i>
+                    Integrations
+                </a>
+                <a href="{{ url_for('docs') }}" class="block text-white hover:bg-white/10 px-4 py-3 rounded-lg mb-2">
+                    <i data-lucide="book-open" class="w-4 h-4 inline mr-2"></i>
+                    Docs
+                </a>
+                <a href="{{ url_for('logout') }}" class="block bg-red-600/80 hover:bg-red-600 text-white px-4 py-3 rounded-lg">
+                    <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i>
+                    Logout
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="block text-white hover:bg-white/10 px-4 py-3 rounded-lg mb-2">
+                    <i data-lucide="log-in" class="w-4 h-4 inline mr-2"></i>
+                    Login
+                </a>
+                <a href="{{ url_for('register') }}" class="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg mb-2">
+                    <i data-lucide="user-plus" class="w-4 h-4 inline mr-2"></i>
+                    Sign Up
+                </a>
+                <a href="{{ url_for('docs') }}" class="block text-white hover:bg-white/10 px-4 py-3 rounded-lg">
+                    <i data-lucide="book-open" class="w-4 h-4 inline mr-2"></i>
+                    Docs
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-white/10 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-400 text-sm">
+                <p class="mb-4 text-lg font-semibold text-white">Development Team</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 max-w-4xl mx-auto">
+                    <div class="glass-card p-4 rounded-xl">
+                        <p class="text-blue-400 font-semibold mb-1">Hamza Sayyad</p>
+                        <p class="text-xs text-gray-500">Frontend Developer</p>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl">
+                        <p class="text-blue-400 font-semibold mb-1">Hasan Shaikh</p>
+                        <p class="text-xs text-gray-500">Backend Developer</p>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl">
+                        <p class="text-blue-400 font-semibold mb-1">Ujjval Shrivastav</p>
+                        <p class="text-xs text-gray-500">Cloud & Database Architect</p>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl">
+                        <p class="text-blue-400 font-semibold mb-1">Rahul Rathod</p>
+                        <p class="text-xs text-gray-500">Cloud & Database Architect</p>
+                    </div>
+                </div>
+                <p class="text-gray-500">L.R. Tiwari College of Engineering</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification System -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Toast notification function - make it globally available
+        window.showToast = function(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toastContainer');
+            if (!container) {
+                console.error('Toast container not found');
+                return;
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'x-circle',
+                warning: 'alert-triangle',
+                info: 'info'
+            };
+            
+            toast.innerHTML = `
+                <i data-lucide="${icons[type] || 'info'}" class="w-5 h-5"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        };
+
+        // Convert Flask flash messages to toasts
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    showToast('{{ message|safe }}', '{{ "error" if category in ["danger", "error"] else category }}');
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.error('Error:', e);
+        });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+            lucide.createIcons();
+        }
+
+        // Check for saved theme preference
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            document.body.classList.add('light-mode');
+            updateThemeIcons();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const theme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+            localStorage.setItem('theme', theme);
+            updateThemeIcons();
+        }
+
+        function updateThemeIcons() {
+            const sunIcons = document.querySelectorAll('.sun-icon');
+            const moonIcons = document.querySelectorAll('.moon-icon');
+            const isLight = document.body.classList.contains('light-mode');
+            
+            sunIcons.forEach(icon => icon.style.display = isLight ? 'block' : 'none');
+            moonIcons.forEach(icon => icon.style.display = isLight ? 'none' : 'block');
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if (isLight) {
+                    link.classList.remove('text-gray-300', 'hover:text-white');
+                    link.classList.add('text-gray-700', 'hover:text-black');
+                } else {
+                    link.classList.remove('text-gray-700', 'hover:text-black');
+                    link.classList.add('text-gray-300', 'hover:text-white');
+                }
+            });
+            
+            lucide.createIcons();
+        }
+
+        updateThemeIcons();
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
