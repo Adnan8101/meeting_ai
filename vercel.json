@@ -11,13 +11,5 @@
       "src": "/(.*)",
       "dest": "wsgi.py"
     }
-  ],
-  "env": {
-    "FLASK_ENV": "production"
-  },
-  "functions": {
-    "wsgi.py": {
-      "runtime": "python3.12"
-    }
-  }
+  ]
 }
