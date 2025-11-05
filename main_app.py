@@ -16,13 +16,21 @@ from models import User, Team, TrelloCredentials, TrelloCard, JiraCredentials
 from dotenv import load_dotenv
 
 load_dotenv()
-# --- CONFIGURATION (Unchanged) ---
-TRELLO_API_KEY = os.environ.get("TRELLO_API_KEY")
-TRELLO_API_SECRET = os.environ.get("TRELLO_API_SECRET")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
-SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")
+
+# --- CONFIGURATION ---
+# Get environment variables with fallbacks
+TRELLO_API_KEY = os.environ.get("TRELLO_API_KEY", "")
+TRELLO_API_SECRET = os.environ.get("TRELLO_API_SECRET", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "")
+SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD", "")
 FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "a-default-secret-key-for-local-dev")
+
+# Log configuration status (without exposing secrets)
+print(f"[*] Configuration loaded:")
+print(f"    - TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
+print(f"    - GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
+print(f"    - DATABASE_URL: {'✓ Set' if os.environ.get('DATABASE_URL') else '✗ Using SQLite'}")
 
 
 def create_app():
