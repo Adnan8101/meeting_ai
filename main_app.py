@@ -37,17 +37,28 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = FLASK_SECRET_KEY
 
-    # --- Database Configuration (Unchanged) ---
+    # --- Database Configuration ---
     database_url = os.environ.get('DATABASE_URL')
     if database_url:
-        if database_url.startswith("postgres://"): database_url = database_url.replace("postgres://", "postgresql://",
-                                                                                       1)
+        if database_url.startswith("postgres://"): 
+            database_url = database_url.replace("postgres://", "postgresql://", 1)
         app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+        # For serverless environments (like Vercel), use /tmp for SQLite
+        # Note: /tmp is ephemeral and will be cleared between deployments
+        if os.environ.get('VERCEL'):
+            # Running on Vercel - use /tmp directory
+            os.makedirs('/tmp/instance', exist_ok=True)
+            app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/instance/site.db'
+            print("[*] Using ephemeral SQLite database in /tmp (data will not persist!)")
+        else:
+            # Local development
+            app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+    
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    db.init_app(app);
-    bcrypt.init_app(app);
+    db.init_app(app)
+    bcrypt.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'login'
 

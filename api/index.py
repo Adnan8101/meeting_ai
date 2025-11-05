@@ -57,7 +57,24 @@ try:
 except Exception as e:
     print(f"[ERROR] Failed to initialize app: {e}")
     import traceback
-    traceback.print_exc()
+    error_traceback = traceback.format_exc()
+    print(error_traceback)
+    
+    # Store error for display
+    init_error = {
+        "error": "Application initialization failed",
+        "details": str(e),
+        "type": type(e).__name__,
+        "traceback": error_traceback,
+        "env_check": {
+            "FLASK_SECRET_KEY": "Set" if os.environ.get("FLASK_SECRET_KEY") else "MISSING",
+            "GEMINI_API_KEY": "Set" if os.environ.get("GEMINI_API_KEY") else "MISSING",
+            "TRELLO_API_KEY": "Set" if os.environ.get("TRELLO_API_KEY") else "MISSING",
+            "DATABASE_URL": "Set" if os.environ.get("DATABASE_URL") else "MISSING (will use SQLite)",
+        },
+        "python_version": sys.version,
+        "cwd": os.getcwd(),
+    }
     
     # Use error app if main app fails
     app = error_app
@@ -65,15 +82,7 @@ except Exception as e:
     @app.route('/')
     @app.route('/<path:path>')
     def error_handler(path=''):
-        return jsonify({
-            "error": "Application initialization failed",
-            "details": str(e),
-            "type": type(e).__name__,
-            "env_check": {
-                "FLASK_SECRET_KEY": "Set" if os.environ.get("FLASK_SECRET_KEY") else "MISSING",
-                "GEMINI_API_KEY": "Set" if os.environ.get("GEMINI_API_KEY") else "MISSING",
-            }
-        }), 500
+        return jsonify(init_error), 500
 
 
 
