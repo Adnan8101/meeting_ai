@@ -36,6 +36,12 @@ print(f"    - DATABASE_URL: {'âœ“ Set' if os.environ.get('DATABASE_URL') else 'â
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = FLASK_SECRET_KEY
+    
+    # Session configuration for better compatibility with serverless
+    app.config['SESSION_COOKIE_SECURE'] = False  # Set to True if using HTTPS in production
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
 
     # --- Database Configuration ---
     database_url = os.environ.get('DATABASE_URL')
@@ -43,6 +49,7 @@ def create_app():
         if database_url.startswith("postgres://"): 
             database_url = database_url.replace("postgres://", "postgresql://", 1)
         app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+        print("[*] Using PostgreSQL database")
     else:
         # For serverless environments (like Vercel), use /tmp for SQLite
         # Note: /tmp is ephemeral and will be cleared between deployments
@@ -50,12 +57,19 @@ def create_app():
             # Running on Vercel - use /tmp directory
             os.makedirs('/tmp/instance', exist_ok=True)
             app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/instance/site.db'
-            print("[*] Using ephemeral SQLite database in /tmp (data will not persist!)")
+            print("[!] WARNING: Using ephemeral SQLite database in /tmp")
+            print("[!] Data will NOT persist between deployments or function invocations!")
+            print("[!] Please set DATABASE_URL environment variable with a PostgreSQL connection string")
         else:
             # Local development
             app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+            print("[*] Using local SQLite database")
     
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+    }
 
     db.init_app(app)
     bcrypt.init_app(app)
@@ -64,7 +78,16 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id))
+        try:
+            user = User.query.get(int(user_id))
+            if user:
+                print(f"[DEBUG] Loaded user: {user.username} (ID: {user.id})")
+            else:
+                print(f"[DEBUG] User with ID {user_id} not found in database")
+            return user
+        except Exception as e:
+            print(f"[ERROR] Failed to load user {user_id}: {e}")
+            return None
 
     # --- AI MODEL AND HELPER FUNCTIONS (Unchanged) ---
     try:
@@ -324,6 +347,10 @@ def create_app():
     @login_required
     def analyze():
         try:
+            # Debug logging
+            print(f"[DEBUG] User authenticated: {current_user.is_authenticated}")
+            print(f"[DEBUG] User ID: {current_user.id if current_user.is_authenticated else 'None'}")
+            
             transcript_text = request.form.get('transcript')
             analysis_result, notification = None, None
             
@@ -452,7 +479,7 @@ def create_app():
                 
                 user = User.query.filter_by(email=email).first()
                 if user and user.verify_password(password):
-                    login_user(user, remember=True)
+                    login_user(user, remember=True, duration=None)
                     next_page = request.args.get('next')
                     flash(f'Welcome back, {user.username}!', 'success')
                     return redirect(next_page or url_for('home'))
