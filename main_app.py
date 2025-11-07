@@ -96,7 +96,6 @@ def create_app():
                     user = User.objects(id=obj_id).first()
                     if user:
                         print(f"[✓] User loaded: {user.username} (ID: {user.id})")
-                    else:
                     return user
                 except Exception as e:
                     # If conversion fails, it's an invalid ObjectId
@@ -111,12 +110,16 @@ def create_app():
             return None
 
     # --- AI MODEL AND HELPER FUNCTIONS (Unchanged) ---
+    model = None
     try:
         if GEMINI_API_KEY:
             genai.configure(api_key=GEMINI_API_KEY)
             model = genai.GenerativeModel('gemini-2.0-flash-exp')
         else:
+            model = None
     except Exception as e:
+        model = None
+        print(f"[WARN] Failed to configure Gemini AI: {e}")
 
     def analyze_transcript_with_ai(transcript_text):
         if not model: return {"error": "AI model not configured."}
@@ -249,12 +252,18 @@ def create_app():
 
         payload = {"blocks": blocks}
         try:
-            response = requests.post(webhook_url, json=payload, timeout=10);
+            response = requests.post(webhook_url, json=payload, timeout=10)
             response.raise_for_status()
             if response.text == 'ok':
+                return True
             else:
+                return False
         except requests.exceptions.RequestException as e:
+            print(f"[ERROR] Slack request failed: {e}")
+            return False
         except Exception as e:
+            print(f"[ERROR] Slack notification failed: {e}")
+            return False
 
     # --- JIRA HELPER FUNCTIONS (Unchanged) ---
     def get_jira_client(user):
@@ -645,6 +654,7 @@ def create_app():
                 try:
                     send_welcome_email(user.email, user.username)
                 except Exception as e:
+                    print(f"[WARN] Failed to send welcome email: {e}")
                 
                 flash('Email verified successfully! Welcome to AI Meeting Agent!', 'success')
                 return redirect(url_for('login'))
@@ -728,6 +738,7 @@ def create_app():
                 traceback.print_exc()
                 flash('An error occurred during login. Please try again.', 'error')
         else:
+            flash('Invalid email or password.', 'error')
         
         print("="*60 + "\n")
         return render_template('login.html')
