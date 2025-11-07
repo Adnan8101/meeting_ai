@@ -106,13 +106,20 @@
 </div>
 
 <script>
+// Debug console logging
+console.log('%c🔐 Login Page Loaded', 'background: #3b82f6; color: white; padding: 5px 10px; border-radius: 5px;');
+console.log('Page URL:', window.location.href);
+console.log('Timestamp:', new Date().toISOString());
+
 // Password toggle functionality for login page
 function togglePasswordVisibilityLogin() {
+    console.log('Password visibility toggle clicked');
     const passwordField = document.getElementById('password');
     const toggleIcon = document.getElementById('toggle-password-login');
     
     if (passwordField.type === 'password') {
         passwordField.type = 'text';
+        console.log('Password visibility: SHOWN');
         toggleIcon.innerHTML = `
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M9.878 9.878a3 3 0 015.657 2.122m0 0a3 3 0 01-4.243 4.243M12 9v.01m-6.938 4L12 9"></path>
@@ -120,6 +127,7 @@ function togglePasswordVisibilityLogin() {
         `;
     } else {
         passwordField.type = 'password';
+        console.log('Password visibility: HIDDEN');
         toggleIcon.innerHTML = `
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -129,7 +137,39 @@ function togglePasswordVisibilityLogin() {
     }
 }
 
+// Track form submission
+const loginForm = document.querySelector('form');
+if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+        const email = document.getElementById('email').value;
+        console.log('%c📤 Login Form Submitted', 'background: #8b5cf6; color: white; padding: 5px 10px; border-radius: 5px;');
+        console.log('Email:', email);
+        console.log('Password length:', document.getElementById('password').value.length);
+        console.log('Timestamp:', new Date().toISOString());
+    });
+}
+
+// Track input changes
+document.getElementById('email').addEventListener('input', function(e) {
+    console.log('Email field changed:', e.target.value);
+});
+
+document.getElementById('password').addEventListener('input', function(e) {
+    console.log('Password field changed, length:', e.target.value.length);
+});
+
 // Auto-focus email field
+console.log('Auto-focusing email field');
 document.getElementById('email').focus();
+
+// Global error handler
+window.addEventListener('error', function(e) {
+    console.error('%c❌ JavaScript Error on Login Page', 'background: #ef4444; color: white; padding: 5px 10px; border-radius: 5px;');
+    console.error('Error:', e.message);
+    console.error('File:', e.filename);
+    console.error('Line:', e.lineno + ':' + e.colno);
+});
+
+console.log('%c✅ Login Page Scripts Initialized', 'background: #10b981; color: white; padding: 5px 10px; border-radius: 5px;');
 </script>
 {% endblock %}

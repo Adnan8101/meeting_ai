@@ -48,12 +48,41 @@ def create_app():
     app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
 
     # --- MongoDB Configuration ---
+    print("\n" + "="*60)
+    print("🗄️  MONGODB CONNECTION ATTEMPT")
+    print("="*60)
+    
     if MONGO_URL:
-        mongoengine.connect(host=MONGO_URL)
-        print("[*] Connected to MongoDB")
+        try:
+            print(f"[*] Attempting to connect to MongoDB...")
+            print(f"[*] MongoDB URL format: {MONGO_URL[:30]}...{MONGO_URL[-20:]}")
+            
+            mongoengine.connect(host=MONGO_URL)
+            
+            # Test the connection
+            from mongoengine.connection import get_db
+            db = get_db()
+            print(f"[✓] Successfully connected to MongoDB")
+            print(f"[✓] Database name: {db.name}")
+            print(f"[✓] Collections: {db.list_collection_names()}")
+            
+        except Exception as e:
+            print(f"[✗] MongoDB connection failed!")
+            print(f"[✗] Error type: {type(e).__name__}")
+            print(f"[✗] Error message: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise
     else:
         print("[!] MONGO_URL missing - using local MongoDB")
-        mongoengine.connect('ai_meeting_agent')
+        try:
+            mongoengine.connect('ai_meeting_agent')
+            print("[✓] Connected to local MongoDB")
+        except Exception as e:
+            print(f"[✗] Local MongoDB connection failed: {e}")
+            raise
+    
+    print("="*60 + "\n")
 
     bcrypt.init_app(app)
     login_manager.init_app(app)
@@ -70,14 +99,18 @@ def create_app():
                     obj_id = ObjectId(user_id)
                     user = User.objects(id=obj_id).first()
                     if user:
-                        print(f"[DEBUG] Loaded user: {user.username} (ID: {user.id})")
+                        print(f"[✓] User loaded: {user.username} (ID: {user.id})")
+                    else:
+                        print(f"[!] User not found for ID: {user_id}")
                     return user
-                except:
+                except Exception as e:
                     # If conversion fails, it's an invalid ObjectId
+                    print(f"[✗] Failed to load user: {e}")
                     return None
             else:
                 # For invalid ID formats (like old integer IDs), silently return None
                 # This handles the migration from SQLAlchemy to MongoDB
+                print(f"[!] Invalid user ID format: {user_id}")
                 return None
         except Exception as e:
             print(f"[ERROR] Failed to load user {user_id}: {e}")
@@ -286,9 +319,16 @@ def create_app():
 
     # --- ROUTES ---
     @app.route('/')
+    def landing():
+        """Public landing page"""
+        if current_user.is_authenticated:
+            return redirect(url_for('dashboard'))
+        return render_template('landing.html')
+    
     @app.route('/home')
+    @app.route('/dashboard')
     @login_required
-    def home():
+    def dashboard():
         trello_client = get_trello_client(current_user)
         boards = trello_client.list_boards() if trello_client else []
         
@@ -459,40 +499,63 @@ def create_app():
         return render_template('index.html', analysis=analysis_result, transcript=transcript_text, trello_boards=boards)
 
     # --- USERNAME AVAILABILITY CHECK ---
-    @app.route('/check_username', methods=['POST'])
+    @app.route('/check_username', methods=['POST', 'OPTIONS'])
     def check_username():
         """Check if username is available via AJAX"""
+        # Handle CORS preflight
+        if request.method == 'OPTIONS':
+            response = jsonify({'status': 'ok'})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+            response.headers.add('Access-Control-Allow-Methods', 'POST')
+            return response
+            
         try:
-            data = request.get_json()
-            username = data.get('username', '').strip()
+            # Try to get data from JSON first, then form data
+            if request.is_json:
+                data = request.get_json()
+                username = data.get('username', '').strip() if data else ''
+            else:
+                username = request.form.get('username', '').strip()
+            
+            print(f"[*] Checking username: {username}")
             
             if not username:
-                return jsonify({'available': False, 'message': 'Username is required'})
+                return jsonify({'available': False, 'message': 'Username is required'}), 200
             
             if len(username) < 3:
-                return jsonify({'available': False, 'message': 'Username must be at least 3 characters'})
+                return jsonify({'available': False, 'message': 'Username must be at least 3 characters'}), 200
             
             if len(username) > 20:
-                return jsonify({'available': False, 'message': 'Username must be less than 20 characters'})
+                return jsonify({'available': False, 'message': 'Username must be less than 20 characters'}), 200
             
             # Check if username exists
             existing_user = User.objects(username=username).first()
             if existing_user:
-                return jsonify({'available': False, 'message': 'Username is already taken'})
+                return jsonify({'available': False, 'message': 'Username is already taken'}), 200
             
-            return jsonify({'available': True, 'message': 'Username is available'})
+            return jsonify({'available': True, 'message': 'Username is available'}), 200
         except Exception as e:
             print(f"[!] Error checking username: {e}")
-            return jsonify({'available': False, 'message': 'Error checking username'})
+            import traceback
+            traceback.print_exc()
+            return jsonify({'available': False, 'message': 'Error checking username. Please try again.'}), 500
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
-        if current_user.is_authenticated: 
-            return redirect(url_for('home'))
+        print("\n" + "="*60)
+        print("📝 REGISTRATION REQUEST")
+        print("="*60)
+        
+        if current_user.is_authenticated:
+            print(f"[*] User already authenticated: {current_user.username}")
+            print("="*60 + "\n")
+            return redirect(url_for('dashboard'))
         
         if request.method == 'POST':
             # Check if this is an AJAX request for registration
             is_ajax = request.headers.get('Content-Type') == 'application/json'
+            print(f"[*] Request type: {'AJAX' if is_ajax else 'Form'}")
             
             if is_ajax:
                 data = request.get_json()
@@ -505,21 +568,28 @@ def create_app():
                 password = request.form.get('password', '').strip()
             
             try:
-                print(f"[DEBUG] Registration attempt: username={username}, email={email}")
+                print(f"[*] Registration attempt:")
+                print(f"    - Username: {username}")
+                print(f"    - Email: {email}")
+                print(f"    - Password length: {len(password) if password else 0}")
                 
                 # Validation
                 if not username or not email or not password:
                     message = 'All fields are required.'
+                    print(f"[✗] Validation failed: {message}")
                     if is_ajax:
                         return jsonify({'success': False, 'message': message})
                     flash(message, 'error')
+                    print("="*60 + "\n")
                     return redirect(url_for('register'))
                 
                 if len(username) < 3:
                     message = 'Username must be at least 3 characters long.'
+                    print(f"[✗] Validation failed: {message}")
                     if is_ajax:
                         return jsonify({'success': False, 'message': message})
                     flash(message, 'error')
+                    print("="*60 + "\n")
                     return redirect(url_for('register'))
                 
                 if len(password) < 6:
@@ -645,35 +715,71 @@ def create_app():
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
-        if current_user.is_authenticated: 
-            return redirect(url_for('home'))
+        print("\n" + "="*60)
+        print("🔐 LOGIN REQUEST")
+        print("="*60)
+        
+        if current_user.is_authenticated:
+            print(f"[*] User already authenticated: {current_user.username}")
+            print("="*60 + "\n")
+            return redirect(url_for('dashboard'))
         
         if request.method == 'POST':
             try:
                 email = request.form.get('email')
                 password = request.form.get('password')
                 
+                print(f"[*] Login attempt for email: {email}")
+                print(f"[*] Password provided: {'Yes' if password else 'No'}")
+                print(f"[*] Password length: {len(password) if password else 0}")
+                
                 if not email or not password:
+                    print("[✗] Missing email or password")
                     flash('Email and password are required.', 'error')
+                    print("="*60 + "\n")
                     return render_template('login.html')
                 
+                print(f"[*] Querying MongoDB for user with email: {email}")
                 user = User.objects(email=email).first()
-                if user and user.verify_password(password):
-                    # Check if email is verified
-                    if not user.is_verified:
-                        flash('Please verify your email before logging in. Check your email for the verification code.', 'warning')
-                        return redirect(url_for('verify_email', email=email))
+                
+                if user:
+                    print(f"[✓] User found: {user.username} (ID: {user.id})")
+                    print(f"[*] Email verified: {user.is_verified}")
+                    print(f"[*] Verifying password...")
                     
-                    login_user(user, remember=True, duration=None)
-                    next_page = request.args.get('next')
-                    flash(f'Welcome back, {user.username}!', 'success')
-                    return redirect(next_page or url_for('home'))
+                    if user.verify_password(password):
+                        print(f"[✓] Password verified successfully")
+                        
+                        # Check if email is verified
+                        if not user.is_verified:
+                            print(f"[!] Email not verified for user: {user.username}")
+                            flash('Please verify your email before logging in. Check your email for the verification code.', 'warning')
+                            print("="*60 + "\n")
+                            return redirect(url_for('verify_email', email=email))
+                        
+                        print(f"[✓] Logging in user: {user.username}")
+                        login_user(user, remember=True, duration=None)
+                        next_page = request.args.get('next')
+                        flash(f'Welcome back, {user.username}!', 'success')
+                        print(f"[✓] Login successful! Redirecting to: {next_page or 'dashboard'}")
+                        print("="*60 + "\n")
+                        return redirect(next_page or url_for('dashboard'))
+                    else:
+                        print(f"[✗] Password verification failed")
+                        flash('Invalid email or password. Please try again.', 'error')
                 else:
+                    print(f"[✗] No user found with email: {email}")
                     flash('Invalid email or password. Please try again.', 'error')
+                    
             except Exception as e:
-                print(f"[!] Error in login: {e}")
+                print(f"[✗] Error in login: {type(e).__name__}: {str(e)}")
+                import traceback
+                traceback.print_exc()
                 flash('An error occurred during login. Please try again.', 'error')
+        else:
+            print(f"[*] GET request - showing login form")
         
+        print("="*60 + "\n")
         return render_template('login.html')
 
     @app.route('/logout')
