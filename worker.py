@@ -40,7 +40,6 @@ def check_trello_tasks():
             if not user:
                 continue
                 
-            print(f"\n[*] Checking tasks for user: {user.username}")
             client = TrelloClient(
                 api_key=TRELLO_API_KEY,
                 api_secret=TRELLO_API_SECRET,

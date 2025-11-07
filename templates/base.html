@@ -28,7 +28,8 @@
         /* Dark Theme (Default) */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            background: #000000;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            background-attachment: fixed;
             color: var(--apple-white);
             position: relative;
             overflow-x: hidden;
@@ -714,7 +715,6 @@
         window.showToast = function(message, type = 'info', duration = 5000) {
             const container = document.getElementById('toastContainer');
             if (!container) {
-                console.error('Toast container not found');
                 return;
             }
             
@@ -753,7 +753,6 @@
 
         // Global error handler
         window.addEventListener('error', function(e) {
-            console.error('Error:', e);
         });
 
         // Mobile menu toggle

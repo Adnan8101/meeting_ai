@@ -30,7 +30,6 @@ FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "mongodb-secret-key-v2")
 MONGO_URL = os.environ.get("MONGO_URL", "")
 
 # Log configuration status (without exposing secrets)
-print(f"[*] Configuration loaded:")
 print(f"    - TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
 print(f"    - GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
 print(f"    - MONGO_URL: {'✓ Set' if MONGO_URL else '✗ Missing'}")
@@ -54,8 +53,6 @@ def create_app():
     
     if MONGO_URL:
         try:
-            print(f"[*] Attempting to connect to MongoDB...")
-            print(f"[*] MongoDB URL format: {MONGO_URL[:30]}...{MONGO_URL[-20:]}")
             
             mongoengine.connect(host=MONGO_URL)
             
@@ -74,7 +71,6 @@ def create_app():
             traceback.print_exc()
             raise
     else:
-        print("[!] MONGO_URL missing - using local MongoDB")
         try:
             mongoengine.connect('ai_meeting_agent')
             print("[✓] Connected to local MongoDB")
@@ -101,7 +97,6 @@ def create_app():
                     if user:
                         print(f"[✓] User loaded: {user.username} (ID: {user.id})")
                     else:
-                        print(f"[!] User not found for ID: {user_id}")
                     return user
                 except Exception as e:
                     # If conversion fails, it's an invalid ObjectId
@@ -110,7 +105,6 @@ def create_app():
             else:
                 # For invalid ID formats (like old integer IDs), silently return None
                 # This handles the migration from SQLAlchemy to MongoDB
-                print(f"[!] Invalid user ID format: {user_id}")
                 return None
         except Exception as e:
             print(f"[ERROR] Failed to load user {user_id}: {e}")
@@ -121,11 +115,8 @@ def create_app():
         if GEMINI_API_KEY:
             genai.configure(api_key=GEMINI_API_KEY)
             model = genai.GenerativeModel('gemini-2.0-flash-exp')
-            print("[*] Gemini AI configured.")
         else:
-            model = None; print("[!] GEMINI_API_KEY missing.")
     except Exception as e:
-        model = None; print(f"[!] Gemini AI Error: {e}")
 
     def analyze_transcript_with_ai(transcript_text):
         if not model: return {"error": "AI model not configured."}
@@ -261,13 +252,9 @@ def create_app():
             response = requests.post(webhook_url, json=payload, timeout=10);
             response.raise_for_status()
             if response.text == 'ok':
-                print("[*] Slack msg sent."); return "Summary sent to Slack."
             else:
-                print(f"[!] Slack response: {response.text}"); return f"Slack unexpected response: {response.text}"
         except requests.exceptions.RequestException as e:
-            print(f"[!] Slack send error: {e}"); return f"Failed Slack send: {e}"
         except Exception as e:
-            print(f"[!] Slack unexpected error: {e}"); return f"Unexpected Slack error: {e}"
 
     # --- JIRA HELPER FUNCTIONS (Unchanged) ---
     def get_jira_client(user):
@@ -277,14 +264,11 @@ def create_app():
         try:
             jira_client = JIRA(server=creds.jira_url, basic_auth=(creds.email, creds.api_token))
             jira_client.server_info()
-            print("[*] Jira client initialized successfully.")
             return jira_client
         except JIRAError as e:
-            print(f"[!] Failed to connect to Jira: {e.status_code} - {e.text}")
             flash(f"Jira Connection Error: {e.text}", "danger");
             return None
         except Exception as e:
-            print(f"[!] Unexpected error initializing Jira client: {e}")
             flash(f"Jira Initialization Error: {e}", "danger");
             return None
 
@@ -303,13 +287,10 @@ def create_app():
                           'issuetype': {'name': issue_type_name}}
             try:
                 new_issue = jira_client.create_issue(fields=issue_dict)
-                print(f"[*] Created Jira issue: {new_issue.key}");
                 issues_created += 1
             except JIRAError as e:
-                print(f"[!] Failed Jira issue '{summary}': {e.status_code} - {e.text}");
                 failed_items.append(summary)
             except Exception as e:
-                print(f"[!] Unexpected error on Jira issue '{summary}': {e}");
                 failed_items.append(summary)
 
         if not failed_items:
@@ -359,7 +340,6 @@ def create_app():
             lists = [{"id": lst.id, "name": lst.name} for lst in board.list_lists()]
             return jsonify(lists)
         except Exception as e:
-            print(f"[!] Error fetching Trello lists: {e}")
             return jsonify({"error": str(e)}), 500
 
     # ----------------------------------
@@ -375,10 +355,8 @@ def create_app():
             project_list = [{"key": p.key, "name": p.name} for p in projects]
             return jsonify(project_list)
         except JIRAError as e:
-            print(f"[!] JIRAError fetching projects: {e.text}")
             return jsonify({"error": f"Jira API Error: {e.text}"}), 500
         except Exception as e:
-            print(f"[!] Error fetching Jira projects: {e}")
             return jsonify({"error": "Could not fetch Jira projects."}), 500
 
     @app.route('/get_jira_issue_types/<project_key>')
@@ -392,10 +370,8 @@ def create_app():
             issue_type_list = [{"id": it.id, "name": it.name, "subtask": it.subtask} for it in issue_types]
             return jsonify(issue_type_list)
         except JIRAError as e:
-            print(f"[!] JIRAError fetching issue types: {e.text}")
             return jsonify({"error": f"Jira API Error: {e.text}"}), 500
         except Exception as e:
-            print(f"[!] Error fetching Jira issue types: {e}")
             return jsonify({"error": f"Could not fetch issue types for {project_key}."}), 500
 
     @app.route('/analyze', methods=['POST'])
@@ -403,8 +379,6 @@ def create_app():
     def analyze():
         try:
             # Debug logging
-            print(f"[DEBUG] User authenticated: {current_user.is_authenticated}")
-            print(f"[DEBUG] User ID: {current_user.id if current_user.is_authenticated else 'None'}")
             
             transcript_text = request.form.get('transcript')
             analysis_result, notification = None, None
@@ -490,7 +464,6 @@ def create_app():
             boards = trello_client.list_boards() if trello_client else []
             
         except Exception as e:
-            print(f"[!] Error in analyze route: {e}")
             flash(f"An error occurred while processing your request: {str(e)}", "error")
             trello_client = get_trello_client(current_user)
             boards = trello_client.list_boards() if trello_client else []
@@ -518,7 +491,6 @@ def create_app():
             else:
                 username = request.form.get('username', '').strip()
             
-            print(f"[*] Checking username: {username}")
             
             if not username:
                 return jsonify({'available': False, 'message': 'Username is required'}), 200
@@ -536,7 +508,6 @@ def create_app():
             
             return jsonify({'available': True, 'message': 'Username is available'}), 200
         except Exception as e:
-            print(f"[!] Error checking username: {e}")
             import traceback
             traceback.print_exc()
             return jsonify({'available': False, 'message': 'Error checking username. Please try again.'}), 500
@@ -548,14 +519,12 @@ def create_app():
         print("="*60)
         
         if current_user.is_authenticated:
-            print(f"[*] User already authenticated: {current_user.username}")
             print("="*60 + "\n")
             return redirect(url_for('dashboard'))
         
         if request.method == 'POST':
             # Check if this is an AJAX request for registration
             is_ajax = request.headers.get('Content-Type') == 'application/json'
-            print(f"[*] Request type: {'AJAX' if is_ajax else 'Form'}")
             
             if is_ajax:
                 data = request.get_json()
@@ -568,7 +537,6 @@ def create_app():
                 password = request.form.get('password', '').strip()
             
             try:
-                print(f"[*] Registration attempt:")
                 print(f"    - Username: {username}")
                 print(f"    - Email: {email}")
                 print(f"    - Password length: {len(password) if password else 0}")
@@ -618,25 +586,19 @@ def create_app():
                     return redirect(url_for('register'))
                 
                 # Create new user
-                print(f"[DEBUG] Creating new user...")
                 user = User(username=username, email=email)
                 user.password = password  # This will hash the password
                 user.save()
-                print(f"[DEBUG] User saved successfully with ID: {user.id}")
                 
                 # Generate and send verification email
-                print(f"[DEBUG] Sending verification email...")
                 try:
                     otp_code = user.generate_verification_token()
                     success, email_result = send_email_verification(email, username, otp_code)
                     if success:
-                        print(f"[DEBUG] Verification email sent")
                         email_message = " Verification code sent to your email."
                     else:
-                        print(f"[!] Failed to send verification email: {email_result}")
                         email_message = " (Verification email failed to send.)"
                 except Exception as email_error:
-                    print(f"[!] Failed to send verification email: {email_error}")
                     email_message = " (Verification email failed to send.)"
                 
                 message = f'Account created successfully!{email_message} Please verify your email.'
@@ -647,7 +609,6 @@ def create_app():
                 return redirect(url_for('verify_email', email=email))
                 
             except Exception as e:
-                print(f"[!] Error in register: {e}")
                 import traceback
                 traceback.print_exc()
                 message = 'An unexpected error occurred during registration. Please try again.'
@@ -684,7 +645,6 @@ def create_app():
                 try:
                     send_welcome_email(user.email, user.username)
                 except Exception as e:
-                    print(f"[!] Failed to send welcome email: {e}")
                 
                 flash('Email verified successfully! Welcome to AI Meeting Agent!', 'success')
                 return redirect(url_for('login'))
@@ -710,7 +670,6 @@ def create_app():
             else:
                 return jsonify({'success': False, 'message': 'Failed to send verification email'})
         except Exception as e:
-            print(f"[!] Error resending verification: {e}")
             return jsonify({'success': False, 'message': 'An error occurred'})
 
     @app.route('/login', methods=['GET', 'POST'])
@@ -720,7 +679,6 @@ def create_app():
         print("="*60)
         
         if current_user.is_authenticated:
-            print(f"[*] User already authenticated: {current_user.username}")
             print("="*60 + "\n")
             return redirect(url_for('dashboard'))
         
@@ -729,9 +687,6 @@ def create_app():
                 email = request.form.get('email')
                 password = request.form.get('password')
                 
-                print(f"[*] Login attempt for email: {email}")
-                print(f"[*] Password provided: {'Yes' if password else 'No'}")
-                print(f"[*] Password length: {len(password) if password else 0}")
                 
                 if not email or not password:
                     print("[✗] Missing email or password")
@@ -739,20 +694,16 @@ def create_app():
                     print("="*60 + "\n")
                     return render_template('login.html')
                 
-                print(f"[*] Querying MongoDB for user with email: {email}")
                 user = User.objects(email=email).first()
                 
                 if user:
                     print(f"[✓] User found: {user.username} (ID: {user.id})")
-                    print(f"[*] Email verified: {user.is_verified}")
-                    print(f"[*] Verifying password...")
                     
                     if user.verify_password(password):
                         print(f"[✓] Password verified successfully")
                         
                         # Check if email is verified
                         if not user.is_verified:
-                            print(f"[!] Email not verified for user: {user.username}")
                             flash('Please verify your email before logging in. Check your email for the verification code.', 'warning')
                             print("="*60 + "\n")
                             return redirect(url_for('verify_email', email=email))
@@ -777,7 +728,6 @@ def create_app():
                 traceback.print_exc()
                 flash('An error occurred during login. Please try again.', 'error')
         else:
-            print(f"[*] GET request - showing login form")
         
         print("="*60 + "\n")
         return render_template('login.html')
