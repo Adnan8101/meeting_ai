@@ -584,7 +584,7 @@
     <nav class="nav-blur sticky top-0 z-50 border-b border-white/10">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex justify-between items-center h-16">
-                <a href="{{ url_for('dashboard') if current_user.is_authenticated else url_for('login') }}" 
+                <a href="{{ url_for('landing') }}" 
                    class="text-xl font-semibold text-white hover:text-blue-400 transition-colors duration-300 flex items-center gap-2">
                     <i data-lucide="zap" class="w-6 h-6"></i>
                     AI Meeting Agent

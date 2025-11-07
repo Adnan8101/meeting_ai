@@ -1,80 +1,84 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Meeting Agent - Transform Your Meetings with AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
         * {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
+        /* iPhone 15 Pro Space Black Theme */
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            background: #000000;
             background-attachment: fixed;
             overflow-x: hidden;
+            color: #f5f5f7;
+        }
+        
+        /* Subtle gradient overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 10%, rgba(10, 132, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(10, 132, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
         
         .gradient-text {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            background: linear-gradient(135deg, #0a84ff 0%, #0071e3 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(28, 28, 30, 0.6);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
         
         .glow-card {
             transition: all 0.3s ease;
+            background: rgba(28, 28, 30, 0.6);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
         
         .glow-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
+            transform: translateY(-5px);
+            background: rgba(28, 28, 30, 0.7);
+            border-color: rgba(10, 132, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(10, 132, 255, 0.2);
         }
         
         .hero-gradient {
-            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
-        }
-        
-        .animated-border {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .animated-border::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
-            background-size: 300% 300%;
-            border-radius: inherit;
-            z-index: -1;
-            animation: gradient 3s ease infinite;
-        }
-        
-        @keyframes gradient {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            background: radial-gradient(circle at 50% 50%, rgba(10, 132, 255, 0.1) 0%, transparent 50%);
         }
         
         .feature-icon {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: #0a84ff;
             transition: all 0.3s ease;
         }
         
         .glow-card:hover .feature-icon {
-            transform: scale(1.1) rotate(5deg);
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(10, 132, 255, 0.4);
         }
         
         @keyframes float {
@@ -116,11 +120,7 @@
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
+                    <i data-lucide="zap" class="w-8 h-8 text-blue-400"></i>
                     <span class="text-2xl font-bold gradient-text">AI Meeting Agent</span>
                 </div>
                 
@@ -129,11 +129,10 @@
                     <a href="#features" class="nav-link text-gray-300 hover:text-white">Features</a>
                     <a href="#how-it-works" class="nav-link text-gray-300 hover:text-white">How It Works</a>
                     <a href="{{ url_for('docs') }}" class="nav-link text-gray-300 hover:text-white">Documentation</a>
-                    <a href="#developer" class="nav-link text-gray-300 hover:text-white">Developer</a>
                     <a href="{{ url_for('login') }}" class="px-6 py-2.5 text-white border border-white/20 rounded-xl hover:bg-white/10 transition-all">
                         Login
                     </a>
-                    <a href="{{ url_for('register') }}" class="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all">
+                    <a href="{{ url_for('register') }}" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all">
                         Sign Up
                     </a>
                 </div>
@@ -141,9 +140,7 @@
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button id="mobile-menu-btn" class="text-gray-300 hover:text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
+                        <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
             </div>
@@ -155,9 +152,8 @@
                 <a href="#features" class="block px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg">Features</a>
                 <a href="#how-it-works" class="block px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg">How It Works</a>
                 <a href="{{ url_for('docs') }}" class="block px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg">Documentation</a>
-                <a href="#developer" class="block px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg">Developer</a>
                 <a href="{{ url_for('login') }}" class="block px-4 py-2 text-center border border-white/20 rounded-lg">Login</a>
-                <a href="{{ url_for('register') }}" class="block px-4 py-2 text-center bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">Sign Up</a>
+                <a href="{{ url_for('register') }}" class="block px-4 py-2 text-center bg-blue-600 hover:bg-blue-700 rounded-lg">Sign Up</a>
             </div>
         </div>
     </nav>
@@ -166,9 +162,6 @@
     <section class="relative min-h-screen flex items-center justify-center pt-20 hero-gradient">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
             <div class="text-center">
-                <!-- Badge -->
-              
-                
                 <!-- Main Heading -->
                 <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
                     Transform Your<br/>
@@ -181,7 +174,7 @@
                 
                 <!-- CTA Buttons -->
                 <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-16">
-                    <a href="{{ url_for('register') }}" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg font-semibold rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all animated-border">
+                    <a href="{{ url_for('register') }}" class="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-xl transition-all">
                         Get Started Free
                     </a>
                     <a href="#features" class="w-full sm:w-auto px-8 py-4 glass-effect text-white text-lg font-semibold rounded-xl hover:bg-white/10 transition-all">
@@ -234,7 +227,7 @@
                     </div>
                     <h3 class="text-2xl font-bold mb-3">AI-Powered Analysis</h3>
                     <p class="text-gray-400">
-                        Advanced Google Gemini AI analyzes your meeting transcripts and automatically identifies action items, tasks, and priorities.
+                        Advanced LLM analyzes your meeting transcripts and automatically identifies action items, tasks, and priorities.
                     </p>
                 </div>
                 
@@ -370,93 +363,109 @@
     <section id="developer" class="py-20 relative">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="glass-effect rounded-3xl p-12">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                    <!-- Developer Info -->
-                    <div>
+                <div class="space-y-8">
+                    <!-- Team Header -->
+                    <div class="text-center">
                         <h2 class="text-4xl font-bold mb-4">
-                            Built by <span class="gradient-text">Adnan</span>
+                            Built by <span class="gradient-text">Our Development Team</span>
                         </h2>
-                        <p class="text-gray-400 mb-6 text-lg">
-                            Full-stack developer passionate about AI and productivity tools. This project combines cutting-edge AI with seamless integrations to revolutionize how teams work.
+                        <p class="text-gray-400 mb-6 text-lg max-w-3xl mx-auto">
+                            A talented team of developers from L.R. Tiwari College of Engineering, passionate about AI and productivity tools. This project combines cutting-edge AI with seamless integrations to revolutionize how teams work.
                         </p>
-                        <div class="space-y-3 mb-8">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                </div>
-                                <span class="text-gray-300">Python & Flask Backend</span>
+                    </div>
+
+                    <!-- Developer Cards Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Hamza Sayyad -->
+                        <div class="glass-effect rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
+                            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="code" class="w-8 h-8 text-white"></i>
                             </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                </div>
-                                <span class="text-gray-300">MongoDB Database</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-pink-500/20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                </div>
-                                <span class="text-gray-300">Google Gemini AI</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                </div>
-                                <span class="text-gray-300">Trello & Jira APIs</span>
+                            <h3 class="text-xl font-bold text-white mb-2">Hamza Sayyad</h3>
+                            <p class="text-blue-400 font-semibold mb-3 text-sm">Frontend Developer</p>
+                            <div class="flex flex-wrap justify-center gap-2">
+                                <span class="px-2 py-1 bg-blue-500/20 rounded-lg text-xs text-gray-300">HTML/CSS</span>
+                                <span class="px-2 py-1 bg-blue-500/20 rounded-lg text-xs text-gray-300">JavaScript</span>
+                                <span class="px-2 py-1 bg-blue-500/20 rounded-lg text-xs text-gray-300">UI/UX</span>
                             </div>
                         </div>
-                        <div class="flex space-x-4">
-                            <a href="https://github.com/Adnan8101" target="_blank" class="px-6 py-3 glass-effect rounded-xl hover:bg-white/10 transition-all flex items-center space-x-2">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                </svg>
-                                <span>GitHub</span>
-                            </a>
-                            <a href="mailto:skfourcc@gmail.com" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl hover:shadow-lg transition-all flex items-center space-x-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                                <span>Contact</span>
-                            </a>
+
+                        <!-- Hasan Shaikh -->
+                        <div class="glass-effect rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
+                            <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="server" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Hasan Shaikh</h3>
+                            <p class="text-purple-400 font-semibold mb-3 text-sm">Backend Developer</p>
+                            <div class="flex flex-wrap justify-center gap-2">
+                                <span class="px-2 py-1 bg-purple-500/20 rounded-lg text-xs text-gray-300">Python</span>
+                                <span class="px-2 py-1 bg-purple-500/20 rounded-lg text-xs text-gray-300">Flask</span>
+                                <span class="px-2 py-1 bg-purple-500/20 rounded-lg text-xs text-gray-300">AI/ML</span>
+                            </div>
+                        </div>
+
+                        <!-- Ujjval Shrivastav -->
+                        <div class="glass-effect rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
+                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="database" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Ujjval Shrivastav</h3>
+                            <p class="text-green-400 font-semibold mb-3 text-sm">Cloud & Database</p>
+                            <div class="flex flex-wrap justify-center gap-2">
+                                <span class="px-2 py-1 bg-green-500/20 rounded-lg text-xs text-gray-300">MongoDB</span>
+                                <span class="px-2 py-1 bg-green-500/20 rounded-lg text-xs text-gray-300">Cloud</span>
+                                <span class="px-2 py-1 bg-green-500/20 rounded-lg text-xs text-gray-300">DevOps</span>
+                            </div>
+                        </div>
+
+                        <!-- Rahul Rathod -->
+                        <div class="glass-effect rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
+                            <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="cloud" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Rahul Rathod</h3>
+                            <p class="text-orange-400 font-semibold mb-3 text-sm">Cloud & Database</p>
+                            <div class="flex flex-wrap justify-center gap-2">
+                                <span class="px-2 py-1 bg-orange-500/20 rounded-lg text-xs text-gray-300">Database</span>
+                                <span class="px-2 py-1 bg-orange-500/20 rounded-lg text-xs text-gray-300">Cloud</span>
+                                <span class="px-2 py-1 bg-orange-500/20 rounded-lg text-xs text-gray-300">Infrastructure</span>
+                            </div>
                         </div>
                     </div>
-                    
-                    <!-- Tech Stack -->
-                    <div class="glass-effect rounded-2xl p-8">
-                        <h3 class="text-2xl font-bold mb-6 gradient-text">Tech Stack</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Backend</span>
-                                <span class="text-blue-400 font-semibold">Python Flask</span>
+
+                    <!-- Tech Stack Highlights -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8">
+                        <div class="flex items-center space-x-3 glass-effect rounded-xl p-4">
+                            <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="check" class="w-5 h-5 text-blue-400"></i>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Database</span>
-                                <span class="text-green-400 font-semibold">MongoDB</span>
+                            <span class="text-gray-300">Python & Flask</span>
+                        </div>
+                        <div class="flex items-center space-x-3 glass-effect rounded-xl p-4">
+                            <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="check" class="w-5 h-5 text-purple-400"></i>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">AI Engine</span>
-                                <span class="text-purple-400 font-semibold">Google Gemini</span>
+                            <span class="text-gray-300">MongoDB</span>
+                        </div>
+                        <div class="flex items-center space-x-3 glass-effect rounded-xl p-4">
+                            <div class="w-10 h-10 bg-pink-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="check" class="w-5 h-5 text-pink-400"></i>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Frontend</span>
-                                <span class="text-cyan-400 font-semibold">Tailwind CSS</span>
+                            <span class="text-gray-300">Gemini AI</span>
+                        </div>
+                        <div class="flex items-center space-x-3 glass-effect rounded-xl p-4">
+                            <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="check" class="w-5 h-5 text-green-400"></i>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Integrations</span>
-                                <span class="text-orange-400 font-semibold">Trello & Jira</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Deployment</span>
-                                <span class="text-pink-400 font-semibold">Vercel</span>
-                            </div>
+                            <span class="text-gray-300">API Integrations</span>
+                        </div>
+                    </div>
+
+                    <!-- College Attribution -->
+                    <div class="text-center pt-6">
+                        <div class="inline-flex items-center gap-2 glass-effect rounded-xl px-6 py-3">
+                            <i data-lucide="graduation-cap" class="w-5 h-5 text-blue-400"></i>
+                            <span class="text-gray-300">L.R. Tiwari College of Engineering</span>
                         </div>
                     </div>
                 </div>
@@ -513,24 +522,39 @@
                     </ul>
                 </div>
                 
-                <div>
-                    <h4 class="text-white font-semibold mb-4">Company</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#developer" class="hover:text-white transition-colors">About Developer</a></li>
-                        <li><a href="mailto:skfourcc@gmail.com" class="hover:text-white transition-colors">Contact</a></li>
-                        <li><a href="https://github.com/Adnan8101" target="_blank" class="hover:text-white transition-colors">GitHub</a></li>
-                    </ul>
-                </div>
             </div>
             
-            <div class="border-t border-white/10 pt-8 text-center text-gray-400">
-                <p>&copy; 2025 AI Meeting Agent. Built by Adnan. All rights reserved.</p>
+            <div class="border-t border-white/10 pt-8">
+                <p class="mb-4 text-lg font-semibold text-white text-center">Development Team</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 max-w-4xl mx-auto">
+                    <div class="glass-effect p-4 rounded-xl text-center">
+                        <p class="text-blue-400 font-semibold mb-1">Hamza Sayyad</p>
+                        <p class="text-xs text-gray-500">Frontend Developer</p>
+                    </div>
+                    <div class="glass-effect p-4 rounded-xl text-center">
+                        <p class="text-blue-400 font-semibold mb-1">Hasan Shaikh</p>
+                        <p class="text-xs text-gray-500">Backend Developer</p>
+                    </div>
+                    <div class="glass-effect p-4 rounded-xl text-center">
+                        <p class="text-blue-400 font-semibold mb-1">Ujjval Shrivastav</p>
+                        <p class="text-xs text-gray-500">Cloud & Database Architect</p>
+                    </div>
+                    <div class="glass-effect p-4 rounded-xl text-center">
+                        <p class="text-blue-400 font-semibold mb-1">Rahul Rathod</p>
+                        <p class="text-xs text-gray-500">Cloud & Database Architect</p>
+                    </div>
+                </div>
+                <p class="text-center text-gray-500">L.R. Tiwari College of Engineering</p>
+                <p class="text-center text-gray-400 mt-4">&copy; 2025 AI Meeting Agent. All rights reserved.</p>
             </div>
         </div>
     </footer>
     
     <!-- Mobile Menu Script -->
     <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
         // Mobile menu toggle
         document.getElementById('mobile-menu-btn').addEventListener('click', function() {
             const menu = document.getElementById('mobile-menu');
@@ -549,18 +573,8 @@
                     });
                     // Close mobile menu if open
                     document.getElementById('mobile-menu').classList.add('hidden');
-                } else {
-                    console.warn('Target not found for anchor:', this.getAttribute('href'));
                 }
             });
-        });
-        
-        // Global error handler
-        window.addEventListener('error', function(e) {
-            console.error('%c❌ JavaScript Error', 'background: #ef4444; color: white; padding: 5px 10px; border-radius: 5px;');
-            console.error('Error:', e.message);
-            console.error('File:', e.filename);
-            console.error('Line:', e.lineno + ':' + e.colno);
         });
     </script>
 </body>
