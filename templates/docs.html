@@ -578,27 +578,19 @@
     </div>
 </div>
 
-<style>
-    /* Smooth scrolling for anchor links */
-    html {
-        scroll-behavior: smooth;
-    }
-    
-    /* Fix text colors in dark mode */
-    body:not(.light-mode) .text-gray-300,
-    body:not(.light-mode) .text-gray-400 {
-        color: rgba(209, 213, 219, 0.9) !important;
-    }
-    
-    body:not(.light-mode) .text-white {
-        color: rgba(255, 255, 255, 0.95) !important;
-    }
-</style>
+<style>html{scroll-behavior:smooth;}body:not(.light-mode) .text-gray-300,body:not(.light-mode) .text-gray-400{color:rgba(209,213,219,0.9) !important;}body:not(.light-mode) .text-white{color:rgba(255,255,255,0.95) !important;}</style>
 
 <script>
-    // Initialize Lucide icons when page loads
+        (function() {
+            'use strict';
+            try {
+                // Initialize Lucide icons when page loads
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
     });
-</script>
+            } catch(e) {
+                console.error('Script error:', e);
+            }
+        })();
+        </script>
 {% endblock %}

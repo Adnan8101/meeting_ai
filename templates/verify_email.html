@@ -94,7 +94,10 @@
 </div>
 
 <script>
-let resendTimeout;
+        (function() {
+            'use strict';
+            try {
+                let resendTimeout;
 let resendTimeLeft = 0;
 
 // Toast notification function
@@ -199,5 +202,9 @@ document.getElementById('otp').addEventListener('input', function(e) {
         // this.form.submit();
     }
 });
-</script>
+            } catch(e) {
+                console.error('Script error:', e);
+            }
+        })();
+        </script>
 {% endblock %}

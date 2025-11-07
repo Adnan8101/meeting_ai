@@ -39,7 +39,7 @@
                                maxlength="20"
                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 pr-10 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
                                placeholder="Choose a username"
-                               autocomplete="username">
+                               autocomplete="username" autocomplete="username">
                         <div id="usernameStatus" class="absolute right-3 top-1/2 transform -translate-y-1/2">
                             <!-- Status icons will be inserted here -->
                         </div>
@@ -58,7 +58,7 @@
                            required
                            class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
                            placeholder="you@example.com"
-                           autocomplete="email">
+                           autocomplete="email" autocomplete="email">
                 </div>
 
                 <!-- Password Field -->
@@ -72,7 +72,7 @@
                                minlength="6"
                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
                                placeholder="Create a strong password"
-                               autocomplete="new-password">
+                               autocomplete="new-password" autocomplete="current-password">
                         <button type="button" 
                                 id="togglePassword"
                                 onclick="togglePasswordVisibility()"
@@ -139,7 +139,10 @@
 </div>
 
 <script>
-let usernameCheckTimeout;
+        (function() {
+            'use strict';
+            try {
+                let usernameCheckTimeout;
 let usernameAvailable = false;
 
 // Toast notification function
@@ -342,5 +345,9 @@ function togglePasswordVisibility() {
 
 // Auto-focus username field
 document.getElementById('username').focus();
-</script>
+            } catch(e) {
+                console.error('Script error:', e);
+            }
+        })();
+        </script>
 {% endblock %}

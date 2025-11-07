@@ -1,116 +1,54 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth dark">
 <head>
+    <!-- Performance Optimizations -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <style>
+        /* Critical CSS for immediate render */
+        * { box-sizing: border-box; }
+        body { margin: 0; opacity: 0; transition: opacity 0.3s; }
+        body.ready { opacity: 1; }
+        img { max-width: 100%; height: auto; }
+        .fade-in { animation: fadeIn 0.4s ease-out both; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <script>
+        // Mark body as ready when DOM loads
+        document.addEventListener('DOMContentLoaded', () => document.body.classList.add('ready'));
+        // Performance monitoring
+        if ('performance' in window) {
+            window.addEventListener('load', () => {
+                const perfData = performance.timing;
+                const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+                console.log('⚡ Page Load Time:', pageLoadTime + 'ms');
+            });
+        }
+    </script>
+
+    <style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}img,iframe,video{max-width:100%;height:auto;}.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite;}@keyframes loading{0%{background-position:200% 0;}100%{background-position:-200% 0;}}</style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Meeting Agent - Transform Your Meetings with AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        
-        * {
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        /* iPhone 15 Pro Space Black Theme */
-        body {
-            background: #000000;
-            background-attachment: fixed;
-            overflow-x: hidden;
-            color: #f5f5f7;
-        }
-        
-        /* Subtle gradient overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(ellipse at 20% 10%, rgba(10, 132, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 90%, rgba(10, 132, 255, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, #0a84ff 0%, #0071e3 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .glass-effect {
-            background: rgba(28, 28, 30, 0.6);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-        
-        .glow-card {
-            transition: all 0.3s ease;
-            background: rgba(28, 28, 30, 0.6);
-            backdrop-filter: blur(40px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        
-        .glow-card:hover {
-            transform: translateY(-5px);
-            background: rgba(28, 28, 30, 0.7);
-            border-color: rgba(10, 132, 255, 0.3);
-            box-shadow: 0 20px 60px rgba(10, 132, 255, 0.2);
-        }
-        
-        .hero-gradient {
-            background: radial-gradient(circle at 50% 50%, rgba(10, 132, 255, 0.1) 0%, transparent 50%);
-        }
-        
-        .feature-icon {
-            background: #0a84ff;
-            transition: all 0.3s ease;
-        }
-        
-        .glow-card:hover .feature-icon {
-            transform: scale(1.1);
-            box-shadow: 0 10px 30px rgba(10, 132, 255, 0.4);
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .floating {
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 50%;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-        
-        .nav-link:hover::after {
-            width: 100%;
-        }
-    </style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');*{font-family:-apple-system,BlinkMacSystemFont,'Inter','SF Pro Display',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}body{background:#000000;background-attachment:fixed;overflow-x:hidden;color:#f5f5f7;}body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 20% 10%,rgba(10,132,255,0.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(10,132,255,0.05) 0%,transparent 50%);pointer-events:none;z-index:0;}.gradient-text{background:linear-gradient(135deg,#0a84ff 0%,#0071e3 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}.glass-effect{background:rgba(28,28,30,0.6);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.4);}.glow-card{transition:all 0.3s ease;background:rgba(28,28,30,0.6);backdrop-filter:blur(40px);border:1px solid rgba(255,255,255,0.06);}.glow-card:hover{transform:translateY(-5px);background:rgba(28,28,30,0.7);border-color:rgba(10,132,255,0.3);box-shadow:0 20px 60px rgba(10,132,255,0.2);}.hero-gradient{background:radial-gradient(circle at 50% 50%,rgba(10,132,255,0.1) 0%,transparent 50%);}.feature-icon{background:#0a84ff;transition:all 0.3s ease;}.glow-card:hover .feature-icon{transform:scale(1.1);box-shadow:0 10px 30px rgba(10,132,255,0.4);}@keyframes float{0%,100%{transform:translateY(0px);}50%{transform:translateY(-20px);}}.floating{animation:float 6s ease-in-out infinite;}.nav-link{position:relative;transition:color 0.3s ease;}.nav-link::after{content:'';position:absolute;width:0;height:2px;bottom:-5px;left:50%;background:linear-gradient(90deg,#3b82f6,#8b5cf6);transition:all 0.3s ease;transform:translateX(-50%);}.nav-link:hover::after{width:100%;}</style>
+
+    <style>@font-face{font-display:swap;}</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Resource Preloading -->
+    <link rel="preload" as="style" href="https://cdn.tailwindcss.com">
+    <link rel="prefetch" href="https://unpkg.com/lucide@latest">
+
+    <style>.animate{will-change:transform,opacity;}.animate-once{animation-fill-mode:forwards;will-change:auto;}@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}}</style>
 </head>
 <body class="text-white">
     
@@ -552,7 +490,10 @@
     
     <!-- Mobile Menu Script -->
     <script>
-        // Initialize Lucide icons
+        (function() {
+            'use strict';
+            try {
+                // Initialize Lucide icons
         lucide.createIcons();
         
         // Mobile menu toggle
@@ -576,6 +517,67 @@
                 }
             });
         });
-    </script>
+            } catch(e) {
+                console.error('Script error:', e);
+            }
+        })();
+        </script>
+
+    <script>
+        (function() {
+            'use strict';
+            try {
+                // Intersection Observer for lazy loading
+        if ('IntersectionObserver' in window) {
+            const lazyElements = document.querySelectorAll('[data-lazy]');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const element = entry.target;
+                        element.classList.add('fade-in');
+                        observer.unobserve(element);
+                    }
+                });
+            }, { rootMargin: '50px' });
+            
+            lazyElements.forEach(el => observer.observe(el));
+        }
+        
+        // Performance monitoring
+        if ('PerformanceObserver' in window) {
+            const observer = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.entryType === 'largest-contentful-paint') {
+                        console.log('⚡ LCP:', entry.renderTime || entry.loadTime);
+                    }
+                }
+            });
+            observer.observe({ entryTypes: ['largest-contentful-paint'] });
+        }
+            } catch(e) {
+                console.error('Script error:', e);
+            }
+        })();
+        </script>
+
+    <script>
+        (function() {
+            'use strict';
+            try {
+                // Global error boundary
+        window.onerror = function(msg, url, line, col, error) {
+            console.error('Error:', { msg, url, line, col });
+            return true; // Prevent default error handling
+        };
+        
+        // Promise rejection handler
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled Promise Rejection:', e.reason);
+        });
+            } catch(e) {
+                console.error('Script error:', e);
+            }
+        })();
+        </script>
 </body>
 </html>

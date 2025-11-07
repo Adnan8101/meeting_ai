@@ -4,18 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AI Meeting Agent{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Performance Optimizations -->
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Defer non-critical CSS -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Defer Scripts -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
     
     <style>
         /* Apple-inspired Design System for smooth animation*/
         * {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Performance Optimizations */
+        * {
+            will-change: auto;
+        }
+        
+        /* Use CSS containment for better performance */
+        .glass-card, .modal, .toast {
+            contain: layout style paint;
+        }
+        
+        /* Optimize animations with GPU acceleration */
+        .fade-in, .toast, .modal-content {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000px;
         }
 
         :root {
@@ -139,14 +165,20 @@
             box-shadow: 0 2px 10px rgba(10, 132, 255, 0.3);
         }
 
-        /* Fade in animation */
+        /* Fade in animation - Optimized */
         .fade-in {
-            animation: fadeIn 0.6s ease-out;
+            animation: fadeIn 0.4s ease-out both;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { 
+                opacity: 0; 
+                transform: translate3d(0, 20px, 0);
+            }
+            to { 
+                opacity: 1; 
+                transform: translate3d(0, 0, 0);
+            }
         }
 
         /* Modal Styles - Space Black */
@@ -174,8 +206,14 @@
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { 
+                opacity: 0; 
+                transform: translate3d(0, 50px, 0); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translate3d(0, 0, 0); 
+            }
         }
 
         /* Toast Notification Styles */
@@ -241,13 +279,25 @@
         }
 
         @keyframes slideInRight {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from { 
+                transform: translate3d(400px, 0, 0); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translate3d(0, 0, 0); 
+                opacity: 1; 
+            }
         }
 
         @keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(400px); opacity: 0; }
+            from { 
+                transform: translate3d(0, 0, 0); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translate3d(400px, 0, 0); 
+                opacity: 0; 
+            }
         }
 
         .toast.removing {
@@ -721,73 +771,107 @@
 
     <!-- Toast Notification System -->
     <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
+        // Optimized initialization
+        (function() {
+            'use strict';
+            
+            // Wait for DOM and Lucide to be ready
+            function initializeApp() {
+                if (typeof lucide === 'undefined') {
+                    setTimeout(initializeApp, 50);
+                    return;
+                }
+                
+                // Initialize Lucide icons
+                lucide.createIcons();
 
-        // Toast notification function - make it globally available
-        window.showToast = function(message, type = 'info', duration = 5000) {
-            const container = document.getElementById('toastContainer');
-            if (!container) {
-                return;
+                // Toast notification function - make it globally available
+                window.showToast = function(message, type = 'info', duration = 5000) {
+                    const container = document.getElementById('toastContainer');
+                    if (!container) {
+                        console.warn('Toast container not found');
+                        return;
+                    }
+                    
+                    const toast = document.createElement('div');
+                    toast.className = `toast ${type}`;
+                    
+                    const icons = {
+                        success: 'check-circle',
+                        error: 'x-circle',
+                        warning: 'alert-triangle',
+                        info: 'info'
+                    };
+                    
+                    toast.innerHTML = `
+                        <i data-lucide="${icons[type] || 'info'}" class="w-5 h-5"></i>
+                        <span>${message}</span>
+                    `;
+                    
+                    container.appendChild(toast);
+                    lucide.createIcons();
+                    
+                    // Use requestAnimationFrame for smooth animation
+                    requestAnimationFrame(() => {
+                        setTimeout(() => {
+                            toast.classList.add('removing');
+                            setTimeout(() => toast.remove(), 300);
+                        }, duration);
+                    });
+                };
+
+                // Convert Flask flash messages to toasts - Wait for DOM to be fully ready
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        setTimeout(function() {
+                            {% for category, message in messages %}
+                                if (typeof showToast === 'function') {
+                                    showToast('{{ message|safe }}', '{{ "error" if category in ["danger", "error"] else category }}');
+                                }
+                            {% endfor %}
+                        }, 100);
+                    {% endif %}
+                {% endwith %}
             }
-            
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            const icons = {
-                success: 'check-circle',
-                error: 'x-circle',
-                warning: 'alert-triangle',
-                info: 'info'
-            };
-            
-            toast.innerHTML = `
-                <i data-lucide="${icons[type] || 'info'}" class="w-5 h-5"></i>
-                <span>${message}</span>
-            `;
-            
-            container.appendChild(toast);
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                toast.classList.add('removing');
-                setTimeout(() => toast.remove(), 300);
-            }, duration);
+
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeApp);
+            } else {
+                initializeApp();
+            }
+
+            // Global error handler (silent)
+            window.addEventListener('error', function(e) {
+                // Silent error handling
+            });
+        })();
+
+        // Mobile menu toggle - Optimized
+        window.toggleMobileMenu = function() {
+            const menu = document.getElementById('mobileMenu');
+            if (menu) {
+                menu.classList.toggle('active');
+                if (typeof lucide !== 'undefined') {
+                    requestAnimationFrame(() => lucide.createIcons());
+                }
+            }
         };
 
-        // Convert Flask flash messages to toasts
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    showToast('{{ message|safe }}', '{{ "error" if category in ["danger", "error"] else category }}');
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        // Check for saved theme preference - Optimized
+        (function() {
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            if (currentTheme === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        })();
 
-        // Global error handler
-        window.addEventListener('error', function(e) {
-        });
-
-        // Mobile menu toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('active');
-            lucide.createIcons();
-        }
-
-        // Check for saved theme preference
-        const currentTheme = localStorage.getItem('theme') || 'dark';
-        if (currentTheme === 'light') {
-            document.body.classList.add('light-mode');
-            updateThemeIcons();
-        }
-
-        function toggleTheme() {
+        window.toggleTheme = function() {
             document.body.classList.toggle('light-mode');
             const theme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
             localStorage.setItem('theme', theme);
-            updateThemeIcons();
-        }
+            requestAnimationFrame(updateThemeIcons);
+        };
 
         function updateThemeIcons() {
             const sunIcons = document.querySelectorAll('.sun-icon');
@@ -808,10 +892,17 @@
                 }
             });
             
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         }
 
-        updateThemeIcons();
+        // Initialize theme icons when ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateThemeIcons);
+        } else {
+            requestAnimationFrame(updateThemeIcons);
+        }
     </script>
 
     {% block scripts %}{% endblock %}
