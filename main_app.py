@@ -737,8 +737,6 @@ def create_app():
                 import traceback
                 traceback.print_exc()
                 flash('An error occurred during login. Please try again.', 'error')
-        else:
-            flash('Invalid email or password.', 'error')
         
         print("="*60 + "\n")
         return render_template('login.html')

@@ -477,7 +477,7 @@
         if (modal) {
             modal.classList.remove('active');
             // Optional: Redirect to clear URL after closing
-            window.history.pushState({}, document.title, "{{ url_for('home') }}");
+            window.history.pushState({}, document.title, "{{ url_for('dashboard') }}");
         }
     }
 

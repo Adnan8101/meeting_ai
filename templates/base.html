@@ -19,16 +19,18 @@
         }
 
         :root {
-            --space-black: #1d1d1f;
+            --space-black: #000000;
+            --space-black-2: #0a0a0a;
+            --space-black-3: #1c1c1e;
             --space-gray: #86868b;
-            --apple-blue: #0071e3;
+            --apple-blue: #0a84ff;
             --apple-white: #f5f5f7;
         }
 
-        /* Dark Theme (Default) */
+        /* Dark Theme (Default) - iPhone 15 Pro Space Black */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            background: #000000;
             background-attachment: fixed;
             color: var(--apple-white);
             position: relative;
@@ -63,7 +65,7 @@
             color: #86868b !important;
         }
 
-        /* Animated gradient background */
+        /* Subtle gradient background for depth */
         body::before {
             content: '';
             position: fixed;
@@ -72,33 +74,32 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(ellipse at top, rgba(0, 113, 227, 0.15) 0%, transparent 60%),
-                radial-gradient(ellipse at bottom right, rgba(10, 132, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom left, rgba(0, 113, 227, 0.08) 0%, transparent 50%);
-            animation: gradientShift 15s ease-in-out infinite;
+                radial-gradient(ellipse at 20% 10%, rgba(10, 132, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(10, 132, 255, 0.05) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
             transition: opacity 0.3s ease;
         }
 
-        @keyframes gradientShift {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-20px) scale(1.05); }
-        }
-
         body.light-mode::before {
             background: 
-                radial-gradient(ellipse at top, rgba(0, 113, 227, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at bottom right, rgba(10, 132, 255, 0.05) 0%, transparent 50%);
+                radial-gradient(ellipse at top, rgba(0, 113, 227, 0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(10, 132, 255, 0.03) 0%, transparent 50%);
         }
 
-        /* Glass morphism cards */
+        /* Glass morphism cards - Space Black Edition */
         .glass-card {
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            background: rgba(28, 28, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-card:hover {
+            background: rgba(28, 28, 30, 0.7);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         body.light-mode .glass-card {
@@ -108,10 +109,10 @@
         }
 
         .glass {
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            background: rgba(28, 28, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         body.light-mode .glass {
@@ -119,17 +120,23 @@
             border: 1px solid rgba(0, 0, 0, 0.08);
         }
 
-        /* Premium Buttons */
+        /* Premium Buttons - iPhone 15 Pro Style */
         .btn-primary {
-            background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
-            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #0a84ff;
+            box-shadow: 0 4px 20px rgba(10, 132, 255, 0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 113, 227, 0.5);
-            background: linear-gradient(135deg, #0077ed 0%, #007aff 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 25px rgba(10, 132, 255, 0.4);
+            background: #0080ff;
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(10, 132, 255, 0.3);
         }
 
         /* Fade in animation */
@@ -142,7 +149,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Modal Styles */
+        /* Modal Styles - Space Black */
         .modal {
             display: none;
             position: fixed;
@@ -150,8 +157,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
             z-index: 9999;
             align-items: center;
             justify-content: center;
@@ -247,12 +254,12 @@
             animation: slideOutRight 0.3s ease-out forwards;
         }
 
-        /* Navigation Bar */
+        /* Navigation Bar - Space Black */
         .nav-blur {
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            background: rgba(0, 0, 0, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            background: rgba(0, 0, 0, 0.85);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             transition: all 0.3s ease;
         }
 
@@ -261,24 +268,27 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        /* Theme Toggle Button */
+        /* Theme Toggle Button - Minimal */
         .theme-toggle {
             position: relative;
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: rotate(180deg);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
         }
 
         body.light-mode .theme-toggle {
@@ -310,8 +320,8 @@
 
         input:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: var(--apple-blue);
-            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            border-color: #0a84ff;
+            box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
         }
 
         @keyframes pulse {
@@ -323,17 +333,18 @@
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
-        /* Mobile Menu */
+        /* Mobile Menu - Space Black */
         .mobile-menu {
             display: none;
             position: fixed;
             top: 64px;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(20px);
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(40px);
             padding: 20px;
             z-index: 40;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .mobile-menu.active {
@@ -347,12 +358,13 @@
         }
 
         body.light-mode .mobile-menu {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        /* Checkbox Styling */
+        /* Checkbox Styling - iPhone Blue */
         input[type="checkbox"] {
-            accent-color: #0071e3;
+            accent-color: #0a84ff;
             cursor: pointer;
         }
 
@@ -366,15 +378,16 @@
             flex-shrink: 0;
         }
 
-        /* Automation Options Styling */
+        /* Automation Options Styling - Space Black */
         .automation-option {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.2s ease;
         }
 
         .automation-option:hover:not(.opacity-50) {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
         .automation-option.opacity-50 {
@@ -571,7 +584,7 @@
     <nav class="nav-blur sticky top-0 z-50 border-b border-white/10">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex justify-between items-center h-16">
-                <a href="{{ url_for('home') if current_user.is_authenticated else url_for('login') }}" 
+                <a href="{{ url_for('dashboard') if current_user.is_authenticated else url_for('login') }}" 
                    class="text-xl font-semibold text-white hover:text-blue-400 transition-colors duration-300 flex items-center gap-2">
                     <i data-lucide="zap" class="w-6 h-6"></i>
                     AI Meeting Agent
@@ -580,7 +593,7 @@
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-1">
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('home') }}" class="nav-link text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
+                        <a href="{{ url_for('dashboard') }}" class="nav-link text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
                             <i data-lucide="home" class="w-4 h-4 inline mr-1"></i>
                             Analyze
                         </a>
@@ -634,7 +647,7 @@
         <!-- Mobile Menu -->
         <div id="mobileMenu" class="mobile-menu">
             {% if current_user.is_authenticated %}
-                <a href="{{ url_for('home') }}" class="block text-white hover:bg-white/10 px-4 py-3 rounded-lg mb-2">
+                <a href="{{ url_for('dashboard') }}" class="block text-white hover:bg-white/10 px-4 py-3 rounded-lg mb-2">
                     <i data-lucide="home" class="w-4 h-4 inline mr-2"></i>
                     Analyze
                 </a>
