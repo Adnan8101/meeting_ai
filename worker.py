@@ -2,8 +2,8 @@ import os
 import schedule
 import time
 from trello import TrelloClient
-from main_app import create_app, db
-from models import User, TrelloCard
+import mongoengine
+from mongo_models import User, TrelloCard, TrelloCredentials
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,6 +12,13 @@ load_dotenv()
 # Use the same Trello API Key as your main app
 TRELLO_API_KEY = os.environ.get("TRELLO_API_KEY")
 TRELLO_API_SECRET = os.environ.get("TRELLO_API_SECRET")
+MONGO_URL = os.environ.get("MONGO_URL")
+
+# Connect to MongoDB
+if MONGO_URL:
+    mongoengine.connect(host=MONGO_URL)
+else:
+    mongoengine.connect('ai_meeting_agent')
 
 
 def check_trello_tasks():
@@ -20,26 +27,28 @@ def check_trello_tasks():
     """
     print(f"--- Running accountability check at {time.ctime()} ---")
 
-    # The worker needs an app context to interact with the database
-    app = create_app()
-    with app.app_context():
+    try:
         # Find all users who have connected their Trello account
-        users_with_trello = User.query.filter(User.trello_credentials != None).all()
+        trello_credentials = TrelloCredentials.objects()
 
-        if not users_with_trello:
+        if not trello_credentials:
             print("No users with Trello integrations to check.")
             return
 
-        for user in users_with_trello:
+        for creds in trello_credentials:
+            user = User.objects(id=creds.user_id).first()
+            if not user:
+                continue
+                
             print(f"\n[*] Checking tasks for user: {user.username}")
             client = TrelloClient(
                 api_key=TRELLO_API_KEY,
                 api_secret=TRELLO_API_SECRET,
-                token=user.trello_credentials.token
+                token=creds.token
             )
 
             # Get all cards created by this user from our database
-            tracked_cards = TrelloCard.query.filter_by(user_id=user.id).all()
+            tracked_cards = TrelloCard.objects(user_id=creds.user_id)
             if not tracked_cards:
                 print("  -> No tracked cards found for this user.")
                 continue

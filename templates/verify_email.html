@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Verify Email - AI Meeting Agent{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div class="max-w-md mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">Verify Your Email</h1>
+            <p class="text-gray-400">We sent a 6-digit verification code to</p>
+            <p class="text-blue-400 font-medium">{{ email }}</p>
+        </div>
+
+        <!-- Form -->
+        <div class="glass-card rounded-3xl p-8">
+            <form action="{{ url_for('verify_email', email=email) }}" method="POST" class="space-y-6">
+                <div>
+                    <label for="otp" class="block text-sm font-semibold text-white mb-2">
+                        Verification Code
+                    </label>
+                    <input 
+                        type="text" 
+                        id="otp" 
+                        name="otp" 
+                        required 
+                        maxlength="6"
+                        placeholder="Enter 6-digit code"
+                        class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-center text-2xl font-mono tracking-widest">
+                </div>
+                
+                <button 
+                    type="submit" 
+                    class="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-blue-500/50">
+                    Verify Email
+                </button>
+            </form>
+
+            <!-- Resend code -->
+            <div class="text-center mt-6">
+                <p class="text-gray-400 text-sm mb-3">Didn't receive the code?</p>
+                <button 
+                    id="resendBtn"
+                    onclick="resendVerification()"
+                    class="text-blue-400 hover:text-blue-300 font-medium text-sm transition-colors">
+                    Resend Code
+                </button>
+                <span id="resendTimer" class="text-gray-500 text-sm hidden"></span>
+            </div>
+        </div>
+        
+        <!-- Info -->
+        <div class="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                    <p class="text-sm text-blue-300 mb-2">
+                        <strong>Code expires in 30 minutes.</strong>
+                    </p>
+                    <ul class="text-xs text-blue-200 space-y-1">
+                        <li>• Check your spam/junk folder if you don't see the email</li>
+                        <li>• The code is case-sensitive and contains only numbers</li>
+                        <li>• You can request a new code if this one expires</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Login -->
+        <div class="text-center mt-6">
+            <a href="{{ url_for('login') }}" class="text-gray-400 hover:text-white text-sm transition-colors">
+                ← Back to Login
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300">
+    <div class="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg">
+        <div class="flex items-center gap-3">
+            <svg id="toastIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="toastMessage">Code sent successfully!</span>
+        </div>
+    </div>
+</div>
+
+<script>
+let resendTimeout;
+let resendTimeLeft = 0;
+
+// Toast notification function
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    toastMessage.textContent = message;
+    
+    // Update toast style based on type
+    if (type === 'success') {
+        toast.querySelector('div').className = 'bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg';
+        toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+    } else if (type === 'error') {
+        toast.querySelector('div').className = 'bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-3 rounded-xl shadow-lg';
+        toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+    }
+    
+    // Show toast
+    toast.classList.remove('translate-x-full');
+    
+    // Hide after 5 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+    }, 5000);
+}
+
+// Auto-format the OTP input
+document.getElementById('otp').addEventListener('input', function(e) {
+    // Remove any non-numeric characters
+    this.value = this.value.replace(/\D/g, '');
+});
+
+// Auto-focus the OTP input
+document.getElementById('otp').focus();
+
+// Resend verification function
+function resendVerification() {
+    const resendBtn = document.getElementById('resendBtn');
+    const resendTimer = document.getElementById('resendTimer');
+    
+    // Disable button and show loading
+    resendBtn.disabled = true;
+    resendBtn.textContent = 'Sending...';
+    
+    fetch(`/resend_verification/{{ email }}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            // Start countdown
+            startResendTimer();
+        } else {
+            showToast(data.message, 'error');
+            // Re-enable button
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend Code';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('An error occurred while resending the code', 'error');
+        // Re-enable button
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Resend Code';
+    });
+}
+
+// Start resend timer
+function startResendTimer() {
+    const resendBtn = document.getElementById('resendBtn');
+    const resendTimer = document.getElementById('resendTimer');
+    
+    resendTimeLeft = 60; // 60 seconds
+    resendBtn.style.display = 'none';
+    resendTimer.classList.remove('hidden');
+    
+    resendTimeout = setInterval(() => {
+        resendTimer.textContent = `Resend available in ${resendTimeLeft}s`;
+        resendTimeLeft--;
+        
+        if (resendTimeLeft < 0) {
+            clearInterval(resendTimeout);
+            resendTimer.classList.add('hidden');
+            resendBtn.style.display = 'inline';
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend Code';
+        }
+    }, 1000);
+}
+
+// Auto-submit when 6 digits are entered
+document.getElementById('otp').addEventListener('input', function(e) {
+    if (this.value.length === 6) {
+        // Optional: Auto-submit the form
+        // this.form.submit();
+    }
+});
+</script>
+{% endblock %}

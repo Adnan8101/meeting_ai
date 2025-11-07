@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Connect Trello - AI Meeting Agent{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-3">
+            Connect Your Trello Account
+        </h1>
+        <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+            Link your Trello workspace to automatically create cards from meeting action items
+        </p>
+    </div>
+
+    <div class="max-w-2xl mx-auto">
+        <!-- Connection Card -->
+        <div class="glass-card rounded-3xl overflow-hidden shadow-2xl p-8">
+            <!-- Trello Logo -->
+            <div class="flex justify-center mb-6">
+                <div class="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <rect width="7" height="9" x="3" y="3" rx="1.5"/>
+                        <rect width="7" height="14" x="14" y="3" rx="1.5"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-white mb-3">Authorize Trello Access</h2>
+                <p class="text-gray-400 mb-4">
+                    Click the button below to authorize AI Meeting Agent to access your Trello account.
+                    You'll be redirected to Trello's authorization page.
+                </p>
+            </div>
+
+            <!-- Steps -->
+            <div class="space-y-4 mb-8">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                    <div class="flex-1">
+                        <h3 class="text-white font-semibold mb-1">Authorize Access</h3>
+                        <p class="text-gray-400 text-sm">Click the button below and allow AI Meeting Agent to access your Trello workspace</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                    <div class="flex-1">
+                        <h3 class="text-white font-semibold mb-1">Copy the Token</h3>
+                        <p class="text-gray-400 text-sm">After authorization, Trello will display a token. Copy it</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                    <div class="flex-1">
+                        <h3 class="text-white font-semibold mb-1">Paste the Token</h3>
+                        <p class="text-gray-400 text-sm">Return here and paste the token in the form below</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Authorization Button -->
+            <div class="text-center mb-8">
+                <a href="{{ auth_url }}" 
+                   target="_blank"
+                   class="btn-primary text-white font-semibold py-4 px-8 rounded-xl inline-flex items-center justify-center gap-3 shadow-lg hover:shadow-blue-500/50 transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Authorize Trello
+                </a>
+            </div>
+
+            <!-- Token Input Form -->
+            <div class="border-t border-gray-700 pt-8">
+                <form action="{{ url_for('trello_save_token') }}" method="POST" class="space-y-6">
+                    <div>
+                        <label for="pin" class="block text-sm font-semibold text-white mb-2">
+                            Paste Your Trello Token
+                        </label>
+                        <input 
+                            type="text" 
+                            id="pin" 
+                            name="pin" 
+                            required 
+                            placeholder="Enter the token from Trello"
+                            class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <button 
+                            type="submit" 
+                            class="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-blue-500/50">
+                            Complete Connection
+                        </button>
+                        <a 
+                            href="{{ url_for('integrations') }}" 
+                            class="flex-shrink-0 px-6 py-3 bg-gray-800 text-gray-300 font-semibold rounded-xl hover:bg-gray-700 transition-all duration-300">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div class="flex-1">
+                    <p class="text-sm text-blue-300">
+                        <strong>Privacy Note:</strong> Your Trello token is securely stored and only used to create cards on your behalf. We never access or modify your existing Trello data.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

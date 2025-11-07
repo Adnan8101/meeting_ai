@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Verify Reset Code - AI Meeting Agent{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div class="max-w-md mx-auto">
+        {% if step == 'verify' %}
+        <!-- Step 1: Code Verification -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">Enter Reset Code</h1>
+            <p class="text-gray-400">We sent a 6-digit code to {{ email }}</p>
+        </div>
+
+        <div class="glass-card rounded-3xl p-8">
+            <form action="{{ url_for('verify_reset_code', email=email) }}" method="POST" class="space-y-6">
+                <div>
+                    <label for="otp" class="block text-sm font-semibold text-white mb-2">
+                        Verification Code
+                    </label>
+                    <input 
+                        type="text" 
+                        id="otp" 
+                        name="otp" 
+                        required 
+                        maxlength="6"
+                        placeholder="Enter 6-digit code"
+                        class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-center text-2xl font-mono tracking-widest">
+                </div>
+                
+                <button 
+                    type="submit" 
+                    name="verify_code"
+                    value="true"
+                    class="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-blue-500/50">
+                    Verify Code
+                </button>
+            </form>
+
+            <!-- Resend code -->
+            <div class="text-center mt-6">
+                <a href="{{ url_for('forgot_password') }}" class="text-blue-400 hover:text-blue-300 text-sm">
+                    Didn't receive code? Resend
+                </a>
+            </div>
+        </div>
+        
+        {% elif step == 'change_password' %}
+        <!-- Step 2: Password Change -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-4">
+                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">Code Verified!</h1>
+            <p class="text-gray-400">Now enter your new password</p>
+        </div>
+
+        <div class="glass-card rounded-3xl p-8">
+            <form action="{{ url_for('verify_reset_code', email=email) }}" method="POST" class="space-y-6">
+                <input type="hidden" name="verified_code" value="{{ verified_code }}">
+                
+                <div>
+                    <label for="new_password" class="block text-sm font-semibold text-white mb-2">
+                        New Password
+                    </label>
+                    <input 
+                        type="password" 
+                        id="new_password" 
+                        name="new_password" 
+                        required 
+                        minlength="6"
+                        placeholder="Enter new password"
+                        class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
+                </div>
+
+                <div>
+                    <label for="confirm_password" class="block text-sm font-semibold text-white mb-2">
+                        Confirm New Password
+                    </label>
+                    <input 
+                        type="password" 
+                        id="confirm_password" 
+                        name="confirm_password" 
+                        required 
+                        minlength="6"
+                        placeholder="Confirm new password"
+                        class="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
+                </div>
+                
+                <button 
+                    type="submit" 
+                    name="change_password"
+                    value="true"
+                    class="w-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg hover:shadow-green-500/50">
+                    Update Password
+                </button>
+            </form>
+        </div>
+        {% endif %}
+        
+        <!-- Warning -->
+        <div class="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+                <p class="text-sm text-yellow-300">
+                    <strong>Code expires in 15 minutes.</strong> Make sure to use it quickly!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-format the OTP input (only for step 1)
+{% if step == 'verify' %}
+document.getElementById('otp').addEventListener('input', function(e) {
+    // Remove any non-numeric characters
+    this.value = this.value.replace(/\D/g, '');
+});
+
+// Auto-focus the OTP input
+document.getElementById('otp').focus();
+{% elif step == 'change_password' %}
+// Auto-focus the password input
+document.getElementById('new_password').focus();
+
+// Password match validation
+document.getElementById('confirm_password').addEventListener('input', function() {
+    const password = document.getElementById('new_password').value;
+    const confirmPassword = this.value;
+    
+    if (confirmPassword && password !== confirmPassword) {
+        this.setCustomValidity('Passwords do not match');
+    } else {
+        this.setCustomValidity('');
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

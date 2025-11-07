@@ -25,18 +25,28 @@
             </div>
 
             <!-- Registration Form -->
-            <form method="POST" action="" class="space-y-5">
+            <form id="registrationForm" method="POST" action="" class="space-y-5">
                 
                 <!-- Username Field -->
                 <div class="space-y-2">
                     <label for="username" class="block text-sm font-semibold text-gray-300">Username</label>
-                    <input type="text" 
-                           name="username" 
-                           id="username" 
-                           required
-                           class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
-                           placeholder="Choose a username"
-                           autocomplete="username">
+                    <div class="relative">
+                        <input type="text" 
+                               name="username" 
+                               id="username" 
+                               required
+                               minlength="3"
+                               maxlength="20"
+                               class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 pr-10 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
+                               placeholder="Choose a username"
+                               autocomplete="username">
+                        <div id="usernameStatus" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <!-- Status icons will be inserted here -->
+                        </div>
+                    </div>
+                    <div id="usernameMessage" class="text-xs mt-1 min-h-[1rem]">
+                        <!-- Username availability message will appear here -->
+                    </div>
                 </div>
                 
                 <!-- Email Field -->
@@ -54,20 +64,39 @@
                 <!-- Password Field -->
                 <div class="space-y-2">
                     <label for="password" class="block text-sm font-semibold text-gray-300">Password</label>
-                    <input type="password" 
-                           name="password" 
-                           id="password" 
-                           required
-                           class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
-                           placeholder="Create a strong password"
-                           autocomplete="new-password">
-                    <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
+                    <div class="relative">
+                        <input type="password" 
+                               name="password" 
+                               id="password" 
+                               required
+                               minlength="6"
+                               class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
+                               placeholder="Create a strong password"
+                               autocomplete="new-password">
+                        <button type="button" 
+                                id="togglePassword"
+                                onclick="togglePasswordVisibility()"
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200">
+                            <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Must be at least 6 characters</p>
                 </div>
                 
                 <!-- Submit Button -->
                 <button type="submit" 
-                        class="w-full btn-primary text-white font-semibold py-3.5 px-6 rounded-xl text-base relative z-10 mt-6">
-                    Create Account
+                        id="submitBtn"
+                        class="w-full btn-primary text-white font-semibold py-3.5 px-6 rounded-xl text-base relative z-10 mt-6 flex items-center justify-center">
+                    <span id="submitText">Create Account</span>
+                    <div id="submitSpinner" class="hidden ml-2">
+                        <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
                 </button>
             </form>
 
@@ -96,4 +125,210 @@
         </div>
     </div>
 </div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300">
+    <div class="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg">
+        <div class="flex items-center gap-3">
+            <svg id="toastIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="toastMessage">Account created successfully!</span>
+        </div>
+    </div>
+</div>
+
+<script>
+let usernameCheckTimeout;
+let usernameAvailable = false;
+
+// Toast notification function
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    toastMessage.textContent = message;
+    
+    // Update toast style based on type
+    if (type === 'success') {
+        toast.querySelector('div').className = 'bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg';
+        toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+    } else if (type === 'error') {
+        toast.querySelector('div').className = 'bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-3 rounded-xl shadow-lg';
+        toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+    } else if (type === 'warning') {
+        toast.querySelector('div').className = 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-xl shadow-lg';
+        toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>';
+    }
+    
+    // Show toast
+    toast.classList.remove('translate-x-full');
+    
+    // Hide after 5 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+    }, 5000);
+}
+
+// Real-time username availability check
+document.getElementById('username').addEventListener('input', function() {
+    const username = this.value.trim();
+    const statusDiv = document.getElementById('usernameStatus');
+    const messageDiv = document.getElementById('usernameMessage');
+    
+    // Clear previous timeout
+    clearTimeout(usernameCheckTimeout);
+    
+    if (username.length === 0) {
+        statusDiv.innerHTML = '';
+        messageDiv.innerHTML = '';
+        usernameAvailable = false;
+        return;
+    }
+    
+    if (username.length < 3) {
+        statusDiv.innerHTML = '<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+        messageDiv.innerHTML = '<span class="text-red-400">Username must be at least 3 characters</span>';
+        usernameAvailable = false;
+        return;
+    }
+    
+    // Show loading indicator
+    statusDiv.innerHTML = '<svg class="animate-spin w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+    messageDiv.innerHTML = '<span class="text-blue-400">Checking availability...</span>';
+    
+    // Debounce the API call
+    usernameCheckTimeout = setTimeout(() => {
+        fetch('/check_username', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: username
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.available) {
+                statusDiv.innerHTML = '<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+                messageDiv.innerHTML = '<span class="text-green-400">' + data.message + '</span>';
+                usernameAvailable = true;
+            } else {
+                statusDiv.innerHTML = '<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+                messageDiv.innerHTML = '<span class="text-red-400">' + data.message + '</span>';
+                usernameAvailable = false;
+            }
+        })
+        .catch(error => {
+            statusDiv.innerHTML = '<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+            messageDiv.innerHTML = '<span class="text-red-400">Error checking username</span>';
+            usernameAvailable = false;
+        });
+    }, 500); // 500ms delay
+});
+
+// Enhanced form submission with AJAX
+document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitSpinner = document.getElementById('submitSpinner');
+    
+    // Get form data
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    
+    // Basic validation
+    if (!username || !email || !password) {
+        showToast('All fields are required', 'error');
+        return;
+    }
+    
+    if (!usernameAvailable) {
+        showToast('Please choose a different username', 'error');
+        document.getElementById('username').focus();
+        return;
+    }
+    
+    if (password.length < 6) {
+        showToast('Password must be at least 6 characters long', 'error');
+        return;
+    }
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitText.textContent = 'Creating Account...';
+    submitSpinner.classList.remove('hidden');
+    
+    // Submit via AJAX
+    fetch('/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            // Redirect after showing toast
+            setTimeout(() => {
+                window.location.href = data.redirect;
+            }, 2000);
+        } else {
+            showToast(data.message, 'error');
+            
+            // Highlight problematic field if specified
+            if (data.field) {
+                document.getElementById(data.field).focus();
+                document.getElementById(data.field).classList.add('border-red-500');
+                setTimeout(() => {
+                    document.getElementById(data.field).classList.remove('border-red-500');
+                }, 3000);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('An unexpected error occurred. Please try again.', 'error');
+    })
+    .finally(() => {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitText.textContent = 'Create Account';
+        submitSpinner.classList.add('hidden');
+    });
+});
+
+// Password toggle functionality
+function togglePasswordVisibility() {
+    const passwordField = document.getElementById('password');
+    const toggleIcon = document.getElementById('toggle-password');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M9.878 9.878a3 3 0 015.657 2.122m0 0a3 3 0 01-4.243 4.243M12 9v.01m-6.938 4L12 9"></path>
+        `;
+    } else {
+        passwordField.type = 'password';
+        toggleIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.275 4.057-5.065 7-9.543 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        `;
+    }
+}
+
+// Auto-focus username field
+document.getElementById('username').focus();
+</script>
 {% endblock %}

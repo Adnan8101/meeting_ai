@@ -10,9 +10,11 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import login_user, logout_user, login_required, current_user
 import google.generativeai as genai
 from trello import TrelloClient
+import mongoengine
 
-from extensions import db, bcrypt, login_manager
-from models import User, Team, TrelloCredentials, TrelloCard, JiraCredentials
+from extensions import bcrypt, login_manager
+from mongo_models import User, Team, TrelloCredentials, TrelloCard, JiraCredentials
+from email_service import send_welcome_email, send_integration_success_email, send_password_reset_email, send_email_verification
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -24,13 +26,15 @@ TRELLO_API_SECRET = os.environ.get("TRELLO_API_SECRET", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD", "")
-FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "a-default-secret-key-for-local-dev")
+FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "mongodb-secret-key-v2")
+MONGO_URL = os.environ.get("MONGO_URL", "")
 
 # Log configuration status (without exposing secrets)
 print(f"[*] Configuration loaded:")
 print(f"    - TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
 print(f"    - GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
-print(f"    - DATABASE_URL: {'✓ Set' if os.environ.get('DATABASE_URL') else '✗ Using SQLite'}")
+print(f"    - MONGO_URL: {'✓ Set' if MONGO_URL else '✗ Missing'}")
+print(f"    - EMAIL: {'✓ Set' if SENDER_EMAIL and SENDER_PASSWORD else '✗ Missing'}")
 
 
 def create_app():
@@ -43,35 +47,14 @@ def create_app():
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
 
-    # --- Database Configuration ---
-    database_url = os.environ.get('DATABASE_URL')
-    if database_url:
-        if database_url.startswith("postgres://"): 
-            database_url = database_url.replace("postgres://", "postgresql://", 1)
-        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-        print("[*] Using PostgreSQL database")
+    # --- MongoDB Configuration ---
+    if MONGO_URL:
+        mongoengine.connect(host=MONGO_URL)
+        print("[*] Connected to MongoDB")
     else:
-        # For serverless environments (like Vercel), use /tmp for SQLite
-        # Note: /tmp is ephemeral and will be cleared between deployments
-        if os.environ.get('VERCEL'):
-            # Running on Vercel - use /tmp directory
-            os.makedirs('/tmp/instance', exist_ok=True)
-            app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/instance/site.db'
-            print("[!] WARNING: Using ephemeral SQLite database in /tmp")
-            print("[!] Data will NOT persist between deployments or function invocations!")
-            print("[!] Please set DATABASE_URL environment variable with a PostgreSQL connection string")
-        else:
-            # Local development
-            app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-            print("[*] Using local SQLite database")
-    
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_pre_ping': True,
-        'pool_recycle': 300,
-    }
+        print("[!] MONGO_URL missing - using local MongoDB")
+        mongoengine.connect('ai_meeting_agent')
 
-    db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'login'
@@ -79,12 +62,23 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         try:
-            user = User.query.get(int(user_id))
-            if user:
-                print(f"[DEBUG] Loaded user: {user.username} (ID: {user.id})")
+            # Handle MongoDB ObjectId properly
+            from bson import ObjectId
+            if isinstance(user_id, str) and len(user_id) == 24:
+                try:
+                    # Try to convert to ObjectId if it's a valid 24-character hex string
+                    obj_id = ObjectId(user_id)
+                    user = User.objects(id=obj_id).first()
+                    if user:
+                        print(f"[DEBUG] Loaded user: {user.username} (ID: {user.id})")
+                    return user
+                except:
+                    # If conversion fails, it's an invalid ObjectId
+                    return None
             else:
-                print(f"[DEBUG] User with ID {user_id} not found in database")
-            return user
+                # For invalid ID formats (like old integer IDs), silently return None
+                # This handles the migration from SQLAlchemy to MongoDB
+                return None
         except Exception as e:
             print(f"[ERROR] Failed to load user {user_id}: {e}")
             return None
@@ -130,8 +124,9 @@ def create_app():
             return {"error": f"AI Error: {e}"}
 
     def get_trello_client(user):
-        if user.trello_credentials: return TrelloClient(api_key=TRELLO_API_KEY, api_secret=TRELLO_API_SECRET,
-                                                        token=user.trello_credentials.token)
+        creds = TrelloCredentials.objects(user_id=str(user.id)).first()
+        if creds: 
+            return TrelloClient(api_key=TRELLO_API_KEY, api_secret=TRELLO_API_SECRET, token=creds.token)
         return None
 
     def send_summary_email(recipients, analysis):
@@ -160,14 +155,19 @@ def create_app():
                 card_desc = f"Assignee: {item.get('assignee', 'N/A')}\nDue Date: {item.get('due_date', 'N/A')}"
                 new_card = target_list.add_card(name=card_name, desc=card_desc);
                 cards_created += 1
-                db_card = TrelloCard(card_id=new_card.id, user_id=user_id, board_id=board_id, list_id=list_id,
-                                     task_description=item.get('task', 'No desc'), assignee=item.get('assignee'),
-                                     due_date_str=item.get('due_date'))
-                db.session.add(db_card)
-            db.session.commit();
+                db_card = TrelloCard(
+                    card_id=new_card.id, 
+                    user_id=str(user_id), 
+                    board_id=board_id, 
+                    list_id=list_id,
+                    task_description=item.get('task', 'No desc'), 
+                    assignee=item.get('assignee'),
+                    due_date_str=item.get('due_date')
+                )
+                db_card.save()
             return f"{cards_created} Trello cards created."
         except Exception as e:
-            db.session.rollback(); return f"Failed Trello cards: {e}"
+            return f"Failed Trello cards: {e}"
 
     def send_to_slack(team, analysis):
         if not team or not team.slack_webhook_url:
@@ -238,8 +238,9 @@ def create_app():
 
     # --- JIRA HELPER FUNCTIONS (Unchanged) ---
     def get_jira_client(user):
-        if not user.jira_credentials: return None
-        creds = user.jira_credentials
+        creds = JiraCredentials.objects(user_id=str(user.id)).first()
+        if not creds: 
+            return None
         try:
             jira_client = JIRA(server=creds.jira_url, basic_auth=(creds.email, creds.api_token))
             jira_client.server_info()
@@ -290,7 +291,21 @@ def create_app():
     def home():
         trello_client = get_trello_client(current_user)
         boards = trello_client.list_boards() if trello_client else []
-        return render_template('index.html', trello_boards=boards)
+        
+        # Get user's integration credentials for the template
+        trello_creds = TrelloCredentials.objects(user_id=str(current_user.id)).first()
+        jira_creds = JiraCredentials.objects(user_id=str(current_user.id)).first()
+        
+        # Get user's team data if they belong to a team
+        team_data = None
+        if current_user.team_id:
+            team_data = Team.objects(id=current_user.team_id).first()
+        
+        return render_template('index.html', 
+                             trello_boards=boards, 
+                             trello_credentials=trello_creds,
+                             jira_credentials=jira_creds,
+                             team_data=team_data)
 
     # --- GET_LISTS FUNCTION RESTORED ---
     @app.route('/get_lists/<board_id>')
@@ -365,17 +380,27 @@ def create_app():
                 if analysis_result and not analysis_result.get('error'):
                     automation_messages = []
                     action_items_list = analysis_result.get('action_items', [])
+                    
+                    # Get user's team
+                    user_team = None
+                    if current_user.team_id:
+                        user_team = Team.objects(id=current_user.team_id).first()
+                    
                     # Email Automation
-                    if request.form.get('send_email') == 'true' and current_user.team:
-                        recipients = [m.email for m in current_user.team.members if m.email]
+                    if request.form.get('send_email') == 'true' and user_team:
+                        # Get team members
+                        team_members = User.objects(team_id=current_user.team_id)
+                        recipients = [m.email for m in team_members if m.email]
                         if recipients:
                             automation_messages.append(f"Email: {send_summary_email(recipients, analysis_result)}")
                         else:
                             automation_messages.append("Email: No emails in team.")
                     elif request.form.get('send_email') == 'true':
                         automation_messages.append("Email: Requires team.")
+                    
                     # Trello Automation
-                    if request.form.get('create_trello') == 'true' and current_user.trello_credentials:
+                    trello_creds = TrelloCredentials.objects(user_id=str(current_user.id)).first()
+                    if request.form.get('create_trello') == 'true' and trello_creds:
                         t_client = get_trello_client(current_user)
                         b_id, l_id = request.form.get('trello_board_id'), request.form.get('trello_list_id')
                         if t_client and b_id and l_id:
@@ -387,17 +412,19 @@ def create_app():
                             automation_messages.append("Trello: Client error.")
                     elif request.form.get('create_trello') == 'true':
                         automation_messages.append("Trello: Not connected.")
+                    
                     # Slack Automation
-                    if request.form.get(
-                            'send_slack') == 'true' and current_user.team and current_user.team.slack_webhook_url:
-                        automation_messages.append(f"Slack: {send_to_slack(current_user.team, analysis_result)}")
+                    if request.form.get('send_slack') == 'true' and user_team and user_team.slack_webhook_url:
+                        automation_messages.append(f"Slack: {send_to_slack(user_team, analysis_result)}")
                     elif request.form.get('send_slack') == 'true':
-                        if not current_user.team:
+                        if not user_team:
                             automation_messages.append("Slack: Requires team.")
                         else:
                             automation_messages.append("Slack: Not connected.")
+                    
                     # JIRA Automation
-                    if request.form.get('create_jira') == 'true' and current_user.jira_credentials:
+                    jira_creds = JiraCredentials.objects(user_id=str(current_user.id)).first()
+                    if request.form.get('create_jira') == 'true' and jira_creds:
                         jira_project_key = request.form.get('jira_project_key')
                         jira_issue_type_name = request.form.get('jira_issue_type_name')
                         if not jira_project_key or not jira_issue_type_name:
@@ -431,37 +458,190 @@ def create_app():
             
         return render_template('index.html', analysis=analysis_result, transcript=transcript_text, trello_boards=boards)
 
+    # --- USERNAME AVAILABILITY CHECK ---
+    @app.route('/check_username', methods=['POST'])
+    def check_username():
+        """Check if username is available via AJAX"""
+        try:
+            data = request.get_json()
+            username = data.get('username', '').strip()
+            
+            if not username:
+                return jsonify({'available': False, 'message': 'Username is required'})
+            
+            if len(username) < 3:
+                return jsonify({'available': False, 'message': 'Username must be at least 3 characters'})
+            
+            if len(username) > 20:
+                return jsonify({'available': False, 'message': 'Username must be less than 20 characters'})
+            
+            # Check if username exists
+            existing_user = User.objects(username=username).first()
+            if existing_user:
+                return jsonify({'available': False, 'message': 'Username is already taken'})
+            
+            return jsonify({'available': True, 'message': 'Username is available'})
+        except Exception as e:
+            print(f"[!] Error checking username: {e}")
+            return jsonify({'available': False, 'message': 'Error checking username'})
+
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if current_user.is_authenticated: 
             return redirect(url_for('home'))
         
         if request.method == 'POST':
+            # Check if this is an AJAX request for registration
+            is_ajax = request.headers.get('Content-Type') == 'application/json'
+            
+            if is_ajax:
+                data = request.get_json()
+                username = data.get('username', '').strip()
+                email = data.get('email', '').strip()
+                password = data.get('password', '').strip()
+            else:
+                username = request.form.get('username', '').strip()
+                email = request.form.get('email', '').strip()
+                password = request.form.get('password', '').strip()
+            
             try:
-                username = request.form.get('username')
-                email = request.form.get('email')
-                password = request.form.get('password')
+                print(f"[DEBUG] Registration attempt: username={username}, email={email}")
                 
+                # Validation
                 if not username or not email or not password:
-                    flash('All fields are required.', 'error')
+                    message = 'All fields are required.'
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': message})
+                    flash(message, 'error')
                     return redirect(url_for('register'))
                 
-                if User.query.filter((User.username == username) | (User.email == email)).first():
-                    flash('Username or Email already exists. Please try another.', 'error')
+                if len(username) < 3:
+                    message = 'Username must be at least 3 characters long.'
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': message})
+                    flash(message, 'error')
                     return redirect(url_for('register'))
                 
-                user = User(username=username, email=email, password=password)
-                db.session.add(user)
-                db.session.commit()
-                flash('Account created successfully! Please log in.', 'success')
-                return redirect(url_for('login'))
+                if len(password) < 6:
+                    message = 'Password must be at least 6 characters long.'
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': message})
+                    flash(message, 'error')
+                    return redirect(url_for('register'))
+                
+                # Check if username or email already exists
+                existing_username = User.objects(username=username).first()
+                existing_email = User.objects(email=email).first()
+                
+                if existing_username:
+                    message = 'Username already exists. Please choose another.'
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': message, 'field': 'username'})
+                    flash(message, 'error')
+                    return redirect(url_for('register'))
+                
+                if existing_email:
+                    message = 'Email already registered. Please use another email or try logging in.'
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': message, 'field': 'email'})
+                    flash(message, 'error')
+                    return redirect(url_for('register'))
+                
+                # Create new user
+                print(f"[DEBUG] Creating new user...")
+                user = User(username=username, email=email)
+                user.password = password  # This will hash the password
+                user.save()
+                print(f"[DEBUG] User saved successfully with ID: {user.id}")
+                
+                # Generate and send verification email
+                print(f"[DEBUG] Sending verification email...")
+                try:
+                    otp_code = user.generate_verification_token()
+                    success, email_result = send_email_verification(email, username, otp_code)
+                    if success:
+                        print(f"[DEBUG] Verification email sent")
+                        email_message = " Verification code sent to your email."
+                    else:
+                        print(f"[!] Failed to send verification email: {email_result}")
+                        email_message = " (Verification email failed to send.)"
+                except Exception as email_error:
+                    print(f"[!] Failed to send verification email: {email_error}")
+                    email_message = " (Verification email failed to send.)"
+                
+                message = f'Account created successfully!{email_message} Please verify your email.'
+                if is_ajax:
+                    return jsonify({'success': True, 'message': message, 'redirect': url_for('verify_email', email=email)})
+                
+                flash(message, 'success')
+                return redirect(url_for('verify_email', email=email))
+                
             except Exception as e:
-                db.session.rollback()
                 print(f"[!] Error in register: {e}")
-                flash('An error occurred during registration. Please try again.', 'error')
+                import traceback
+                traceback.print_exc()
+                message = 'An unexpected error occurred during registration. Please try again.'
+                if is_ajax:
+                    return jsonify({'success': False, 'message': message})
+                flash(message, 'error')
                 return redirect(url_for('register'))
         
         return render_template('register.html')
+
+    @app.route('/verify_email/<email>', methods=['GET', 'POST'])
+    def verify_email(email):
+        if request.method == 'POST':
+            otp = request.form.get('otp')
+            
+            if not otp:
+                flash('Verification code is required.', 'error')
+                return render_template('verify_email.html', email=email)
+            
+            user = User.objects(email=email).first()
+            if not user:
+                flash('User not found.', 'error')
+                return redirect(url_for('register'))
+            
+            if user.is_verified:
+                flash('Account already verified! Please log in.', 'success')
+                return redirect(url_for('login'))
+            
+            if user.verify_email_token(otp):
+                # Complete verification
+                user.complete_email_verification()
+                
+                # Send welcome email after verification
+                try:
+                    send_welcome_email(user.email, user.username)
+                except Exception as e:
+                    print(f"[!] Failed to send welcome email: {e}")
+                
+                flash('Email verified successfully! Welcome to AI Meeting Agent!', 'success')
+                return redirect(url_for('login'))
+            else:
+                flash('Invalid or expired verification code.', 'error')
+        
+        return render_template('verify_email.html', email=email)
+
+    @app.route('/resend_verification/<email>', methods=['POST'])
+    def resend_verification(email):
+        user = User.objects(email=email).first()
+        if not user:
+            return jsonify({'success': False, 'message': 'User not found'})
+        
+        if user.is_verified:
+            return jsonify({'success': False, 'message': 'Account already verified'})
+        
+        try:
+            otp_code = user.generate_verification_token()
+            success, email_result = send_email_verification(email, user.username, otp_code)
+            if success:
+                return jsonify({'success': True, 'message': 'Verification code sent successfully'})
+            else:
+                return jsonify({'success': False, 'message': 'Failed to send verification email'})
+        except Exception as e:
+            print(f"[!] Error resending verification: {e}")
+            return jsonify({'success': False, 'message': 'An error occurred'})
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -477,8 +657,13 @@ def create_app():
                     flash('Email and password are required.', 'error')
                     return render_template('login.html')
                 
-                user = User.query.filter_by(email=email).first()
+                user = User.objects(email=email).first()
                 if user and user.verify_password(password):
+                    # Check if email is verified
+                    if not user.is_verified:
+                        flash('Please verify your email before logging in. Check your email for the verification code.', 'warning')
+                        return redirect(url_for('verify_email', email=email))
+                    
                     login_user(user, remember=True, duration=None)
                     next_page = request.args.get('next')
                     flash(f'Welcome back, {user.username}!', 'success')
@@ -497,11 +682,92 @@ def create_app():
         logout_user();
         return redirect(url_for('login'))
 
+    @app.route('/forgot_password', methods=['GET', 'POST'])
+    def forgot_password():
+        if request.method == 'POST':
+            email = request.form.get('email')
+            if not email:
+                flash('Email is required.', 'error')
+                return render_template('forgot_password.html')
+            
+            user = User.objects(email=email).first()
+            if user:
+                # Generate OTP
+                otp = user.generate_reset_token()
+                # Send email
+                send_password_reset_email(user.email, user.username, otp)
+                flash('Password reset code sent to your email.', 'success')
+                return redirect(url_for('verify_reset_code', email=email))
+            else:
+                # Don't reveal if user exists or not for security
+                flash('If that email exists, you will receive a reset code.', 'info')
+        
+        return render_template('forgot_password.html')
+
+    @app.route('/verify_reset_code/<email>', methods=['GET', 'POST'])
+    def verify_reset_code(email):
+        if request.method == 'POST':
+            # Check if this is step 1 (code verification) or step 2 (password change)
+            if 'verify_code' in request.form:
+                # Step 1: Verify the code only
+                otp = request.form.get('otp')
+                
+                if not otp:
+                    flash('Verification code is required.', 'error')
+                    return render_template('verify_reset_code.html', email=email, step='verify')
+                
+                user = User.objects(email=email).first()
+                if user and user.verify_reset_token(otp):
+                    # Code is valid, show password change form
+                    flash('Code verified successfully! Now enter your new password.', 'success')
+                    return render_template('verify_reset_code.html', email=email, step='change_password', verified_code=otp)
+                else:
+                    flash('Invalid or expired verification code.', 'error')
+                    return render_template('verify_reset_code.html', email=email, step='verify')
+            
+            elif 'change_password' in request.form:
+                # Step 2: Change password after code verification
+                otp = request.form.get('verified_code')
+                new_password = request.form.get('new_password')
+                confirm_password = request.form.get('confirm_password')
+                
+                if not otp or not new_password or not confirm_password:
+                    flash('All fields are required.', 'error')
+                    return render_template('verify_reset_code.html', email=email, step='change_password', verified_code=otp)
+                
+                if new_password != confirm_password:
+                    flash('Passwords do not match.', 'error')
+                    return render_template('verify_reset_code.html', email=email, step='change_password', verified_code=otp)
+                
+                # Verify the code again for security
+                user = User.objects(email=email).first()
+                if user and user.verify_reset_token(otp):
+                    # Update password
+                    user.password = new_password  # This will hash the password
+                    user.clear_reset_token()
+                    flash('Password updated successfully! Please log in with your new password.', 'success')
+                    return redirect(url_for('login'))
+                else:
+                    flash('Session expired. Please request a new verification code.', 'error')
+                    return redirect(url_for('forgot_password'))
+        
+        # Default: Show code verification form
+        return render_template('verify_reset_code.html', email=email, step='verify')
+
     # --- ADD THIS MISSING ROUTE ---
     @app.route('/team')
     @login_required
     def team():
-        return render_template('team.html')
+        team_data = None
+        team_members = []
+        
+        if current_user.team_id:
+            # Get team data
+            team_data = Team.objects(id=current_user.team_id).first()
+            # Get team members
+            team_members = User.objects(team_id=current_user.team_id)
+        
+        return render_template('team.html', team=team_data, team_members=team_members)
 
     # -----------------------------
 
@@ -511,11 +777,14 @@ def create_app():
         # ... (unchanged) ...
         team_name = request.form.get('team_name')
         if team_name:
-            if current_user.team: flash('Already in a team.', 'warning'); return redirect(url_for('team'))
-            new_team = Team(name=team_name, owner_id=current_user.id);
-            db.session.add(new_team)
-            current_user.team = new_team;
-            db.session.commit()
+            if current_user.team_id: 
+                flash('Already in a team.', 'warning')
+                return redirect(url_for('team'))
+            
+            new_team = Team(name=team_name, owner_id=str(current_user.id))
+            new_team.save()
+            current_user.team_id = str(new_team.id)
+            current_user.save()
             flash(f'Team "{team_name}" created!', 'success')
         else:
             flash('Team name empty.', 'danger')
@@ -525,17 +794,21 @@ def create_app():
     @login_required
     def invite():
         # ... (unchanged) ...
-        if not current_user.team: flash('Must be in team.', 'danger'); return redirect(url_for('team'))
-        email = request.form.get('email');
-        user_to_invite = User.query.filter_by(email=email).first()
+        if not current_user.team_id: 
+            flash('Must be in team.', 'danger')
+            return redirect(url_for('team'))
+        
+        email = request.form.get('email')
+        user_to_invite = User.objects(email=email).first()
         if user_to_invite:
-            if user_to_invite.team:
+            if user_to_invite.team_id:
                 flash(f'{user_to_invite.username} already in team.', 'warning')
             elif user_to_invite == current_user:
                 flash('Cannot invite self.', 'warning')
             else:
-                user_to_invite.team = current_user.team; db.session.commit(); flash(f'{user_to_invite.username} added.',
-                                                                                    'success')
+                user_to_invite.team_id = current_user.team_id
+                user_to_invite.save()
+                flash(f'{user_to_invite.username} added.', 'success')
         else:
             flash('User not found.', 'danger')
         return redirect(url_for('team'))
@@ -543,8 +816,19 @@ def create_app():
     @app.route('/integrations')
     @login_required
     def integrations():
-        # ... (unchanged) ...
-        return render_template('integrations.html')
+        # Get user's integration credentials
+        trello_creds = TrelloCredentials.objects(user_id=str(current_user.id)).first()
+        jira_creds = JiraCredentials.objects(user_id=str(current_user.id)).first()
+        
+        # Get team data for Slack integration
+        team_data = None
+        if current_user.team_id:
+            team_data = Team.objects(id=current_user.team_id).first()
+        
+        return render_template('integrations.html', 
+                             trello_credentials=trello_creds, 
+                             jira_credentials=jira_creds,
+                             team=team_data)
 
     # --- TRELLO ROUTES (Unchanged) ---
     @app.route('/trello/connect')
@@ -563,28 +847,42 @@ def create_app():
     def trello_save_token():
         # ... (unchanged) ...
         access_token = request.form.get('pin')
-        if not access_token: flash('Token required.', 'danger'); return redirect(url_for('trello_connect'))
-        if not TRELLO_API_KEY or not TRELLO_API_SECRET: flash('Trello Key/Secret missing.', 'danger'); return redirect(
-            url_for('integrations'))
+        if not access_token: 
+            flash('Token required.', 'danger')
+            return redirect(url_for('trello_connect'))
+        if not TRELLO_API_KEY or not TRELLO_API_SECRET: 
+            flash('Trello Key/Secret missing.', 'danger')
+            return redirect(url_for('integrations'))
         try:
             client = TrelloClient(api_key=TRELLO_API_KEY, api_secret=TRELLO_API_SECRET, token=access_token)
             trello_user = client.get_member('me')
-            creds = TrelloCredentials.query.filter_by(user_id=current_user.id).first() or TrelloCredentials(
-                user_id=current_user.id)
-            creds.token, creds.trello_username = access_token, trello_user.full_name
-            db.session.add(creds);
-            db.session.commit();
-            flash('Trello connected!', 'success');
+            
+            # Check if credentials already exist
+            creds = TrelloCredentials.objects(user_id=str(current_user.id)).first()
+            if not creds:
+                creds = TrelloCredentials(user_id=str(current_user.id))
+            
+            creds.token = access_token
+            creds.trello_username = trello_user.full_name
+            creds.save()
+            
+            # Send integration success email
+            send_integration_success_email(current_user.email, current_user.username, 'Trello')
+            
+            flash('Trello connected successfully! Confirmation email sent.', 'success')
             return redirect(url_for('integrations'))
         except Exception as e:
-            flash(f'Trello failed: {e}', 'danger'); db.session.rollback(); return redirect(url_for('trello_connect'))
+            flash(f'Trello failed: {e}', 'danger')
+            return redirect(url_for('trello_connect'))
 
     @app.route('/trello/disconnect')
     @login_required
     def trello_disconnect():
         # ... (unchanged) ...
-        creds = TrelloCredentials.query.filter_by(user_id=current_user.id).first()
-        if creds: db.session.delete(creds); db.session.commit(); flash('Trello disconnected.', 'success')
+        creds = TrelloCredentials.objects(user_id=str(current_user.id)).first()
+        if creds: 
+            creds.delete()
+            flash('Trello disconnected.', 'success')
         return redirect(url_for('integrations'))
 
     # --- SLACK ROUTES (Unchanged) ---
@@ -592,28 +890,40 @@ def create_app():
     @login_required
     def slack_connect():
         # ... (unchanged) ...
-        if not current_user.team: flash('Must be in team.', 'danger'); return redirect(url_for('integrations'))
+        if not current_user.team_id: 
+            flash('Must be in team.', 'danger')
+            return redirect(url_for('integrations'))
+        
         webhook_url = request.form.get('slack_webhook_url')
         if not webhook_url or not webhook_url.startswith('https://hooks.slack.com/services/'):
-            flash('Invalid Slack URL.', 'danger');
+            flash('Invalid Slack URL.', 'danger')
             return redirect(url_for('integrations'))
-        current_user.team.slack_webhook_url = webhook_url
-        try:
-            db.session.commit(); flash('Slack saved!', 'success')
-        except Exception as e:
-            db.session.rollback(); flash(f'Save failed: {e}', 'danger')
+        
+        user_team = Team.objects(id=current_user.team_id).first()
+        if user_team:
+            user_team.slack_webhook_url = webhook_url
+            user_team.save()
+            
+            # Send integration success email
+            send_integration_success_email(current_user.email, current_user.username, 'Slack')
+            
+            flash('Slack connected successfully! Confirmation email sent.', 'success')
+        else:
+            flash('Team not found.', 'danger')
         return redirect(url_for('integrations'))
 
     @app.route('/slack/disconnect')
     @login_required
     def slack_disconnect():
         # ... (unchanged) ...
-        if current_user.team and current_user.team.slack_webhook_url:
-            current_user.team.slack_webhook_url = None
-            try:
-                db.session.commit(); flash('Slack disconnected.', 'success')
-            except Exception as e:
-                db.session.rollback(); flash(f'Disconnect failed: {e}', 'danger')
+        if current_user.team_id:
+            user_team = Team.objects(id=current_user.team_id).first()
+            if user_team and user_team.slack_webhook_url:
+                user_team.slack_webhook_url = None
+                user_team.save()
+                flash('Slack disconnected.', 'success')
+            else:
+                flash('Slack not connected.', 'warning')
         else:
             flash('Slack not connected.', 'warning')
         return redirect(url_for('integrations'))
@@ -623,37 +933,45 @@ def create_app():
     @login_required
     def jira_connect():
         # ... (unchanged) ...
-        jira_url, email, api_token = request.form.get('jira_url'), request.form.get('jira_email'), request.form.get(
-            'jira_api_token')
-        if not all([jira_url, email, api_token]): flash('All Jira fields required.', 'danger'); return redirect(
-            url_for('integrations'))
-        if not jira_url.startswith('https://') or not jira_url.endswith('.atlassian.net'):
-            flash('Invalid Jira URL.', 'danger');
+        jira_url, email, api_token = request.form.get('jira_url'), request.form.get('jira_email'), request.form.get('jira_api_token')
+        
+        if not all([jira_url, email, api_token]): 
+            flash('All Jira fields required.', 'danger')
             return redirect(url_for('integrations'))
-        creds = JiraCredentials.query.filter_by(user_id=current_user.id).first() or JiraCredentials(
-            user_id=current_user.id)
-        creds.jira_url = jira_url.rstrip('/');
-        creds.email = email;
+        
+        if not jira_url.startswith('https://') or not jira_url.endswith('.atlassian.net'):
+            flash('Invalid Jira URL.', 'danger')
+            return redirect(url_for('integrations'))
+        
+        # Check if credentials already exist
+        creds = JiraCredentials.objects(user_id=str(current_user.id)).first()
+        if not creds:
+            creds = JiraCredentials(user_id=str(current_user.id))
+        
+        creds.jira_url = jira_url.rstrip('/')
+        creds.email = email
         creds.api_token = api_token
+        
         try:
-            # Add verification call here if desired
-            db.session.add(creds);
-            db.session.commit();
-            flash('Jira saved!', 'success')
+            creds.save()
+            # Send integration success email
+            send_integration_success_email(current_user.email, current_user.username, 'Jira')
+            flash('Jira connected successfully! Confirmation email sent.', 'success')
         except Exception as e:
-            db.session.rollback(); flash(f'Jira save failed: {e}', 'danger')
+            flash(f'Jira save failed: {e}', 'danger')
         return redirect(url_for('integrations'))
 
     @app.route('/jira/disconnect')
     @login_required
     def jira_disconnect():
         # ... (unchanged) ...
-        creds = JiraCredentials.query.filter_by(user_id=current_user.id).first()
+        creds = JiraCredentials.objects(user_id=str(current_user.id)).first()
         if creds:
             try:
-                db.session.delete(creds); db.session.commit(); flash('Jira disconnected.', 'success')
+                creds.delete()
+                flash('Jira disconnected.', 'success')
             except Exception as e:
-                db.session.rollback(); flash(f'Jira disconnect failed: {e}', 'danger')
+                flash(f'Jira disconnect failed: {e}', 'danger')
         else:
             flash('Jira not connected.', 'warning')
         return redirect(url_for('integrations'))
@@ -668,7 +986,6 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    with app.app_context():
-        if not os.environ.get('DATABASE_URL'):
-            db.create_all()
+    # MongoDB doesn't need table creation like SQL databases
+    print("🚀 AI Meeting Agent with MongoDB ready!")
     app.run(debug=True)

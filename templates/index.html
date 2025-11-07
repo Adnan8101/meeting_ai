@@ -38,13 +38,13 @@
                 <div class="space-y-4">
                     
                     <!-- Email Automation -->
-                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not current_user.team %}opacity-50{% endif %}">
-                        <label class="flex items-start gap-3 {% if current_user.team %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
+                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not team_data %}opacity-50{% endif %}">
+                        <label class="flex items-start gap-3 {% if team_data %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
                             <input type="checkbox" 
                                    id="send_email" 
                                    name="send_email" 
                                    value="true"
-                                   {% if not current_user.team %}disabled{% endif %}
+                                   {% if not team_data %}disabled{% endif %}
                                    class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
@@ -53,7 +53,7 @@
                                     </svg>
                                     <span class="font-medium text-white">Send Summary Email to Team</span>
                                 </div>
-                                {% if not current_user.team %}
+                                {% if not team_data %}
                                     <small class="text-gray-400">(<a href="{{ url_for('team') }}" class="text-blue-400 hover:underline">Create a team first</a>)</small>
                                 {% endif %}
                             </div>
@@ -61,13 +61,13 @@
                     </div>
 
                     <!-- Trello Automation -->
-                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not current_user.trello_credentials %}opacity-50{% endif %}">
-                        <label class="flex items-start gap-3 {% if current_user.trello_credentials %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
+                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not trello_credentials %}opacity-50{% endif %}">
+                        <label class="flex items-start gap-3 {% if trello_credentials %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
                             <input type="checkbox" 
                                    id="create_trello" 
                                    name="create_trello" 
                                    value="true"
-                                   {% if not current_user.trello_credentials %}disabled{% endif %}
+                                   {% if not trello_credentials %}disabled{% endif %}
                                    class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
@@ -77,7 +77,7 @@
                                     </svg>
                                     <span class="font-medium text-white">Create Trello Cards for Action Items</span>
                                 </div>
-                                {% if not current_user.trello_credentials %}
+                                {% if not trello_credentials %}
                                     <small class="text-gray-400">(<a href="{{ url_for('integrations') }}" class="text-blue-400 hover:underline">Connect Trello</a>)</small>
                                 {% endif %}
                             </div>
@@ -85,13 +85,13 @@
                     </div>
 
                     <!-- Slack Automation -->
-                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not current_user.team or not current_user.team.slack_webhook_url %}opacity-50{% endif %}">
-                        <label class="flex items-start gap-3 {% if current_user.team and current_user.team.slack_webhook_url %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
+                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not team_data or not team_data.slack_webhook_url %}opacity-50{% endif %}">
+                        <label class="flex items-start gap-3 {% if team_data and team_data.slack_webhook_url %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
                             <input type="checkbox" 
                                    id="send_slack" 
                                    name="send_slack" 
                                    value="true"
-                                   {% if not current_user.team or not current_user.team.slack_webhook_url %}disabled{% endif %}
+                                   {% if not team_data or not team_data.slack_webhook_url %}disabled{% endif %}
                                    class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
@@ -100,9 +100,9 @@
                                     </svg>
                                     <span class="font-medium text-white">Send Summary to Slack Channel</span>
                                 </div>
-                                {% if not current_user.team %}
+                                {% if not team_data %}
                                     <small class="text-gray-400">(<a href="{{ url_for('team') }}" class="text-blue-400 hover:underline">Create a team first</a>)</small>
-                                {% elif not current_user.team.slack_webhook_url %}
+                                {% elif not team_data.slack_webhook_url %}
                                     <small class="text-gray-400">(<a href="{{ url_for('integrations') }}" class="text-blue-400 hover:underline">Connect Slack</a>)</small>
                                 {% endif %}
                             </div>
@@ -110,13 +110,13 @@
                     </div>
 
                     <!-- Jira Automation -->
-                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not current_user.jira_credentials %}opacity-50{% endif %}">
-                        <label class="flex items-start gap-3 {% if current_user.jira_credentials %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
+                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not jira_credentials %}opacity-50{% endif %}">
+                        <label class="flex items-start gap-3 {% if jira_credentials %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
                             <input type="checkbox" 
                                    id="create_jira" 
                                    name="create_jira" 
                                    value="true"
-                                   {% if not current_user.jira_credentials %}disabled{% endif %}
+                                   {% if not jira_credentials %}disabled{% endif %}
                                    class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
@@ -125,7 +125,7 @@
                                     </svg>
                                     <span class="font-medium text-white">Create Jira Issues for Action Items</span>
                                 </div>
-                                {% if not current_user.jira_credentials %}
+                                {% if not jira_credentials %}
                                     <small class="text-gray-400">(<a href="{{ url_for('integrations') }}" class="text-blue-400 hover:underline">Connect Jira</a>)</small>
                                 {% endif %}
                             </div>
@@ -135,7 +135,7 @@
             </div>
 
             <!-- Trello Options -->
-            {% if current_user.trello_credentials %}
+            {% if trello_credentials %}
             <div id="trello-options" class="glass rounded-2xl p-6 hidden">
                 <h3 class="text-lg font-semibold text-white mb-4">Trello Configuration</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -161,7 +161,7 @@
             {% endif %}
 
             <!-- Jira Options -->
-            {% if current_user.jira_credentials %}
+            {% if jira_credentials %}
             <div id="jira-options" class="glass rounded-2xl p-6 hidden">
                 <h3 class="text-lg font-semibold text-white mb-4">Jira Configuration</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
