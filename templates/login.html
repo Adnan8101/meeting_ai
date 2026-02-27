@@ -52,7 +52,6 @@
                                autocomplete="current-password" autocomplete="current-password">
                         <button type="button" 
                                 id="toggle-password-login"
-                                onclick="togglePasswordVisibilityLogin()"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 focus:outline-none transition-colors duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -106,19 +105,16 @@
 </div>
 
 <script>
-        (function() {
-            'use strict';
-            try {
-                // Password toggle functionality for login page
-function togglePasswordVisibilityLogin() {
+// Password toggle functionality for login page
+document.getElementById('toggle-password-login').addEventListener('click', function() {
     const passwordField = document.getElementById('password');
-    const toggleIcon = document.getElementById('toggle-password-login');
+    const toggleIcon = this;
     
     if (passwordField.type === 'password') {
         passwordField.type = 'text';
         toggleIcon.innerHTML = `
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M9.878 9.878a3 3 0 015.657 2.122m0 0a3 3 0 01-4.243 4.243M12 9v.01m-6.938 4L12 9"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464m12.99 5.54a3 3 0 00-4.242-4.242m0 0L9.88 9.88"></path>
             </svg>
         `;
     } else {
@@ -130,7 +126,7 @@ function togglePasswordVisibilityLogin() {
             </svg>
         `;
     }
-}
+});
 
 // Track form submission
 const loginForm = document.querySelector('form');
@@ -142,9 +138,5 @@ if (loginForm) {
 
 // Auto-focus email field
 document.getElementById('email').focus();
-            } catch(e) {
-                console.error('Script error:', e);
-            }
-        })();
-        </script>
+</script>
 {% endblock %}
