@@ -476,3 +476,31 @@ pymongo.errors.ServerSelectionTimeoutError: SSL handshake failed: ac-9oms9fh-sha
 [INFO] 2026-03-02 11:26:22 - database - main_app.create_app:93 - Database name: test
 [INFO] 2026-03-02 11:26:22 - database - main_app.create_app:95 - MongoDB connection established successfully
 [INFO] 2026-03-02 11:26:22 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:31:31 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:31:31 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:31:31 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:31:31 - database - main_app.create_app:92 - Successfully connected to MongoDB in 119.99ms
+[INFO] 2026-03-02 11:31:31 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:31:31 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:31:31 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:31:45 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:31:45 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:31:45 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:31:45 - database - main_app.create_app:92 - Successfully connected to MongoDB in 108.36ms
+[INFO] 2026-03-02 11:31:45 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:31:45 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:31:45 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:32:01 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:32:01 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:32:01 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:32:01 - database - main_app.create_app:92 - Successfully connected to MongoDB in 93.39ms
+[INFO] 2026-03-02 11:32:01 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:32:01 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:32:01 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:32:16 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:32:16 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:32:16 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:32:16 - database - main_app.create_app:92 - Successfully connected to MongoDB in 96.01ms
+[INFO] 2026-03-02 11:32:16 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:32:16 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:32:16 - database - main_app.create_app:134 - ============================================================

@@ -14,11 +14,11 @@ try:
     print("   ✓ Flask imported successfully")
     
     print("2. Testing extensions...")
-    from extensions import db, bcrypt, login_manager
+    from extensions import bcrypt, login_manager
     print("   ✓ Extensions imported successfully")
     
     print("3. Testing models...")
-    from models import User, Team, TrelloCredentials, TrelloCard, JiraCredentials
+    from mongo_models import User, Team, TrelloCredentials, TrelloCard, JiraCredentials
     print("   ✓ Models imported successfully")
     
     print("4. Testing google.generativeai...")
