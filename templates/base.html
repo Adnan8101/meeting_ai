@@ -108,147 +108,200 @@
                 <!-- Logo -->
                 <a href="{{ url_for('landing') }}" class="flex items-center gap-2 text-xl font-semibold hover:text-apple-blue transition-colors">
                     <i data-lucide="zap" class="w-6 h-6"></i>
-                    <span>AI Meeting Agent</span>
+                    <span class="hidden sm:block">AI Meeting Agent</span>
+                    <span class="sm:hidden">AMA</span>
                 </a>
 
                 <!-- Desktop Nav -->
-                <div class="hidden md:flex items-center gap-2">
+                <div class="hidden lg:flex items-center gap-1">
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('landing') }}" class="nav-link">
-                            <i data-lucide="compass" class="w-4 h-4"></i>
-                            Home
-                        </a>
-                        <a href="{{ url_for('dashboard') }}" class="nav-link">
-                            <i data-lucide="sparkles" class="w-4 h-4"></i>
-                            Analyze
-                        </a>
-                        <a href="{{ url_for('team') }}" class="nav-link">
-                            <i data-lucide="users" class="w-4 h-4"></i>
-                            Team
-                        </a>
-                        <a href="{{ url_for('integrations') }}" class="nav-link">
-                            <i data-lucide="plug" class="w-4 h-4"></i>
-                            Integrations
-                        </a>
-                        <a href="{{ url_for('docs') }}" class="nav-link">
-                            <i data-lucide="book-open" class="w-4 h-4"></i>
-                            Docs
-                        </a>
-                        <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-2"></div>
+                        <!-- Main Navigation -->
+                        <div class="flex items-center gap-1">
+                            <a href="{{ url_for('landing') }}" class="nav-link">
+                                <i data-lucide="home" class="w-4 h-4"></i>
+                                Home
+                            </a>
+                            <a href="{{ url_for('dashboard') }}" class="nav-link">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                Analyze
+                            </a>
+                            <a href="{{ url_for('team') }}" class="nav-link">
+                                <i data-lucide="users" class="w-4 h-4"></i>
+                                Team
+                            </a>
+                            <a href="{{ url_for('integrations') }}" class="nav-link">
+                                <i data-lucide="plug" class="w-4 h-4"></i>
+                                Integrations
+                            </a>
+                            <a href="{{ url_for('docs') }}" class="nav-link">
+                                <i data-lucide="book-open" class="w-4 h-4"></i>
+                                Docs
+                            </a>
+                        </div>
+                        
+                        <!-- Divider -->
+                        <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-3"></div>
+                        
+                        <!-- Theme Toggle -->
                         <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Toggle theme">
                             <i data-lucide="sun" class="sun-icon w-5 h-5 hidden"></i>
                             <i data-lucide="moon" class="moon-icon w-5 h-5"></i>
                         </button>
-                        <div class="flex items-center gap-3 ml-2 pl-2 border-l border-gray-300 dark:border-gray-700">
-                            <div class="flex items-center gap-2">
+                        
+                        <!-- User Menu -->
+                        <div class="relative ml-3">
+                            <button onclick="toggleUserMenu()" class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
                                     {{ current_user.username[0].upper() }}
                                 </div>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ current_user.username }}</span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 hidden xl:block">{{ current_user.username }}</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500"></i>
+                            </button>
+                            
+                            <!-- User Dropdown -->
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+                                <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                                    <p class="font-semibold text-gray-900 dark:text-white">{{ current_user.username }}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ current_user.email }}</p>
+                                </div>
+                                <a href="{{ url_for('logout') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                                    Sign Out
+                                </a>
                             </div>
-                            <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">
-                                <i data-lucide="log-out" class="w-4 h-4"></i>
-                                Logout
-                            </a>
                         </div>
                     {% else %}
-                        <a href="{{ url_for('landing') }}" class="nav-link">
-                            <i data-lucide="home" class="w-4 h-4"></i>
-                            Home
-                        </a>
-                        <a href="{{ url_for('docs') }}" class="nav-link">
-                            <i data-lucide="book-open" class="w-4 h-4"></i>
-                            Docs
-                        </a>
-                        <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-2"></div>
+                        <!-- Public Navigation -->
+                        <div class="flex items-center gap-1">
+                            <a href="{{ url_for('landing') }}" class="nav-link">
+                                <i data-lucide="home" class="w-4 h-4"></i>
+                                Home
+                            </a>
+                            <a href="{{ url_for('docs') }}" class="nav-link">
+                                <i data-lucide="book-open" class="w-4 h-4"></i>
+                                Docs
+                            </a>
+                        </div>
+                        
+                        <!-- Divider -->
+                        <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-3"></div>
+                        
+                        <!-- Theme Toggle -->
                         <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Toggle theme">
                             <i data-lucide="sun" class="sun-icon w-5 h-5 hidden"></i>
                             <i data-lucide="moon" class="moon-icon w-5 h-5"></i>
                         </button>
-                        <a href="{{ url_for('login') }}" class="btn btn-ghost btn-sm">
-                            <i data-lucide="log-in" class="w-4 h-4"></i>
-                            Sign In
-                        </a>
-                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">
-                            <i data-lucide="rocket" class="w-4 h-4"></i>
-                            Get Started
-                        </a>
+                        
+                        <!-- Auth Buttons -->
+                        <div class="flex items-center gap-2 ml-3">
+                            <a href="{{ url_for('login') }}" class="btn btn-ghost btn-sm">
+                                <i data-lucide="log-in" class="w-4 h-4"></i>
+                                Sign In
+                            </a>
+                            <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">
+                                <i data-lucide="rocket" class="w-4 h-4"></i>
+                                Get Started
+                            </a>
+                        </div>
                     {% endif %}
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
+                <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <i data-lucide="menu" id="menuIcon" class="w-6 h-6"></i>
+                    <i data-lucide="x" id="closeIcon" class="w-6 h-6 hidden"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="md:hidden hidden border-t dark:border-dark-border">
-            <div class="container-custom py-4 flex flex-col gap-2">
+        <div id="mobileMenu" class="lg:hidden hidden border-t dark:border-dark-border bg-white dark:bg-gray-900">
+            <div class="container-custom py-4">
                 {% if current_user.is_authenticated %}
-                    <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 mb-2">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                    <!-- User Info -->
+                    <div class="flex items-center gap-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                             {{ current_user.username[0].upper() }}
                         </div>
-                        <div>
+                        <div class="flex-1">
                             <p class="font-semibold text-gray-900 dark:text-white">{{ current_user.username }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ current_user.email }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ current_user.email }}</p>
                         </div>
                     </div>
-                    <a href="{{ url_for('landing') }}" class="nav-link justify-start">
-                        <i data-lucide="compass" class="w-4 h-4"></i>
-                        Home
-                    </a>
-                    <a href="{{ url_for('dashboard') }}" class="nav-link justify-start">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i>
-                        Analyze
-                    </a>
-                    <a href="{{ url_for('team') }}" class="nav-link justify-start">
-                        <i data-lucide="users" class="w-4 h-4"></i>
-                        Team
-                    </a>
-                    <a href="{{ url_for('integrations') }}" class="nav-link justify-start">
-                        <i data-lucide="plug" class="w-4 h-4"></i>
-                        Integrations
-                    </a>
-                    <a href="{{ url_for('docs') }}" class="nav-link justify-start">
-                        <i data-lucide="book-open" class="w-4 h-4"></i>
-                        Docs
-                    </a>
-                    <button onclick="toggleTheme()" class="nav-link justify-start">
-                        <i data-lucide="sun" class="sun-icon w-4 h-4 hidden"></i>
-                        <i data-lucide="moon" class="moon-icon w-4 h-4"></i>
-                        Toggle Theme
-                    </button>
-                    <a href="{{ url_for('logout') }}" class="btn btn-secondary justify-start">
-                        <i data-lucide="log-out" class="w-4 h-4"></i>
-                        Logout
-                    </a>
+                    
+                    <!-- Navigation Links -->
+                    <div class="space-y-1">
+                        <a href="{{ url_for('landing') }}" class="nav-link-mobile">
+                            <i data-lucide="home" class="w-5 h-5"></i>
+                            Home
+                        </a>
+                        <a href="{{ url_for('dashboard') }}" class="nav-link-mobile">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                            Analyze Transcript
+                        </a>
+                        <a href="{{ url_for('team') }}" class="nav-link-mobile">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                            Team Management
+                        </a>
+                        <a href="{{ url_for('integrations') }}" class="nav-link-mobile">
+                            <i data-lucide="plug" class="w-5 h-5"></i>
+                            Integrations
+                        </a>
+                        <a href="{{ url_for('docs') }}" class="nav-link-mobile">
+                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                            Documentation
+                        </a>
+                    </div>
+                    
+                    <!-- Divider -->
+                    <div class="h-px bg-gray-200 dark:bg-gray-700 my-4"></div>
+                    
+                    <!-- Settings & Actions -->
+                    <div class="space-y-1">
+                        <button onclick="toggleTheme()" class="nav-link-mobile">
+                            <i data-lucide="sun" class="sun-icon w-5 h-5 hidden"></i>
+                            <i data-lucide="moon" class="moon-icon w-5 h-5"></i>
+                            Toggle Theme
+                        </button>
+                        <a href="{{ url_for('logout') }}" class="nav-link-mobile text-red-600 dark:text-red-400">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                            Sign Out
+                        </a>
+                    </div>
                 {% else %}
-                    <a href="{{ url_for('landing') }}" class="nav-link justify-start">
-                        <i data-lucide="home" class="w-4 h-4"></i>
-                        Home
-                    </a>
-                    <a href="{{ url_for('docs') }}" class="nav-link justify-start">
-                        <i data-lucide="book-open" class="w-4 h-4"></i>
-                        Docs
-                    </a>
-                    <div class="h-px bg-gray-200 dark:bg-gray-700 my-2"></div>
-                    <button onclick="toggleTheme()" class="nav-link justify-start">
-                        <i data-lucide="sun" class="sun-icon w-4 h-4 hidden"></i>
-                        <i data-lucide="moon" class="moon-icon w-4 h-4"></i>
+                    <!-- Public Navigation -->
+                    <div class="space-y-1">
+                        <a href="{{ url_for('landing') }}" class="nav-link-mobile">
+                            <i data-lucide="home" class="w-5 h-5"></i>
+                            Home
+                        </a>
+                        <a href="{{ url_for('docs') }}" class="nav-link-mobile">
+                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                            Documentation
+                        </a>
+                    </div>
+                    
+                    <!-- Divider -->
+                    <div class="h-px bg-gray-200 dark:bg-gray-700 my-4"></div>
+                    
+                    <!-- Theme Toggle -->
+                    <button onclick="toggleTheme()" class="nav-link-mobile mb-4">
+                        <i data-lucide="sun" class="sun-icon w-5 h-5 hidden"></i>
+                        <i data-lucide="moon" class="moon-icon w-5 h-5"></i>
                         Toggle Theme
                     </button>
-                    <div class="h-px bg-gray-200 dark:bg-gray-700 my-2"></div>
-                    <a href="{{ url_for('login') }}" class="btn btn-ghost justify-start w-full">
-                        <i data-lucide="log-in" class="w-4 h-4"></i>
-                        Sign In
-                    </a>
-                    <a href="{{ url_for('register') }}" class="btn btn-primary justify-start w-full">
-                        <i data-lucide="rocket" class="w-4 h-4"></i>
-                        Get Started Free
-                    </a>
+                    
+                    <!-- Auth Buttons -->
+                    <div class="space-y-2">
+                        <a href="{{ url_for('login') }}" class="btn btn-ghost w-full justify-start">
+                            <i data-lucide="log-in" class="w-5 h-5"></i>
+                            Sign In
+                        </a>
+                        <a href="{{ url_for('register') }}" class="btn btn-primary w-full justify-start">
+                            <i data-lucide="rocket" class="w-5 h-5"></i>
+                            Get Started Free
+                        </a>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -341,9 +394,64 @@
         // Mobile Menu Toggle
         window.toggleMobileMenu = function() {
             const menu = document.getElementById('mobileMenu');
+            const menuIcon = document.getElementById('menuIcon');
+            const closeIcon = document.getElementById('closeIcon');
+            
+            const isHidden = menu.classList.contains('hidden');
+            
             menu.classList.toggle('hidden');
+            
+            if (isHidden) {
+                menuIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+            } else {
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+            
             lucide.createIcons();
         };
+
+        // User Menu Toggle (Desktop)
+        window.toggleUserMenu = function() {
+            const userMenu = document.getElementById('userMenu');
+            userMenu.classList.toggle('hidden');
+        };
+
+        // Close menus when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            // Close user menu if clicking outside
+            if (userMenu && !event.target.closest('.relative') && !userMenu.classList.contains('hidden')) {
+                userMenu.classList.add('hidden');
+            }
+            
+            // Close mobile menu if clicking outside (except on mobile menu button)
+            if (mobileMenu && !event.target.closest('nav') && window.innerWidth >= 1024) {
+                mobileMenu.classList.add('hidden');
+                const menuIcon = document.getElementById('menuIcon');
+                const closeIcon = document.getElementById('closeIcon');
+                if (menuIcon && closeIcon) {
+                    menuIcon.classList.remove('hidden');
+                    closeIcon.classList.add('hidden');
+                }
+            }
+        });
+
+        // Close mobile menu on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                const mobileMenu = document.getElementById('mobileMenu');
+                const menuIcon = document.getElementById('menuIcon');
+                const closeIcon = document.getElementById('closeIcon');
+                
+                if (mobileMenu) mobileMenu.classList.add('hidden');
+                if (menuIcon) menuIcon.classList.remove('hidden');
+                if (closeIcon) closeIcon.classList.add('hidden');
+            }
+        });
 
         // Theme Toggle
         const currentTheme = localStorage.getItem('theme') || 'dark';
