@@ -1,0 +1,30 @@
+[DEBUG] 2026-03-02 00:21:08 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[WARNING] 2026-03-02 00:21:08 - integration - main_app.get_trello_client:251 - No Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:25:07 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[WARNING] 2026-03-02 00:25:07 - integration - main_app.get_trello_client:251 - No Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:25:07 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[WARNING] 2026-03-02 00:25:07 - integration - main_app.get_trello_client:251 - No Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:26:14 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[WARNING] 2026-03-02 00:26:14 - integration - main_app.get_trello_client:251 - No Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:27:33 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[WARNING] 2026-03-02 00:27:33 - integration - main_app.get_trello_client:251 - No Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:30:52 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[WARNING] 2026-03-02 00:30:52 - integration - main_app.get_trello_client:251 - No Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:31:03 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[WARNING] 2026-03-02 00:31:03 - integration - main_app.get_trello_client:251 - No Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:33:18 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[WARNING] 2026-03-02 00:33:18 - integration - main_app.get_trello_client:251 - No Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:33:28 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[WARNING] 2026-03-02 00:33:28 - integration - main_app.get_trello_client:251 - No Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:43:34 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[INFO] 2026-03-02 00:43:34 - integration - main_app.get_trello_client:248 - Trello credentials found for user: byte
+[DEBUG] 2026-03-02 00:43:47 - integration - main_app.get_trello_client:244 - Getting Trello client for user: byte
+[INFO] 2026-03-02 00:43:47 - integration - main_app.get_trello_client:248 - Trello credentials found for user: byte
+[DEBUG] 2026-03-02 11:23:26 - integration - main_app.get_trello_client:245 - Getting Trello client for user: adnan
+[WARNING] 2026-03-02 11:23:26 - integration - main_app.get_trello_client:252 - No Trello credentials found for user: adnan
+[DEBUG] 2026-03-02 11:23:40 - integration - main_app.get_trello_client:245 - Getting Trello client for user: adnan
+[WARNING] 2026-03-02 11:23:40 - integration - main_app.get_trello_client:252 - No Trello credentials found for user: adnan
+[DEBUG] 2026-03-02 11:24:14 - integration - main_app.get_trello_client:245 - Getting Trello client for user: adnan
+[WARNING] 2026-03-02 11:24:14 - integration - main_app.get_trello_client:252 - No Trello credentials found for user: adnan
+[DEBUG] 2026-03-02 11:26:28 - integration - main_app.get_trello_client:245 - Getting Trello client for user: adnan
+[WARNING] 2026-03-02 11:26:28 - integration - main_app.get_trello_client:252 - No Trello credentials found for user: adnan

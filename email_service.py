@@ -2,14 +2,25 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+import time
+
+# Import logging configuration
+from logger_config import email_logger, log_email_operation, log_error
+
+email_logger.info("Email service module loaded")
 
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD", "")
+
+email_logger.info(f"Email configuration: Sender configured: {bool(SENDER_EMAIL and SENDER_PASSWORD)}")
 
 def send_email(to_email, subject, html_body, text_body=None):
     """
     Send an email with HTML content
     """
+    email_logger.info(f"Preparing to send email to: {to_email}, Subject: {subject}")
+    start_time = time.time()
+    
     try:
         # Create message
         msg = MIMEMultipart('alternative')
@@ -17,26 +28,43 @@ def send_email(to_email, subject, html_body, text_body=None):
         msg['From'] = SENDER_EMAIL
         msg['To'] = to_email
         
+        email_logger.debug("Email message created with headers")
+        
         # Add text version if provided
         if text_body:
             part1 = MIMEText(text_body, 'plain')
             msg.attach(part1)
+            email_logger.debug("Text body attached")
         
         # Add HTML version
         part2 = MIMEText(html_body, 'html')
         msg.attach(part2)
+        email_logger.debug("HTML body attached")
         
         # Send email
+        email_logger.debug("Connecting to SMTP server...")
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            email_logger.debug("SMTP connection established")
             server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            email_logger.debug("SMTP authentication successful")
             server.send_message(msg)
+            
+        send_time = (time.time() - start_time) * 1000
+        email_logger.info(f"Email sent successfully to {to_email} in {send_time:.2f}ms")
+        log_email_operation(email_logger, "send", to_email, subject, success=True)
         
         return True, "Email sent successfully"
     except Exception as e:
+        send_time = (time.time() - start_time) * 1000
+        email_logger.error(f"Failed to send email to {to_email} after {send_time:.2f}ms: {str(e)}")
+        log_error(email_logger, e, {"recipient": to_email, "subject": subject})
+        log_email_operation(email_logger, "send", to_email, subject, success=False, error=str(e))
+        
         return False, f"Failed to send email: {e}"
 
 def send_welcome_email(user_email, username):
     """Send welcome email after successful account creation"""
+    email_logger.info(f"Sending welcome email to new user: {username} ({user_email})")
     subject = "Welcome to AI Meeting Agent! 🎉"
     
     html_body = f"""
@@ -111,6 +139,7 @@ def send_welcome_email(user_email, username):
 
 def send_integration_success_email(user_email, username, integration_name):
     """Send email after successful integration"""
+    email_logger.info(f"Sending integration success email for {integration_name} to: {username} ({user_email})")
     subject = f"{integration_name} Integration Successful! ✅"
     
     html_body = f"""
@@ -156,6 +185,8 @@ def send_integration_success_email(user_email, username, integration_name):
 
 def send_password_reset_email(user_email, username, otp_code):
     """Send password reset email with OTP"""
+    email_logger.info(f"Sending password reset email to: {username} ({user_email})")
+    email_logger.debug(f"OTP code generated: {otp_code}")
     subject = "Password Reset Code - AI Meeting Agent 🔐"
     
     html_body = f"""
@@ -216,6 +247,8 @@ def send_password_reset_email(user_email, username, otp_code):
 
 def send_email_verification(user_email, username, otp_code):
     """Send email verification OTP after account creation"""
+    email_logger.info(f"Sending email verification to new user: {username} ({user_email})")
+    email_logger.debug(f"Verification OTP generated: {otp_code}")
     subject = "Verify Your Email - AI Meeting Agent"
     
     html_body = f"""

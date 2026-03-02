@@ -5,6 +5,8 @@ from email.mime.text import MIMEText
 import requests
 from jira import JIRA  # Make sure this is imported
 from jira.exceptions import JIRAError  # Import specific Jira errors
+import time
+from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
@@ -17,7 +19,14 @@ from mongo_models import User, Team, TrelloCredentials, TrelloCard, JiraCredenti
 from email_service import send_welcome_email, send_integration_success_email, send_password_reset_email, send_email_verification
 from dotenv import load_dotenv
 
+# Import logging configuration
+from logger_config import (
+    app_logger, database_logger, integration_logger, security_logger, access_logger,
+    log_request, log_response, log_error, log_security_event, log_integration_operation
+)
+
 load_dotenv()
+app_logger.info("Starting AI Meeting Agent application initialization")
 
 # --- CONFIGURATION ---
 # Get environment variables with fallbacks
@@ -27,9 +36,19 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD", "")
 FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "mongodb-secret-key-v2")
-MONGO_URL = os.environ.get("MONGO_URL", "")
+# Support both MONGO_URI and MONGO_URL for backward compatibility
+MONGO_URL = os.environ.get("MONGO_URI") or os.environ.get("MONGO_URL", "")
 
 # Log configuration status (without exposing secrets)
+app_logger.info("="*60)
+app_logger.info("CONFIGURATION STATUS")
+app_logger.info("="*60)
+app_logger.info(f"TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
+app_logger.info(f"GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
+app_logger.info(f"MONGO_URL: {'✓ Set' if MONGO_URL else '✗ Missing'}")
+app_logger.info(f"EMAIL: {'✓ Set' if SENDER_EMAIL and SENDER_PASSWORD else '✗ Missing'}")
+app_logger.info("="*60)
+
 print(f"    - TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
 print(f"    - GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
 print(f"    - MONGO_URL: {'✓ Set' if MONGO_URL else '✗ Missing'}")
@@ -40,49 +59,85 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = FLASK_SECRET_KEY
     
+    app_logger.info("Creating Flask application instance")
+    
     # Session configuration for better compatibility with serverless
     app.config['SESSION_COOKIE_SECURE'] = False  # Set to True if using HTTPS in production
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
+    app_logger.info("Session configuration applied")
 
     # --- MongoDB Configuration ---
+    database_logger.info("="*60)
+    database_logger.info("MONGODB CONNECTION ATTEMPT")
+    database_logger.info("="*60)
+    
     print("\n" + "="*60)
     print("🗄️  MONGODB CONNECTION ATTEMPT")
     print("="*60)
     
+    mongodb_connected = False
+    
     if MONGO_URL:
         try:
-            
+            start_time = time.time()
             mongoengine.connect(host=MONGO_URL)
             
             # Test the connection
             from mongoengine.connection import get_db
             db = get_db()
+            connection_time = (time.time() - start_time) * 1000
+            
+            database_logger.info(f"Successfully connected to MongoDB in {connection_time:.2f}ms")
+            database_logger.info(f"Database name: {db.name}")
+            # Skip collection listing to avoid SSL timeout issues
+            database_logger.info("MongoDB connection established successfully")
+            
             print(f"[✓] Successfully connected to MongoDB")
             print(f"[✓] Database name: {db.name}")
-            print(f"[✓] Collections: {db.list_collection_names()}")
+            print(f"[✓] MongoDB connection established successfully")
+            
+            mongodb_connected = True
             
         except Exception as e:
+            database_logger.error(f"MongoDB connection failed: {type(e).__name__} - {str(e)}")
+            log_error(database_logger, e, {"connection_string": "REDACTED"})
+            
             print(f"[✗] MongoDB connection failed!")
             print(f"[✗] Error type: {type(e).__name__}")
             print(f"[✗] Error message: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            raise
+            print(f"[⚠️] App will continue in LIMITED MODE without database")
+            print(f"[⚠️] To fix: Update MONGO_URL in your .env file with a valid MongoDB connection string")
+            
+            # Don't raise - allow app to continue without MongoDB
+            database_logger.warning("Continuing without MongoDB - database features will be disabled")
     else:
         try:
+            start_time = time.time()
             mongoengine.connect('ai_meeting_agent')
+            connection_time = (time.time() - start_time) * 1000
+            
+            database_logger.info(f"Connected to local MongoDB in {connection_time:.2f}ms")
             print("[✓] Connected to local MongoDB")
+            mongodb_connected = True
         except Exception as e:
+            database_logger.error(f"Local MongoDB connection failed: {str(e)}")
+            log_error(database_logger, e)
             print(f"[✗] Local MongoDB connection failed: {e}")
-            raise
+            print(f"[⚠️] App will continue in LIMITED MODE without database")
+            database_logger.warning("Continuing without MongoDB - database features will be disabled")
+            
+    # Store MongoDB connection status in app config
+    app.config['MONGODB_CONNECTED'] = mongodb_connected
     
+    database_logger.info("="*60)
     print("="*60 + "\n")
 
     bcrypt.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'login'
+    app_logger.info("Flask extensions initialized (bcrypt, login_manager)")
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -95,17 +150,23 @@ def create_app():
                     obj_id = ObjectId(user_id)
                     user = User.objects(id=obj_id).first()
                     if user:
+                        security_logger.debug(f"User loaded successfully: {user.username} (ID: {user.id})")
                         print(f"[✓] User loaded: {user.username} (ID: {user.id})")
+                    else:
+                        security_logger.warning(f"User not found for ID: {user_id}")
                     return user
                 except Exception as e:
                     # If conversion fails, it's an invalid ObjectId
+                    security_logger.error(f"Failed to load user with ID {user_id}: {str(e)}")
                     print(f"[✗] Failed to load user: {e}")
                     return None
             else:
                 # For invalid ID formats (like old integer IDs), silently return None
                 # This handles the migration from SQLAlchemy to MongoDB
+                security_logger.debug(f"Invalid user ID format: {user_id}")
                 return None
         except Exception as e:
+            security_logger.error(f"Error loading user {user_id}: {str(e)}")
             print(f"[ERROR] Failed to load user {user_id}: {e}")
             return None
 
@@ -113,16 +174,28 @@ def create_app():
     model = None
     try:
         if GEMINI_API_KEY:
+            app_logger.info("Configuring Gemini AI model...")
             genai.configure(api_key=GEMINI_API_KEY)
-            model = genai.GenerativeModel('gemini-2.0-flash-exp')
+            model = genai.GenerativeModel('gemini-2.5-flash-lite')
+            app_logger.info("Gemini AI model configured successfully (gemini-2.5-flash-lite)")
         else:
+            app_logger.warning("Gemini API Key not provided, AI features disabled")
             model = None
     except Exception as e:
         model = None
+        app_logger.error(f"Failed to configure Gemini AI: {str(e)}")
+        log_error(app_logger, e)
         print(f"[WARN] Failed to configure Gemini AI: {e}")
 
     def analyze_transcript_with_ai(transcript_text):
-        if not model: return {"error": "AI model not configured."}
+        """Analyze meeting transcript using AI"""
+        app_logger.info("Starting AI transcript analysis")
+        start_time = time.time()
+        
+        if not model:
+            app_logger.error("AI model not configured")
+            return {"error": "AI model not configured."}
+        
         # --- PROMPT RESTORED ---
         prompt = f"""
         Analyze the following meeting transcript. Provide your analysis ONLY in a valid JSON object format. Do not include any text, markdown formatting, or explanations before or after the JSON object.
@@ -140,21 +213,48 @@ def create_app():
         JSON Analysis:
         """
         try:
-            response = model.generate_content(prompt);
+            app_logger.debug(f"Sending {len(transcript_text)} characters to AI model")
+            response = model.generate_content(prompt)
+            
+            analysis_time = (time.time() - start_time) * 1000
+            app_logger.info(f"AI analysis completed in {analysis_time:.2f}ms")
+            app_logger.debug(f"Raw AI response: {response.text[:200]}...")
+            
             print(f"Raw AI: {response.text}")
             json_text = response.text.strip().replace('```json', '').replace('```', '').strip()
-            if not json_text: return {"error": "AI empty response."}
-            return json.loads(json_text)
+            
+            if not json_text:
+                app_logger.error("AI returned empty response")
+                return {"error": "AI empty response."}
+            
+            result = json.loads(json_text)
+            app_logger.info(f"AI analysis successful: {len(result.get('action_items', []))} action items, {len(result.get('decisions', []))} decisions")
+            return result
+            
         except json.JSONDecodeError as e:
+            app_logger.error(f"AI JSON parse error: {str(e)}")
+            log_error(app_logger, e, {"raw_response": response.text[:500]})
             return {"error": f"AI JSON Parse Error: {e}. Raw: '{response.text}'"}
         except Exception as e:
+            app_logger.error(f"AI analysis error: {str(e)}")
+            log_error(app_logger, e)
             return {"error": f"AI Error: {e}"}
 
     def get_trello_client(user):
-        creds = TrelloCredentials.objects(user_id=str(user.id)).first()
-        if creds: 
-            return TrelloClient(api_key=TRELLO_API_KEY, api_secret=TRELLO_API_SECRET, token=creds.token)
-        return None
+        """Get Trello client for user"""
+        integration_logger.debug(f"Getting Trello client for user: {user.username}")
+        try:
+            creds = TrelloCredentials.objects(user_id=str(user.id)).first()
+            if creds:
+                integration_logger.info(f"Trello credentials found for user: {user.username}")
+                return TrelloClient(api_key=TRELLO_API_KEY, api_secret=TRELLO_API_SECRET, token=creds.token)
+            else:
+                integration_logger.warning(f"No Trello credentials found for user: {user.username}")
+                return None
+        except Exception as e:
+            integration_logger.error(f"Error getting Trello client for user {user.username}: {str(e)}")
+            log_error(integration_logger, e)
+            return None
 
     def send_summary_email(recipients, analysis):
         if not SENDER_EMAIL or not SENDER_PASSWORD: return "Email creds not configured."
@@ -252,33 +352,83 @@ def create_app():
 
         payload = {"blocks": blocks}
         try:
+            integration_logger.info(f"Sending Slack notification to team: {team.name}")
+            integration_logger.debug(f"Slack payload blocks: {len(blocks)} blocks")
+            
             response = requests.post(webhook_url, json=payload, timeout=10)
             response.raise_for_status()
+            
             if response.text == 'ok':
+                integration_logger.info("Slack notification sent successfully")
+                log_integration_operation(integration_logger, "Slack", "send_notification", success=True)
                 return True
             else:
+                integration_logger.warning(f"Slack response not 'ok': {response.text}")
+                log_integration_operation(integration_logger, "Slack", "send_notification", success=False, error=f"Response: {response.text}")
                 return False
         except requests.exceptions.RequestException as e:
+            integration_logger.error(f"Slack request failed: {str(e)}")
+            log_error(integration_logger, e)
+            log_integration_operation(integration_logger, "Slack", "send_notification", success=False, error=str(e))
             print(f"[ERROR] Slack request failed: {e}")
             return False
         except Exception as e:
+            integration_logger.error(f"Slack notification failed: {str(e)}")
+            log_error(integration_logger, e)
+            log_integration_operation(integration_logger, "Slack", "send_notification", success=False, error=str(e))
             print(f"[ERROR] Slack notification failed: {e}")
             return False
 
+    # --- REQUEST/RESPONSE LOGGING MIDDLEWARE ---
+    @app.before_request
+    def before_request_logging():
+        """Log all incoming requests"""
+        request.start_time = time.time()
+        log_request(access_logger, request, current_user if current_user.is_authenticated else None)
+    
+    @app.after_request
+    def after_request_logging(response):
+        """Log all outgoing responses"""
+        if hasattr(request, 'start_time'):
+            duration_ms = (time.time() - request.start_time) * 1000
+            log_response(access_logger, request, response, duration_ms)
+        return response
+    
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        """Log all unhandled exceptions"""
+        log_error(app_logger, e, {
+            "path": request.path,
+            "method": request.method,
+            "user": current_user.username if current_user.is_authenticated else "Anonymous"
+        })
+        # Re-raise to let Flask handle it
+        raise
+
     # --- JIRA HELPER FUNCTIONS (Unchanged) ---
     def get_jira_client(user):
-        creds = JiraCredentials.objects(user_id=str(user.id)).first()
-        if not creds: 
-            return None
+        """Get Jira client for user"""
+        integration_logger.debug(f"Getting Jira client for user: {user.username}")
         try:
+            creds = JiraCredentials.objects(user_id=str(user.id)).first()
+            if not creds:
+                integration_logger.warning(f"No Jira credentials found for user: {user.username}")
+                return None
+            
+            integration_logger.info(f"Connecting to Jira at {creds.jira_url}")
             jira_client = JIRA(server=creds.jira_url, basic_auth=(creds.email, creds.api_token))
             jira_client.server_info()
+            integration_logger.info(f"Jira connection successful for user: {user.username}")
             return jira_client
         except JIRAError as e:
-            flash(f"Jira Connection Error: {e.text}", "danger");
+            integration_logger.error(f"Jira connection error for {user.username}: {e.text}")
+            log_error(integration_logger, e)
+            flash(f"Jira Connection Error: {e.text}", "danger")
             return None
         except Exception as e:
-            flash(f"Jira Initialization Error: {e}", "danger");
+            integration_logger.error(f"Jira initialization error for {user.username}: {str(e)}")
+            log_error(integration_logger, e)
+            flash(f"Jira Initialization Error: {e}", "danger")
             return None
 
     def create_jira_issues(user, action_items, project_key, issue_type_name):
@@ -383,9 +533,20 @@ def create_app():
         except Exception as e:
             return jsonify({"error": f"Could not fetch issue types for {project_key}."}), 500
 
-    @app.route('/analyze', methods=['POST'])
+    @app.route('/analyze', methods=['GET', 'POST'])
     @login_required
     def analyze():
+        # Redirect GET requests to dashboard
+        if request.method == 'GET':
+            return redirect(url_for('dashboard'))
+        
+        # Check if this is an AJAX request - improved detection
+        is_ajax = (
+            request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 
+            'application/json' in request.headers.get('Accept', '') or
+            request.headers.get('Content-Type') == 'application/json' or
+            request.args.get('ajax') == '1'
+        )
         try:
             # Debug logging
             
@@ -393,6 +554,10 @@ def create_app():
             analysis_result, notification = None, None
             
             if not transcript_text or not transcript_text.strip():
+                if is_ajax:
+                    response = jsonify({'success': False, 'error': 'Please provide a meeting transcript to analyze.'})
+                    response.headers['Content-Type'] = 'application/json'
+                    return response
                 flash("Please provide a meeting transcript to analyze.", "error")
                 trello_client = get_trello_client(current_user)
                 boards = trello_client.list_boards() if trello_client else []
@@ -458,7 +623,18 @@ def create_app():
                             automation_messages.append(f"Jira: {jira_status}")
                     elif request.form.get('create_jira') == 'true':
                         automation_messages.append("Jira: Integration not connected.")
-                    # Notification logic
+                    
+                    # Return JSON for AJAX requests
+                    if is_ajax:
+                        response = jsonify({
+                            'success': True,
+                            'analysis': analysis_result,
+                            'automation_messages': automation_messages if automation_messages else None
+                        })
+                        response.headers['Content-Type'] = 'application/json'
+                        return response
+                    
+                    # Notification logic for non-AJAX
                     if automation_messages:
                         overall_type = "success"
                         for msg in automation_messages:
@@ -467,12 +643,20 @@ def create_app():
                                 break
                         flash(" | ".join(automation_messages), overall_type)
                 elif analysis_result and analysis_result.get('error'):
+                    if is_ajax:
+                        response = jsonify({'success': False, 'error': f"AI Analysis Error: {analysis_result['error']}"})
+                        response.headers['Content-Type'] = 'application/json'
+                        return response
                     flash(f"AI Analysis Error: {analysis_result['error']}", "error")
 
             trello_client = get_trello_client(current_user)
             boards = trello_client.list_boards() if trello_client else []
             
         except Exception as e:
+            if is_ajax:
+                response = jsonify({'success': False, 'error': f"An error occurred: {str(e)}"})
+                response.headers['Content-Type'] = 'application/json'
+                return response
             flash(f"An error occurred while processing your request: {str(e)}", "error")
             trello_client = get_trello_client(current_user)
             boards = trello_client.list_boards() if trello_client else []
@@ -526,8 +710,10 @@ def create_app():
         print("\n" + "="*60)
         print("📝 REGISTRATION REQUEST")
         print("="*60)
+        security_logger.info("Registration request received")
         
         if current_user.is_authenticated:
+            security_logger.info(f"Already authenticated user {current_user.username} trying to register")
             print("="*60 + "\n")
             return redirect(url_for('dashboard'))
         
@@ -540,20 +726,26 @@ def create_app():
                 username = data.get('username', '').strip()
                 email = data.get('email', '').strip()
                 password = data.get('password', '').strip()
+                confirm_password = data.get('confirm_password', '').strip()
+                terms_accepted = bool(data.get('terms', False))
             else:
                 username = request.form.get('username', '').strip()
                 email = request.form.get('email', '').strip()
                 password = request.form.get('password', '').strip()
+                confirm_password = request.form.get('confirm_password', '').strip()
+                terms_accepted = request.form.get('terms') == 'on'
             
             try:
                 print(f"    - Username: {username}")
                 print(f"    - Email: {email}")
                 print(f"    - Password length: {len(password) if password else 0}")
+                security_logger.info(f"Registration attempt for username: {username}, email: {email}")
                 
                 # Validation
                 if not username or not email or not password:
                     message = 'All fields are required.'
                     print(f"[✗] Validation failed: {message}")
+                    security_logger.warning(f"Registration failed - validation: {message}")
                     if is_ajax:
                         return jsonify({'success': False, 'message': message})
                     flash(message, 'error')
@@ -573,6 +765,27 @@ def create_app():
                     message = 'Password must be at least 6 characters long.'
                     if is_ajax:
                         return jsonify({'success': False, 'message': message})
+                    flash(message, 'error')
+                    return redirect(url_for('register'))
+
+                if not confirm_password:
+                    message = 'Please confirm your password.'
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': message, 'field': 'confirm_password'})
+                    flash(message, 'error')
+                    return redirect(url_for('register'))
+
+                if password != confirm_password:
+                    message = 'Passwords do not match.'
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': message, 'field': 'confirm_password'})
+                    flash(message, 'error')
+                    return redirect(url_for('register'))
+
+                if not terms_accepted:
+                    message = 'You must agree to the Terms of Service and Privacy Policy.'
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': message, 'field': 'terms'})
                     flash(message, 'error')
                     return redirect(url_for('register'))
                 
@@ -667,20 +880,24 @@ def create_app():
     def resend_verification(email):
         user = User.objects(email=email).first()
         if not user:
-            return jsonify({'success': False, 'message': 'User not found'})
+            flash('User not found.', 'error')
+            return redirect(url_for('register'))
         
         if user.is_verified:
-            return jsonify({'success': False, 'message': 'Account already verified'})
+            flash('Account already verified! Please log in.', 'success')
+            return redirect(url_for('login'))
         
         try:
             otp_code = user.generate_verification_token()
             success, email_result = send_email_verification(email, user.username, otp_code)
             if success:
-                return jsonify({'success': True, 'message': 'Verification code sent successfully'})
+                flash('Verification code sent successfully! Check your email.', 'success')
             else:
-                return jsonify({'success': False, 'message': 'Failed to send verification email'})
+                flash('Failed to send verification email. Please try again.', 'error')
         except Exception as e:
-            return jsonify({'success': False, 'message': 'An error occurred'})
+            flash('An error occurred. Please try again.', 'error')
+        
+        return redirect(url_for('verify_email', email=email))
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -696,6 +913,7 @@ def create_app():
             try:
                 email = request.form.get('email')
                 password = request.form.get('password')
+                remember = request.form.get('remember') == 'on'
                 
                 
                 if not email or not password:
@@ -719,7 +937,7 @@ def create_app():
                             return redirect(url_for('verify_email', email=email))
                         
                         print(f"[✓] Logging in user: {user.username}")
-                        login_user(user, remember=True, duration=None)
+                        login_user(user, remember=remember, duration=None)
                         next_page = request.args.get('next')
                         flash(f'Welcome back, {user.username}!', 'success')
                         print(f"[✓] Login successful! Redirecting to: {next_page or 'dashboard'}")
@@ -769,9 +987,19 @@ def create_app():
         
         return render_template('forgot_password.html')
 
+    @app.route('/verify_reset_code', methods=['GET', 'POST'])
     @app.route('/verify_reset_code/<email>', methods=['GET', 'POST'])
-    def verify_reset_code(email):
+    def verify_reset_code(email=None):
+        # Get email from URL parameter or form data
+        if email is None:
+            email = request.form.get('email') or request.args.get('email')
+        
         if request.method == 'POST':
+            # If no email provided, show error
+            if not email:
+                flash('Email is required.', 'error')
+                return render_template('verify_reset_code.html', email=email, step='verify')
+            
             # Check if this is step 1 (code verification) or step 2 (password change)
             if 'verify_code' in request.form:
                 # Step 1: Verify the code only
@@ -815,12 +1043,36 @@ def create_app():
                 else:
                     flash('Session expired. Please request a new verification code.', 'error')
                     return redirect(url_for('forgot_password'))
+            
+            else:
+                # Direct form submission with code and password (simpler flow)
+                code = request.form.get('code')
+                new_password = request.form.get('new_password')
+                confirm_password = request.form.get('confirm_password')
+                
+                if not code or not new_password or not confirm_password:
+                    flash('All fields are required.', 'error')
+                    return render_template('verify_reset_code.html', email=email, step='verify')
+                
+                if new_password != confirm_password:
+                    flash('Passwords do not match.', 'error')
+                    return render_template('verify_reset_code.html', email=email, step='verify')
+                
+                user = User.objects(email=email).first()
+                if user and user.verify_reset_token(code):
+                    user.password = new_password
+                    user.clear_reset_token()
+                    flash('Password updated successfully! Please log in with your new password.', 'success')
+                    return redirect(url_for('login'))
+                else:
+                    flash('Invalid or expired verification code.', 'error')
+                    return render_template('verify_reset_code.html', email=email, step='verify')
         
         # Default: Show code verification form
         return render_template('verify_reset_code.html', email=email, step='verify')
 
     # --- ADD THIS MISSING ROUTE ---
-    @app.route('/team')
+    @app.route('/team', methods=['GET', 'POST'])
     @login_required
     def team():
         team_data = None
@@ -940,7 +1192,7 @@ def create_app():
             flash(f'Trello failed: {e}', 'danger')
             return redirect(url_for('trello_connect'))
 
-    @app.route('/trello/disconnect')
+    @app.route('/trello/disconnect', methods=['GET', 'POST'])
     @login_required
     def trello_disconnect():
         # ... (unchanged) ...
@@ -977,7 +1229,7 @@ def create_app():
             flash('Team not found.', 'danger')
         return redirect(url_for('integrations'))
 
-    @app.route('/slack/disconnect')
+    @app.route('/slack/disconnect', methods=['GET', 'POST'])
     @login_required
     def slack_disconnect():
         # ... (unchanged) ...
@@ -1026,7 +1278,7 @@ def create_app():
             flash(f'Jira save failed: {e}', 'danger')
         return redirect(url_for('integrations'))
 
-    @app.route('/jira/disconnect')
+    @app.route('/jira/disconnect', methods=['GET', 'POST'])
     @login_required
     def jira_disconnect():
         # ... (unchanged) ...

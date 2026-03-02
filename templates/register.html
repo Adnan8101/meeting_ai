@@ -1,349 +1,247 @@
 {% extends "base.html" %}
+
 {% block title %}Sign Up - AI Meeting Agent{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center min-h-[calc(100vh-16rem)] fade-in">
-    <div class="w-full max-w-md">
-        <!-- Sign Up Card with Glassmorphism -->
-        <div class="glass-card rounded-3xl p-10 shadow-2xl">
-            
-            <!-- Logo/Icon -->
-            <div class="flex justify-center mb-6">
-                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-lg">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                    </svg>
-                </div>
+<div class="min-h-screen flex items-center justify-center section-padding">
+    <div class="w-full max-w-md animate-fade-in">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-apple-blue/10 mb-4">
+                <i data-lucide="user-plus" class="w-8 h-8 text-apple-blue"></i>
             </div>
+            <h1 class="heading-1 mb-2">Create Account</h1>
+            <p class="body-text text-gray-600 dark:text-gray-400">Start analyzing meetings with AI</p>
+            <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">All fields are required.</p>
+        </div>
 
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-white mb-2">
-                    Create Account
-                </h2>
-                <p class="text-gray-400">Join thousands of teams using AI Meeting Agent</p>
-            </div>
+        <div class="card">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'error' if category == 'danger' else category }} mb-6">
+                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-            <!-- Registration Form -->
-            <form id="registrationForm" method="POST" action="" class="space-y-5">
-                
-                <!-- Username Field -->
-                <div class="space-y-2">
-                    <label for="username" class="block text-sm font-semibold text-gray-300">Username</label>
+            <form method="POST" action="{{ url_for('register') }}" class="space-y-6" id="registerForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
                     <div class="relative">
-                        <input type="text" 
-                               name="username" 
-                               id="username" 
-                               required
-                               minlength="3"
-                               maxlength="20"
-                               class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 pr-10 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
-                               placeholder="Choose a username"
-                               autocomplete="username" autocomplete="username">
-                        <div id="usernameStatus" class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                            <!-- Status icons will be inserted here -->
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            class="input pr-10" 
+                            placeholder="john_doe"
+                            minlength="3"
+                            maxlength="20"
+                            pattern="[A-Za-z0-9_]+"
+                            required
+                            autofocus
+                        >
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                            <i data-lucide="loader" class="w-5 h-5 text-gray-400 animate-spin hidden" id="usernameLoading"></i>
+                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 hidden" id="usernameAvailable"></i>
+                            <i data-lucide="x-circle" class="w-5 h-5 text-red-500 hidden" id="usernameTaken"></i>
                         </div>
                     </div>
-                    <div id="usernameMessage" class="text-xs mt-1 min-h-[1rem]">
-                        <!-- Username availability message will appear here -->
-                    </div>
-                </div>
-                
-                <!-- Email Field -->
-                <div class="space-y-2">
-                    <label for="email" class="block text-sm font-semibold text-gray-300">Email Address</label>
-                    <input type="email" 
-                           name="email" 
-                           id="email" 
-                           required
-                           class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
-                           placeholder="you@example.com"
-                           autocomplete="email" autocomplete="email">
+                    <p id="usernameHelp" class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        Use 3-20 characters (letters, numbers, underscore)
+                    </p>
                 </div>
 
-                <!-- Password Field -->
-                <div class="space-y-2">
-                    <label for="password" class="block text-sm font-semibold text-gray-300">Password</label>
-                    <div class="relative">
-                        <input type="password" 
-                               name="password" 
-                               id="password" 
-                               required
-                               minlength="6"
-                               class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300"
-                               placeholder="Create a strong password"
-                               autocomplete="new-password" autocomplete="current-password">
-                        <button type="button" 
-                                id="togglePassword"
-                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200">
-                            <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Must be at least 6 characters</p>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="input" 
+                        placeholder="you@example.com"
+                        required
+                    >
                 </div>
-                
-                <!-- Submit Button -->
-                <button type="submit" 
-                        id="submitBtn"
-                        class="w-full btn-primary text-white font-semibold py-3.5 px-6 rounded-xl text-base relative z-10 mt-6 flex items-center justify-center">
-                    <span id="submitText">Create Account</span>
-                    <div id="submitSpinner" class="hidden ml-2">
-                        <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="input" 
+                        placeholder="Create a strong password"
+                        minlength="6"
+                        required
+                    >
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        Minimum 6 characters
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <input 
+                        type="password" 
+                        id="confirm_password" 
+                        name="confirm_password" 
+                        class="input" 
+                        placeholder="Confirm your password"
+                        required
+                    >
+                </div>
+
+                <div class="flex items-start gap-2">
+                    <input type="checkbox" id="terms" name="terms" class="w-4 h-4 mt-1 rounded border-gray-300 text-apple-blue focus:ring-apple-blue" required>
+                    <label for="terms" class="text-sm text-gray-600 dark:text-gray-400">
+                        I agree to the <a href="#" class="text-apple-blue hover:text-apple-blue-dark">Terms of Service</a> and <a href="#" class="text-apple-blue hover:text-apple-blue-dark">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    Create Account
                 </button>
             </form>
-
-            <!-- Terms -->
-            <p class="text-center text-xs text-gray-500 mt-6">
-                By creating an account, you agree to our Terms of Service and Privacy Policy
-            </p>
-
-            <!-- Divider -->
-            <div class="relative my-8">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-white/10"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-4 bg-transparent text-gray-500">Already have an account?</span>
-                </div>
-            </div>
-
-            <!-- Login Link -->
-            <div class="text-center">
-                <a href="{{ url_for('login') }}" 
-                   class="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-300">
-                    Sign in instead →
-                </a>
-            </div>
         </div>
-    </div>
-</div>
 
-<!-- Toast Notification -->
-<div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300">
-    <div class="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg">
-        <div class="flex items-center gap-3">
-            <svg id="toastIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span id="toastMessage">Account created successfully!</span>
-        </div>
+        <p class="text-center mt-6 body-text text-gray-600 dark:text-gray-400">
+            Already have an account? 
+            <a href="{{ url_for('login') }}" class="text-apple-blue hover:text-apple-blue-dark transition-colors font-medium">
+                Sign in
+            </a>
+        </p>
     </div>
 </div>
 
 <script>
-let usernameCheckTimeout;
-let usernameAvailable = false;
+let usernameTimeout;
+const usernameInput = document.getElementById('username');
+const usernameHelp = document.getElementById('usernameHelp');
+const usernameLoading = document.getElementById('usernameLoading');
+const usernameAvailable = document.getElementById('usernameAvailable');
+const usernameTaken = document.getElementById('usernameTaken');
+const submitBtn = document.querySelector('button[type="submit"]');
+let isUsernameValid = false;
 
-// Toast notification function
-function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastMessage = document.getElementById('toastMessage');
+function showStatus(status) {
+    // Hide all icons first
+    usernameLoading.classList.add('hidden');
+    usernameAvailable.classList.add('hidden');
+    usernameTaken.classList.add('hidden');
     
-    toastMessage.textContent = message;
-    
-    // Update toast style based on type
-    if (type === 'success') {
-        toast.querySelector('div').className = 'bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg';
-        toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
-    } else if (type === 'error') {
-        toast.querySelector('div').className = 'bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-3 rounded-xl shadow-lg';
-        toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
-    } else if (type === 'warning') {
-        toast.querySelector('div').className = 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-xl shadow-lg';
-        toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>';
+    // Show the appropriate icon
+    if (status === 'loading') {
+        usernameLoading.classList.remove('hidden');
+    } else if (status === 'available') {
+        usernameAvailable.classList.remove('hidden');
+    } else if (status === 'taken') {
+        usernameTaken.classList.remove('hidden');
     }
     
-    // Show toast
-    toast.classList.remove('translate-x-full');
-    
-    // Hide after 5 seconds
-    setTimeout(() => {
-        toast.classList.add('translate-x-full');
-    }, 5000);
+    // Re-render lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
-// Real-time username availability check
-document.getElementById('username').addEventListener('input', function() {
-    const username = this.value.trim();
-    const statusDiv = document.getElementById('usernameStatus');
-    const messageDiv = document.getElementById('usernameMessage');
+function checkUsername() {
+    const username = usernameInput.value.trim();
     
-    // Clear previous timeout
-    clearTimeout(usernameCheckTimeout);
+    // Reset
+    usernameInput.classList.remove('border-green-500', 'border-red-500');
     
     if (username.length === 0) {
-        statusDiv.innerHTML = '';
-        messageDiv.innerHTML = '';
-        usernameAvailable = false;
+        showStatus('none');
+        usernameHelp.textContent = 'Use 3-20 characters (letters, numbers, underscore)';
+        usernameHelp.className = 'text-xs text-gray-500 dark:text-gray-500 mt-1';
+        isUsernameValid = false;
         return;
     }
     
     if (username.length < 3) {
-        statusDiv.innerHTML = '<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
-        messageDiv.innerHTML = '<span class="text-red-400">Username must be at least 3 characters</span>';
-        usernameAvailable = false;
+        showStatus('none');
+        usernameHelp.textContent = 'Username must be at least 3 characters';
+        usernameHelp.className = 'text-xs text-red-500 mt-1';
+        isUsernameValid = false;
         return;
     }
     
-    // Show loading indicator
-    statusDiv.innerHTML = '<svg class="animate-spin w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-    messageDiv.innerHTML = '<span class="text-blue-400">Checking availability...</span>';
-    
-    // Debounce the API call
-    usernameCheckTimeout = setTimeout(() => {
-        fetch('/check_username', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                username: username
-            }),
-            credentials: 'same-origin'
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.available) {
-                statusDiv.innerHTML = '<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
-                messageDiv.innerHTML = '<span class="text-green-400">' + data.message + '</span>';
-                usernameAvailable = true;
-            } else {
-                statusDiv.innerHTML = '<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
-                messageDiv.innerHTML = '<span class="text-red-400">' + data.message + '</span>';
-                usernameAvailable = false;
-            }
-        })
-        .catch(error => {
-            console.error('%c⚠️ Username Check Failed', 'background: #f59e0b; color: white; padding: 3px 8px; border-radius: 3px;');
-            console.error('Error details:', error);
-            console.error('Error message:', error.message);
-            console.error('Stack trace:', error.stack);
-            
-            statusDiv.innerHTML = '<svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
-            messageDiv.innerHTML = '<span class="text-yellow-400">Could not verify username. You can still proceed.</span>';
-            usernameAvailable = true; // Allow submission on error
-        });
-    }, 500); // 500ms delay
-});
-
-// Enhanced form submission with AJAX
-document.getElementById('registrationForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const submitBtn = document.getElementById('submitBtn');
-    const submitText = document.getElementById('submitText');
-    const submitSpinner = document.getElementById('submitSpinner');
-    
-    // Get form data
-    const username = document.getElementById('username').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    
-    // Basic validation
-    if (!username || !email || !password) {
-        showToast('All fields are required', 'error');
+    if (username.length > 20) {
+        showStatus('none');
+        usernameHelp.textContent = 'Username must be less than 20 characters';
+        usernameHelp.className = 'text-xs text-red-500 mt-1';
+        isUsernameValid = false;
         return;
     }
     
-    if (!usernameAvailable) {
-        showToast('Please choose a different username', 'error');
-        document.getElementById('username').focus();
+    if (!/^[A-Za-z0-9_]+$/.test(username)) {
+        showStatus('none');
+        usernameHelp.textContent = 'Only letters, numbers, and underscore allowed';
+        usernameHelp.className = 'text-xs text-red-500 mt-1';
+        isUsernameValid = false;
         return;
     }
     
-    if (password.length < 6) {
-        showToast('Password must be at least 6 characters long', 'error');
-        return;
-    }
+    // Check availability
+    showStatus('loading');
     
-    // Show loading state
-    submitBtn.disabled = true;
-    submitText.textContent = 'Creating Account...';
-    submitSpinner.classList.remove('hidden');
-    
-    // Submit via AJAX
-    fetch('/register', {
+    fetch('{{ url_for("check_username") }}', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            username: username,
-            email: email,
-            password: password
-        })
+        body: JSON.stringify({ username: username })
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            showToast(data.message, 'success');
-            // Redirect after showing toast
-            setTimeout(() => {
-                window.location.href = data.redirect;
-            }, 2000);
+        if (data.available) {
+            showStatus('available');
+            usernameInput.classList.add('border-green-500');
+            usernameHelp.textContent = '✓ ' + data.message;
+            usernameHelp.className = 'text-xs text-green-600 dark:text-green-400 mt-1';
+            isUsernameValid = true;
         } else {
-            showToast(data.message, 'error');
-            
-            // Highlight problematic field if specified
-            if (data.field) {
-                document.getElementById(data.field).focus();
-                document.getElementById(data.field).classList.add('border-red-500');
-                setTimeout(() => {
-                    document.getElementById(data.field).classList.remove('border-red-500');
-                }, 3000);
-            }
+            showStatus('taken');
+            usernameInput.classList.add('border-red-500');
+            usernameHelp.textContent = '✗ ' + data.message;
+            usernameHelp.className = 'text-xs text-red-500 mt-1';
+            isUsernameValid = false;
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showToast('An unexpected error occurred. Please try again.', 'error');
-    })
-    .finally(() => {
-        // Reset button state
-        submitBtn.disabled = false;
-        submitText.textContent = 'Create Account';
-        submitSpinner.classList.add('hidden');
+        console.error('Error checking username:', error);
+        showStatus('none');
+        usernameHelp.textContent = 'Error checking availability. Please try again.';
+        usernameHelp.className = 'text-xs text-red-500 mt-1';
+        isUsernameValid = false;
     });
+}
+
+usernameInput.addEventListener('input', function() {
+    clearTimeout(usernameTimeout);
+    usernameTimeout = setTimeout(checkUsername, 500);
 });
 
-// Password toggle functionality
-document.getElementById('togglePassword').addEventListener('click', function() {
-    const passwordField = document.getElementById('password');
-    const toggleIcon = this;
+// Form validation
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const terms = document.getElementById('terms').checked;
     
-    if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        toggleIcon.innerHTML = `
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464m12.99 5.54a3 3 0 00-4.242-4.242m0 0L9.88 9.88"></path>
-            </svg>
-        `;
-    } else {
-        passwordField.type = 'password';
-        toggleIcon.innerHTML = `
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.275 4.057-5.065 7-9.543 7-4.477 0-8.268-2.943-9.542-7z"></path>
-            </svg>
-        `;
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+        return false;
+    }
+    
+    if (!terms) {
+        e.preventDefault();
+        alert('Please agree to the Terms of Service and Privacy Policy.');
+        return false;
     }
 });
-
-// Auto-focus username field
-document.getElementById('username').focus();
 </script>
 {% endblock %}

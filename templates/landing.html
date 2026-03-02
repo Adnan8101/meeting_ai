@@ -1,583 +1,191 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth dark">
-<head>
-    <!-- Performance Optimizations -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
-    <link rel="dns-prefetch" href="https://unpkg.com">
-    <style>
-        /* Critical CSS for immediate render */
-        * { box-sizing: border-box; }
-        body { margin: 0; opacity: 0; transition: opacity 0.3s; }
-        body.ready { opacity: 1; }
-        img { max-width: 100%; height: auto; }
-        .fade-in { animation: fadeIn 0.4s ease-out both; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-    <script>
-        // Mark body as ready when DOM loads
-        document.addEventListener('DOMContentLoaded', () => document.body.classList.add('ready'));
-        // Performance monitoring
-        if ('performance' in window) {
-            window.addEventListener('load', () => {
-                const perfData = performance.timing;
-                const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-                console.log('⚡ Page Load Time:', pageLoadTime + 'ms');
-            });
-        }
-    </script>
+{% extends "base.html" %}
 
-    <style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}img,iframe,video{max-width:100%;height:auto;}.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite;}@keyframes loading{0%{background-position:200% 0;}100%{background-position:-200% 0;}}</style>
+{% block title %}AI Meeting Agent - Transform Your Meetings{% endblock %}
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Meeting Agent - Transform Your Meetings with AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');*{font-family:-apple-system,BlinkMacSystemFont,'Inter','SF Pro Display',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}body{background:#000000;background-attachment:fixed;overflow-x:hidden;color:#f5f5f7;}body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 20% 10%,rgba(10,132,255,0.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(10,132,255,0.05) 0%,transparent 50%);pointer-events:none;z-index:0;}.gradient-text{background:linear-gradient(135deg,#0a84ff 0%,#0071e3 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}.glass-effect{background:rgba(28,28,30,0.6);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.4);}.glow-card{transition:all 0.3s ease;background:rgba(28,28,30,0.6);backdrop-filter:blur(40px);border:1px solid rgba(255,255,255,0.06);}.glow-card:hover{transform:translateY(-5px);background:rgba(28,28,30,0.7);border-color:rgba(10,132,255,0.3);box-shadow:0 20px 60px rgba(10,132,255,0.2);}.hero-gradient{background:radial-gradient(circle at 50% 50%,rgba(10,132,255,0.1) 0%,transparent 50%);}.feature-icon{background:#0a84ff;transition:all 0.3s ease;}.glow-card:hover .feature-icon{transform:scale(1.1);box-shadow:0 10px 30px rgba(10,132,255,0.4);}@keyframes float{0%,100%{transform:translateY(0px);}50%{transform:translateY(-20px);}}.floating{animation:float 6s ease-in-out infinite;}.nav-link{position:relative;transition:color 0.3s ease;}.nav-link::after{content:'';position:absolute;width:0;height:2px;bottom:-5px;left:50%;background:linear-gradient(90deg,#3b82f6,#8b5cf6);transition:all 0.3s ease;transform:translateX(-50%);}.nav-link:hover::after{width:100%;}</style>
-
-    <style>@font-face{font-display:swap;}</style>
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Resource Preloading -->
-    <link rel="preload" as="style" href="https://cdn.tailwindcss.com">
-    <link rel="prefetch" href="https://unpkg.com/lucide@latest">
-
-    <style>.animate{will-change:transform,opacity;}.animate-once{animation-fill-mode:forwards;will-change:auto;}@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}}</style>
-</head>
-<body class="text-white">
-    
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 glass-effect">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
-                <div class="flex items-center space-x-3">
-                    <i data-lucide="zap" class="w-8 h-8 text-blue-400"></i>
-                    <span class="text-2xl font-bold gradient-text">AI Meeting Agent</span>
-                </div>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#features" class="nav-link text-gray-300 hover:text-white">Features</a>
-                    <a href="#how-it-works" class="nav-link text-gray-300 hover:text-white">How It Works</a>
-                    <a href="{{ url_for('docs') }}" class="nav-link text-gray-300 hover:text-white">Documentation</a>
-                    <a href="{{ url_for('login') }}" class="px-6 py-2.5 text-white border border-white/20 rounded-xl hover:bg-white/10 transition-all">
-                        Login
-                    </a>
-                    <a href="{{ url_for('register') }}" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all">
-                        Sign Up
-                    </a>
-                </div>
-                
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
-                    </button>
-                </div>
-            </div>
+{% block content %}
+<!-- Hero Section -->
+<section class="section-padding text-center animate-fade-in">
+    <div class="container-custom">
+        <h1 class="heading-1 mb-6">
+            Transform Your<br/>
+            <span class="text-apple-blue">Meetings into Action</span>
+        </h1>
+        
+        <p class="body-text text-xl mb-12 max-w-3xl mx-auto">
+            AI-powered meeting analysis that automatically creates tasks, syncs with Trello & Jira, and keeps your team aligned.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <a href="{{ url_for('register') }}" class="btn btn-primary">
+                <i data-lucide="rocket" class="w-5 h-5"></i>
+                Get Started Free
+            </a>
+            <a href="#features" class="btn btn-ghost">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+                Explore Features
+            </a>
         </div>
         
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="hidden md:hidden glass-effect">
-            <div class="px-4 pt-4 pb-6 space-y-3">
-                <a href="#features" class="block px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg">Features</a>
-                <a href="#how-it-works" class="block px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg">How It Works</a>
-                <a href="{{ url_for('docs') }}" class="block px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg">Documentation</a>
-                <a href="{{ url_for('login') }}" class="block px-4 py-2 text-center border border-white/20 rounded-lg">Login</a>
-                <a href="{{ url_for('register') }}" class="block px-4 py-2 text-center bg-blue-600 hover:bg-blue-700 rounded-lg">Sign Up</a>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div class="card">
+                <h3 class="heading-3 text-apple-blue mb-2">AI-Powered</h3>
+                <p class="body-text text-sm">Intelligent Analysis</p>
+            </div>
+            <div class="card">
+                <h3 class="heading-3 text-apple-blue mb-2">2+ Integrations</h3>
+                <p class="body-text text-sm">Trello & Jira</p>
+            </div>
+            <div class="card">
+                <h3 class="heading-3 text-apple-blue mb-2">Instant</h3>
+                <p class="body-text text-sm">Task Creation</p>
             </div>
         </div>
-    </nav>
-    
-    <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center pt-20 hero-gradient">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="section-padding bg-gray-50 dark:bg-dark-bg-secondary">
+    <div class="container-custom">
+        <div class="text-center mb-16">
+            <h2 class="heading-2 mb-4">
+                Powerful <span class="text-apple-blue">Features</span>
+            </h2>
+            <p class="body-text max-w-2xl mx-auto">
+                Everything you need to transform meeting discussions into actionable tasks
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="card hover-lift">
+                <div class="w-12 h-12 bg-apple-blue rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="brain" class="w-6 h-6 text-white"></i>
+                </div>
+                <h3 class="heading-3 text-lg mb-3">AI-Powered Analysis</h3>
+                <p class="body-text text-sm">
+                    Advanced LLM analyzes your meeting transcripts and automatically identifies action items.
+                </p>
+            </div>
+            
+            <div class="card hover-lift">
+                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="trello" class="w-6 h-6 text-white"></i>
+                </div>
+                <h3 class="heading-3 text-lg mb-3">Trello Integration</h3>
+                <p class="body-text text-sm">
+                    Seamlessly create cards, lists, and boards on Trello directly from meetings.
+                </p>
+            </div>
+            
+            <div class="card hover-lift">
+                <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="check-square" class="w-6 h-6 text-white"></i>
+                </div>
+                <h3 class="heading-3 text-lg mb-3">Jira Integration</h3>
+                <p class="body-text text-sm">
+                    Create issues, epics, and stories in Jira automatically from meeting outcomes.
+                </p>
+            </div>
+            
+            <div class="card hover-lift">
+                <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="users" class="w-6 h-6 text-white"></i>
+                </div>
+                <h3 class="heading-3 text-lg mb-3">Team Collaboration</h3>
+                <p class="body-text text-sm">
+                    Create teams, assign tasks, and collaborate seamlessly after every meeting.
+                </p>
+            </div>
+            
+            <div class="card hover-lift">
+                <div class="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="mail" class="w-6 h-6 text-white"></i>
+                </div>
+                <h3 class="heading-3 text-lg mb-3">Email Notifications</h3>
+                <p class="body-text text-sm">
+                    Get instant notifications for activities, integrations, and updates.
+                </p>
+            </div>
+            
+            <div class="card hover-lift">
+                <div class="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mb-4">
+                    <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+                </div>
+                <h3 class="heading-3 text-lg mb-3">Secure & Private</h3>
+                <p class="body-text text-sm">
+                    Enterprise-grade security with MongoDB encryption and authentication.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="section-padding">
+    <div class="container-custom">
+        <div class="text-center mb-16">
+            <h2 class="heading-2 mb-4">
+                How It <span class="text-apple-blue">Works</span>
+            </h2>
+            <p class="body-text max-w-2xl mx-auto">
+                Get started in minutes and transform your workflow
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div class="text-center">
-                <!-- Main Heading -->
-                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                    Transform Your<br/>
-                    <span class="gradient-text">Meetings into Action</span>
-                </h1>
-                
-                <p class="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto">
-                    AI-powered meeting analysis that automatically creates tasks, syncs with Trello & Jira, and keeps your team aligned.
-                </p>
-                
-                <!-- CTA Buttons -->
-                <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-16">
-                    <a href="{{ url_for('register') }}" class="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-xl transition-all">
-                        Get Started Free
-                    </a>
-                    <a href="#features" class="w-full sm:w-auto px-8 py-4 glass-effect text-white text-lg font-semibold rounded-xl hover:bg-white/10 transition-all">
-                        Explore Features
-                    </a>
+                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">
+                    1
                 </div>
-                
-                <!-- Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                    <div class="glass-effect rounded-2xl p-6">
-                        <div class="text-4xl font-bold gradient-text mb-2">AI-Powered</div>
-                        <div class="text-gray-400">Intelligent Analysis</div>
-                    </div>
-                    <div class="glass-effect rounded-2xl p-6">
-                        <div class="text-4xl font-bold gradient-text mb-2">2+ Integrations</div>
-                        <div class="text-gray-400">Trello & Jira</div>
-                    </div>
-                    <div class="glass-effect rounded-2xl p-6">
-                        <div class="text-4xl font-bold gradient-text mb-2">Instant</div>
-                        <div class="text-gray-400">Task Creation</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Floating Elements -->
-        <div class="absolute top-40 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-3xl floating"></div>
-        <div class="absolute bottom-40 right-10 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl floating" style="animation-delay: 2s;"></div>
-    </section>
-    
-    <!-- Features Section -->
-    <section id="features" class="py-20 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">
-                    Powerful <span class="gradient-text">Features</span>
-                </h2>
-                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
-                    Everything you need to transform meeting discussions into actionable tasks
-                </p>
+                <h3 class="heading-3 text-base mb-2">Sign Up</h3>
+                <p class="body-text text-sm">Create account and verify email</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="glow-card glass-effect rounded-2xl p-8">
-                    <div class="feature-icon w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-3">AI-Powered Analysis</h3>
-                    <p class="text-gray-400">
-                        Advanced LLM analyzes your meeting transcripts and automatically identifies action items, tasks, and priorities.
-                    </p>
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">
+                    2
                 </div>
-                
-                <!-- Feature 2 -->
-                <div class="glow-card glass-effect rounded-2xl p-8">
-                    <div class="feature-icon w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-3">Trello Integration</h3>
-                    <p class="text-gray-400">
-                        Seamlessly create cards, lists, and boards on Trello. Sync your meeting outcomes directly to your project boards.
-                    </p>
-                </div>
-                
-                <!-- Feature 3 -->
-                <div class="glow-card glass-effect rounded-2xl p-8">
-                    <div class="feature-icon w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-3">Jira Integration</h3>
-                    <p class="text-gray-400">
-                        Create issues, epics, and stories in Jira automatically. Keep your development team synced with meeting decisions.
-                    </p>
-                </div>
-                
-                <!-- Feature 4 -->
-                <div class="glow-card glass-effect rounded-2xl p-8">
-                    <div class="feature-icon w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-3">Team Collaboration</h3>
-                    <p class="text-gray-400">
-                        Create teams, assign tasks, and collaborate seamlessly. Everyone stays on the same page after every meeting.
-                    </p>
-                </div>
-                
-                <!-- Feature 5 -->
-                <div class="glow-card glass-effect rounded-2xl p-8">
-                    <div class="feature-icon w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-3">Email Notifications</h3>
-                    <p class="text-gray-400">
-                        Get instant email notifications for account activities, successful integrations, and important updates.
-                    </p>
-                </div>
-                
-                <!-- Feature 6 -->
-                <div class="glow-card glass-effect rounded-2xl p-8">
-                    <div class="feature-icon w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-3">Secure & Private</h3>
-                    <p class="text-gray-400">
-                        Enterprise-grade security with MongoDB encryption, secure authentication, and email verification for all accounts.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- How It Works Section -->
-    <section id="how-it-works" class="py-20 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">
-                    How It <span class="gradient-text">Works</span>
-                </h2>
-                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
-                    Get started in minutes and transform your workflow
-                </p>
+                <h3 class="heading-3 text-base mb-2">Connect Tools</h3>
+                <p class="body-text text-sm">Integrate with Trello and Jira</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Step 1 -->
-                <div class="text-center">
-                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-3xl font-bold">
-                        1
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Sign Up</h3>
-                    <p class="text-gray-400">
-                        Create your account and verify your email to get started
-                    </p>
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pink-500 to-red-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">
+                    3
                 </div>
-                
-                <!-- Step 2 -->
-                <div class="text-center">
-                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center text-3xl font-bold">
-                        2
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Connect Tools</h3>
-                    <p class="text-gray-400">
-                        Integrate with Trello and Jira using secure OAuth
-                    </p>
-                </div>
-                
-                <!-- Step 3 -->
-                <div class="text-center">
-                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-pink-500 to-red-600 rounded-2xl flex items-center justify-center text-3xl font-bold">
-                        3
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Upload Transcript</h3>
-                    <p class="text-gray-400">
-                        Paste your meeting transcript for AI analysis
-                    </p>
-                </div>
-                
-                <!-- Step 4 -->
-                <div class="text-center">
-                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl flex items-center justify-center text-3xl font-bold">
-                        4
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Auto-Create Tasks</h3>
-                    <p class="text-gray-400">
-                        AI creates tasks automatically in your tools
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Developer Section -->
-    <section id="developer" class="py-20 relative">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="glass-effect rounded-3xl p-12">
-                <div class="space-y-8">
-                    <!-- Team Header -->
-                    <div class="text-center">
-                        <h2 class="text-4xl font-bold mb-4">
-                            Built by <span class="gradient-text">Our Development Team</span>
-                        </h2>
-                        <p class="text-gray-400 mb-6 text-lg max-w-3xl mx-auto">
-                            A talented team of developers from L.R. Tiwari College of Engineering, passionate about AI and productivity tools. This project combines cutting-edge AI with seamless integrations to revolutionize how teams work.
-                        </p>
-                    </div>
-
-                    <!-- Developer Cards Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Hamza Sayyad -->
-                        <div class="glass-effect rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
-                            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i data-lucide="code" class="w-8 h-8 text-white"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white mb-2">Hamza Sayyad</h3>
-                            <p class="text-blue-400 font-semibold mb-3 text-sm">Frontend Developer</p>
-                            <div class="flex flex-wrap justify-center gap-2">
-                                <span class="px-2 py-1 bg-blue-500/20 rounded-lg text-xs text-gray-300">HTML/CSS</span>
-                                <span class="px-2 py-1 bg-blue-500/20 rounded-lg text-xs text-gray-300">JavaScript</span>
-                                <span class="px-2 py-1 bg-blue-500/20 rounded-lg text-xs text-gray-300">UI/UX</span>
-                            </div>
-                        </div>
-
-                        <!-- Hasan Shaikh -->
-                        <div class="glass-effect rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
-                            <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i data-lucide="server" class="w-8 h-8 text-white"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white mb-2">Hasan Shaikh</h3>
-                            <p class="text-purple-400 font-semibold mb-3 text-sm">Backend Developer</p>
-                            <div class="flex flex-wrap justify-center gap-2">
-                                <span class="px-2 py-1 bg-purple-500/20 rounded-lg text-xs text-gray-300">Python</span>
-                                <span class="px-2 py-1 bg-purple-500/20 rounded-lg text-xs text-gray-300">Flask</span>
-                                <span class="px-2 py-1 bg-purple-500/20 rounded-lg text-xs text-gray-300">AI/ML</span>
-                            </div>
-                        </div>
-
-                        <!-- Ujjval Shrivastav -->
-                        <div class="glass-effect rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
-                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i data-lucide="database" class="w-8 h-8 text-white"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white mb-2">Ujjval Shrivastav</h3>
-                            <p class="text-green-400 font-semibold mb-3 text-sm">Cloud & Database</p>
-                            <div class="flex flex-wrap justify-center gap-2">
-                                <span class="px-2 py-1 bg-green-500/20 rounded-lg text-xs text-gray-300">MongoDB</span>
-                                <span class="px-2 py-1 bg-green-500/20 rounded-lg text-xs text-gray-300">Cloud</span>
-                                <span class="px-2 py-1 bg-green-500/20 rounded-lg text-xs text-gray-300">DevOps</span>
-                            </div>
-                        </div>
-
-                        <!-- Rahul Rathod -->
-                        <div class="glass-effect rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
-                            <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i data-lucide="cloud" class="w-8 h-8 text-white"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white mb-2">Rahul Rathod</h3>
-                            <p class="text-orange-400 font-semibold mb-3 text-sm">Cloud & Database</p>
-                            <div class="flex flex-wrap justify-center gap-2">
-                                <span class="px-2 py-1 bg-orange-500/20 rounded-lg text-xs text-gray-300">Database</span>
-                                <span class="px-2 py-1 bg-orange-500/20 rounded-lg text-xs text-gray-300">Cloud</span>
-                                <span class="px-2 py-1 bg-orange-500/20 rounded-lg text-xs text-gray-300">Infrastructure</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tech Stack Highlights -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8">
-                        <div class="flex items-center space-x-3 glass-effect rounded-xl p-4">
-                            <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                <i data-lucide="check" class="w-5 h-5 text-blue-400"></i>
-                            </div>
-                            <span class="text-gray-300">Python & Flask</span>
-                        </div>
-                        <div class="flex items-center space-x-3 glass-effect rounded-xl p-4">
-                            <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                                <i data-lucide="check" class="w-5 h-5 text-purple-400"></i>
-                            </div>
-                            <span class="text-gray-300">MongoDB</span>
-                        </div>
-                        <div class="flex items-center space-x-3 glass-effect rounded-xl p-4">
-                            <div class="w-10 h-10 bg-pink-500/20 rounded-lg flex items-center justify-center">
-                                <i data-lucide="check" class="w-5 h-5 text-pink-400"></i>
-                            </div>
-                            <span class="text-gray-300">Gemini AI</span>
-                        </div>
-                        <div class="flex items-center space-x-3 glass-effect rounded-xl p-4">
-                            <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                <i data-lucide="check" class="w-5 h-5 text-green-400"></i>
-                            </div>
-                            <span class="text-gray-300">API Integrations</span>
-                        </div>
-                    </div>
-
-                    <!-- College Attribution -->
-                    <div class="text-center pt-6">
-                        <div class="inline-flex items-center gap-2 glass-effect rounded-xl px-6 py-3">
-                            <i data-lucide="graduation-cap" class="w-5 h-5 text-blue-400"></i>
-                            <span class="text-gray-300">L.R. Tiwari College of Engineering</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- CTA Section -->
-    <section class="py-20 relative">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="glass-effect rounded-3xl p-12 text-center animated-border">
-                <h2 class="text-4xl md:text-5xl font-bold mb-6">
-                    Ready to Transform Your <span class="gradient-text">Meetings?</span>
-                </h2>
-                <p class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-                    Join teams who are already saving hours every week with AI-powered meeting management
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-                    <a href="{{ url_for('register') }}" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg font-semibold rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all">
-                        Get Started Free →
-                    </a>
-                    <a href="{{ url_for('docs') }}" class="w-full sm:w-auto px-8 py-4 glass-effect text-white text-lg font-semibold rounded-xl hover:bg-white/10 transition-all">
-                        Read Documentation
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Footer -->
-    <footer class="py-12 glass-effect mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div class="col-span-1 md:col-span-2">
-                    <div class="flex items-center space-x-3 mb-4">
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                        </div>
-                        <span class="text-xl font-bold gradient-text">AI Meeting Agent</span>
-                    </div>
-                    <p class="text-gray-400 mb-4">
-                        Transform your meetings into actionable tasks with the power of AI. Built with ❤️ by developers for teams.
-                    </p>
-                </div>
-                
-                <div>
-                    <h4 class="text-white font-semibold mb-4">Product</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
-                        <li><a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a></li>
-                        <li><a href="{{ url_for('docs') }}" class="hover:text-white transition-colors">Documentation</a></li>
-                    </ul>
-                </div>
-                
+                <h3 class="heading-3 text-base mb-2">Upload Transcript</h3>
+                <p class="body-text text-sm">Paste meeting transcript</p>
             </div>
             
-            <div class="border-t border-white/10 pt-8">
-                <p class="mb-4 text-lg font-semibold text-white text-center">Development Team</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 max-w-4xl mx-auto">
-                    <div class="glass-effect p-4 rounded-xl text-center">
-                        <p class="text-blue-400 font-semibold mb-1">Hamza Sayyad</p>
-                        <p class="text-xs text-gray-500">Frontend Developer</p>
-                    </div>
-                    <div class="glass-effect p-4 rounded-xl text-center">
-                        <p class="text-blue-400 font-semibold mb-1">Hasan Shaikh</p>
-                        <p class="text-xs text-gray-500">Backend Developer</p>
-                    </div>
-                    <div class="glass-effect p-4 rounded-xl text-center">
-                        <p class="text-blue-400 font-semibold mb-1">Ujjval Shrivastav</p>
-                        <p class="text-xs text-gray-500">Cloud & Database Architect</p>
-                    </div>
-                    <div class="glass-effect p-4 rounded-xl text-center">
-                        <p class="text-blue-400 font-semibold mb-1">Rahul Rathod</p>
-                        <p class="text-xs text-gray-500">Cloud & Database Architect</p>
-                    </div>
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">
+                    4
                 </div>
-                <p class="text-center text-gray-500">L.R. Tiwari College of Engineering</p>
-                <p class="text-center text-gray-400 mt-4">&copy; 2025 AI Meeting Agent. All rights reserved.</p>
+                <h3 class="heading-3 text-base mb-2">Auto-Create Tasks</h3>
+                <p class="body-text text-sm">AI creates tasks automatically</p>
             </div>
         </div>
-    </footer>
-    
-    <!-- Mobile Menu Script -->
-    <script>
-        (function() {
-            'use strict';
-            try {
-                // Initialize Lucide icons
-        lucide.createIcons();
-        
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        });
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    // Close mobile menu if open
-                    document.getElementById('mobile-menu').classList.add('hidden');
-                }
-            });
-        });
-            } catch(e) {
-                console.error('Script error:', e);
-            }
-        })();
-        </script>
+    </div>
+</section>
 
-    <script>
-        (function() {
-            'use strict';
-            try {
-                // Intersection Observer for lazy loading
-        if ('IntersectionObserver' in window) {
-            const lazyElements = document.querySelectorAll('[data-lazy]');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const element = entry.target;
-                        element.classList.add('fade-in');
-                        observer.unobserve(element);
-                    }
-                });
-            }, { rootMargin: '50px' });
-            
-            lazyElements.forEach(el => observer.observe(el));
-        }
-        
-        // Performance monitoring
-        if ('PerformanceObserver' in window) {
-            const observer = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (entry.entryType === 'largest-contentful-paint') {
-                        console.log('⚡ LCP:', entry.renderTime || entry.loadTime);
-                    }
-                }
-            });
-            observer.observe({ entryTypes: ['largest-contentful-paint'] });
-        }
-            } catch(e) {
-                console.error('Script error:', e);
-            }
-        })();
-        </script>
-
-    <script>
-        (function() {
-            'use strict';
-            try {
-                // Global error boundary
-        window.onerror = function(msg, url, line, col, error) {
-            console.error('Error:', { msg, url, line, col });
-            return true; // Prevent default error handling
-        };
-        
-        // Promise rejection handler
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('Unhandled Promise Rejection:', e.reason);
-        });
-            } catch(e) {
-                console.error('Script error:', e);
-            }
-        })();
-        </script>
-</body>
-</html>
+<!-- CTA Section -->
+<section class="section-padding bg-gray-50 dark:bg-dark-bg-secondary">
+    <div class="container-custom max-w-4xl">
+        <div class="card text-center p-12">
+            <h2 class="heading-2 mb-6">
+                Ready to Transform Your <span class="text-apple-blue">Meetings?</span>
+            </h2>
+            <p class="body-text mb-8 max-w-2xl mx-auto">
+                Join teams saving hours every week with AI-powered meeting management
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="{{ url_for('register') }}" class="btn btn-primary">
+                    Get Started Free →
+                </a>
+                <a href="{{ url_for('docs') }}" class="btn btn-ghost">
+                    Read Documentation
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

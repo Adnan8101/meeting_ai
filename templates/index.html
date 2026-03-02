@@ -1,570 +1,445 @@
 {% extends "base.html" %}
-{% block title %}Analyze Meeting - AI Meeting Agent{% endblock %}
+
+{% block title %}Dashboard - AI Meeting Agent{% endblock %}
 
 {% block content %}
-<div class="fade-in max-w-7xl mx-auto">
-    <!-- Hero Section -->
-    <div class="text-center mb-12">
-        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-            AI Meeting Analyzer
-        </h1>
-        <p class="text-lg text-gray-400 max-w-2xl mx-auto">
-            Transform your meeting transcripts into actionable insights with AI-powered analysis
-        </p>
-    </div>
+<div class="container-custom section-padding">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12 animate-fade-in">
+            <h1 class="heading-1 mb-3">Meeting Transcript Analyzer</h1>
+            <p class="body-text text-gray-600 dark:text-gray-400">
+                Upload or paste your meeting transcript and let AI extract insights, action items, and summaries
+            </p>
+        </div>
 
-    <!-- Main Analysis Form -->
-    <div class="glass-card rounded-3xl p-8 md:p-10 shadow-2xl mb-12">
-        <form action="{{ url_for('analyze') }}" method="post" class="space-y-8" id="analysisForm">
-            
-            <!-- Transcript Input -->
-            <div>
-                <label for="transcript" class="block text-lg font-semibold text-white mb-3">Meeting Transcript</label>
-                <textarea id="transcript" 
-                          name="transcript" 
-                          rows="12"
-                          class="w-full bg-black/40 border border-white/20 rounded-2xl p-5 text-white placeholder-gray-500 focus:border-blue-500 transition duration-300 resize-none"
-                          placeholder="Paste your meeting transcript here...&#10;&#10;Example:&#10;John: We need to finalize the Q4 roadmap by next Friday.&#10;Sarah: I'll prepare the presentation slides.&#10;Mike: Let's schedule a follow-up meeting for next Tuesday.">{{ transcript or '' }}</textarea>
-            </div>
-
-            <!-- Automations Section -->
-            <div class="glass rounded-2xl p-6">
-                <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
-                    Automation Options
-                </h2>
-                <div class="space-y-4">
-                    
-                    <!-- Email Automation -->
-                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not team_data %}opacity-50{% endif %}">
-                        <label class="flex items-start gap-3 {% if team_data %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
-                            <input type="checkbox" 
-                                   id="send_email" 
-                                   name="send_email" 
-                                   value="true"
-                                   {% if not team_data %}disabled{% endif %}
-                                   class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                    </svg>
-                                    <span class="font-medium text-white">Send Summary Email to Team</span>
-                                </div>
-                                {% if not team_data %}
-                                    <small class="text-gray-400">(<a href="{{ url_for('team') }}" class="text-blue-400 hover:underline">Create a team first</a>)</small>
-                                {% endif %}
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- Trello Automation -->
-                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not trello_credentials %}opacity-50{% endif %}">
-                        <label class="flex items-start gap-3 {% if trello_credentials %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
-                            <input type="checkbox" 
-                                   id="create_trello" 
-                                   name="create_trello" 
-                                   value="true"
-                                   {% if not trello_credentials %}disabled{% endif %}
-                                   class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                                        <rect width="8" height="10" x="3" y="3" rx="1.5"/>
-                                        <rect width="8" height="16" x="13" y="3" rx="1.5"/>
-                                    </svg>
-                                    <span class="font-medium text-white">Create Trello Cards for Action Items</span>
-                                </div>
-                                {% if not trello_credentials %}
-                                    <small class="text-gray-400">(<a href="{{ url_for('integrations') }}" class="text-blue-400 hover:underline">Connect Trello</a>)</small>
-                                {% endif %}
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- Slack Automation -->
-                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not team_data or not team_data.slack_webhook_url %}opacity-50{% endif %}">
-                        <label class="flex items-start gap-3 {% if team_data and team_data.slack_webhook_url %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
-                            <input type="checkbox" 
-                                   id="send_slack" 
-                                   name="send_slack" 
-                                   value="true"
-                                   {% if not team_data or not team_data.slack_webhook_url %}disabled{% endif %}
-                                   class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52z"/>
-                                    </svg>
-                                    <span class="font-medium text-white">Send Summary to Slack Channel</span>
-                                </div>
-                                {% if not team_data %}
-                                    <small class="text-gray-400">(<a href="{{ url_for('team') }}" class="text-blue-400 hover:underline">Create a team first</a>)</small>
-                                {% elif not team_data.slack_webhook_url %}
-                                    <small class="text-gray-400">(<a href="{{ url_for('integrations') }}" class="text-blue-400 hover:underline">Connect Slack</a>)</small>
-                                {% endif %}
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- Jira Automation -->
-                    <div class="automation-option p-4 rounded-xl hover:bg-white/5 transition-colors {% if not jira_credentials %}opacity-50{% endif %}">
-                        <label class="flex items-start gap-3 {% if jira_credentials %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
-                            <input type="checkbox" 
-                                   id="create_jira" 
-                                   name="create_jira" 
-                                   value="true"
-                                   {% if not jira_credentials %}disabled{% endif %}
-                                   class="mt-1 h-5 w-5 rounded bg-black/40 border-white/20 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M11.571 11.513H0a5.218 5.218 0 0 0 5.232 5.215h2.13v2.057A5.215 5.215 0 0 0 12.575 24V12.518a1.005 1.005 0 0 0-1.005-1.005z"/>
-                                    </svg>
-                                    <span class="font-medium text-white">Create Jira Issues for Action Items</span>
-                                </div>
-                                {% if not jira_credentials %}
-                                    <small class="text-gray-400">(<a href="{{ url_for('integrations') }}" class="text-blue-400 hover:underline">Connect Jira</a>)</small>
-                                {% endif %}
-                            </div>
-                        </label>
-                    </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-8 space-y-3 animate-slide-up">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category == 'success' else 'error' if category == 'danger' else 'info' }}">
+                            <i data-lucide="{{ 'check-circle' if category == 'success' else 'alert-circle' if category == 'danger' else 'info' }}" class="w-5 h-5"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
                 </div>
-            </div>
-
-            <!-- Trello Options -->
-            {% if trello_credentials %}
-            <div id="trello-options" class="glass rounded-2xl p-6 hidden">
-                <h3 class="text-lg font-semibold text-white mb-4">Trello Configuration</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="trello-board" class="block text-sm font-medium text-gray-300 mb-2">Select Board</label>
-                        <select name="trello_board_id" id="trello-board"
-                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-blue-500 transition">
-                            <option value="">-- Select a Board --</option>
-                            {% for board in trello_boards %}
-                                <option value="{{ board.id }}">{{ board.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label for="trello-list" class="block text-sm font-medium text-gray-300 mb-2">Select List</label>
-                        <select name="trello_list_id" id="trello-list"
-                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-blue-500 transition">
-                            <option value="">-- Select a Board First --</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
             {% endif %}
+        {% endwith %}
 
-            <!-- Jira Options -->
-            {% if jira_credentials %}
-            <div id="jira-options" class="glass rounded-2xl p-6 hidden">
-                <h3 class="text-lg font-semibold text-white mb-4">Jira Configuration</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="jira-project" class="block text-sm font-medium text-gray-300 mb-2">Select Project</label>
-                        <select name="jira_project_key" id="jira-project"
-                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-blue-500 transition">
-                            <option value="">-- Loading Projects... --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="jira-issue-type" class="block text-sm font-medium text-gray-300 mb-2">Issue Type</label>
-                        <select name="jira_issue_type_name" id="jira-issue-type"
-                                class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-blue-500 transition">
-                            <option value="">-- Select Project First --</option>
-                        </select>
-                    </div>
+        <!-- Upload Form -->
+        <div class="card hover-lift mb-8 animate-fade-in">
+            <form id="transcriptForm" method="POST" action="{{ url_for('analyze') }}" enctype="multipart/form-data">
+                <!-- Textarea Input -->
+                <div class="form-group">
+                    <label for="transcript" class="form-label">Meeting Transcript</label>
+                    <textarea 
+                        id="transcript" 
+                        name="transcript" 
+                        rows="12" 
+                        class="input resize-none font-mono text-sm"
+                        placeholder="Paste your meeting transcript here...&#10;&#10;Example:&#10;John: We need to finalize the Q1 roadmap by Friday&#10;Sarah: I'll prepare the presentation&#10;Mike: Let's schedule a follow-up next week"
+                    ></textarea>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        Supports plain text, Google Meet, Zoom, or Microsoft Teams transcripts
+                    </p>
                 </div>
-            </div>
-            {% endif %}
 
-            <!-- Submit Button -->
-            <button type="submit" id="analyzeBtn"
-                    class="w-full btn-primary text-white font-bold py-4 px-8 rounded-2xl text-lg relative z-10 flex items-center justify-center gap-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-                Analyze & Generate Insights
-            </button>
-        </form>
-    </div>
+                <!-- File Upload -->
+                <div class="form-group">
+                    <label class="form-label">Or Upload File</label>
+                    <div class="relative">
+                        <input 
+                            type="file" 
+                            id="file" 
+                            name="file" 
+                            accept=".txt,.doc,.docx,.pdf"
+                            class="hidden"
+                            onchange="handleFileSelect(this)"
+                        >
+                        <label 
+                            for="file" 
+                            class="flex items-center justify-center gap-2 p-6 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer hover:border-apple-blue dark:hover:border-apple-blue transition-colors"
+                        >
+                            <i data-lucide="upload" class="w-5 h-5 text-gray-400"></i>
+                            <span class="body-text text-gray-600 dark:text-gray-400" id="fileLabel">
+                                Click to upload or drag and drop
+                            </span>
+                        </label>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        Supported formats: TXT, DOC, DOCX, PDF (max 10MB)
+                    </p>
+                </div>
 
-    <!-- Analysis Results Modal -->
-    {% if analysis and not analysis.error %}
-    <div id="resultsModal" class="modal active">
-        <div class="modal-content glass-card rounded-3xl p-8 md:p-10 max-w-5xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-start mb-6">
-                <h2 class="text-3xl font-bold text-white">Analysis Results</h2>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                <!-- Automation Options -->
+                <div class="form-group">
+                    <label class="form-label">Automation Options</label>
+                    <div class="space-y-3">
+                        <label class="flex items-start gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-apple-blue dark:hover:border-apple-blue transition-colors cursor-pointer">
+                            <input type="checkbox" name="create_trello_cards" value="true" class="w-5 h-5 mt-0.5 rounded border-gray-300 text-apple-blue focus:ring-apple-blue">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i data-lucide="trello" class="w-4 h-4 text-blue-600"></i>
+                                    <span class="font-medium">Create Trello Cards</span>
+                                </div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    Automatically create cards for action items and tasks
+                                </p>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-apple-blue dark:hover:border-apple-blue transition-colors cursor-pointer">
+                            <input type="checkbox" name="create_jira_tickets" value="true" class="w-5 h-5 mt-0.5 rounded border-gray-300 text-apple-blue focus:ring-apple-blue">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i data-lucide="clipboard-list" class="w-4 h-4 text-blue-700"></i>
+                                    <span class="font-medium">Create Jira Tickets</span>
+                                </div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    Automatically create tickets for technical tasks
+                                </p>
+                            </div>
+                        </label>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                        <i data-lucide="info" class="w-3 h-3 inline"></i>
+                        Connect your accounts in <a href="{{ url_for('integrations') }}" class="text-apple-blue hover:underline">Integrations</a>
+                    </p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="analyzeBtn" class="btn btn-primary w-full">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    Analyze with AI
                 </button>
-            </div>
-
-            <!-- Summary -->
-            <div class="mb-8">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white">Summary</h3>
-                </div>
-                <p class="text-gray-300 leading-relaxed text-lg bg-black/20 rounded-2xl p-6">{{ analysis.summary }}</p>
-            </div>
-
-            <!-- Key Decisions -->
-            <div class="mb-8">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white">Key Decisions</h3>
-                </div>
-                <ul class="space-y-3">
-                    {% for decision in analysis.decisions %}
-                    <li class="bg-black/20 rounded-xl p-5 border border-white/10 hover:border-purple-500/30 transition-colors">
-                        <div class="flex items-start gap-3">
-                            <span class="text-purple-400 text-xl">•</span>
-                            <p class="text-gray-300 flex-1">{{ decision }}</p>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <!-- Action Items -->
-            <div>
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white">Action Items</h3>
-                </div>
-                <div class="space-y-4">
-                    {% for item in analysis.action_items %}
-                    <div class="bg-black/20 rounded-xl p-5 border border-white/10 hover:border-green-500/30 transition-colors">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="md:col-span-1">
-                                <strong class="text-sm text-gray-400 block mb-1">Task:</strong>
-                                <span class="text-white">{{ item.task }}</span>
-                            </div>
-                            <div>
-                                <strong class="text-sm text-gray-400 block mb-1">Assignee:</strong>
-                                <span class="inline-flex items-center px-3 py-1 bg-blue-500/20 text-blue-300 rounded-lg text-sm font-medium">
-                                    {{ item.assignee }}
-                                </span>
-                            </div>
-                            <div>
-                                <strong class="text-sm text-gray-400 block mb-1">Due Date:</strong>
-                                <span class="text-white">{{ item.due_date }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
+            </form>
         </div>
     </div>
-    {% elif analysis and analysis.error %}
-    <div class="glass-card rounded-2xl p-6 border-red-500/30 text-red-300" role="alert">
-        <div class="flex items-center gap-3">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-            </svg>
-            <div>
-                <strong>Analysis Error:</strong> {{ analysis.error }}
+</div>
+
+<!-- Results Modal -->
+<div id="resultsModal" class="results-modal">
+    <div class="results-modal-backdrop" onclick="closeResultsModal()"></div>
+    <div class="results-modal-content">
+        <div class="results-modal-header">
+            <div class="results-modal-title">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                </div>
+                <span>AI Analysis Results</span>
             </div>
+            <button class="results-modal-close" onclick="closeResultsModal()">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div class="results-modal-body" id="resultsBody">
+            <!-- Results will be dynamically inserted here -->
+        </div>
+        <div class="results-modal-footer">
+            <button class="btn btn-secondary" onclick="closeResultsModal()">
+                <i data-lucide="x" class="w-4 h-4"></i>
+                Close
+            </button>
+            <button class="btn btn-primary" onclick="analyzeAnother()">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                Analyze Another
+            </button>
         </div>
     </div>
-    {% endif %}
 </div>
 
 <script>
-    // Optimized script execution with performance improvements
-    (function() {
-        'use strict';
-        
-        // Show/hide integration options based on checkboxes
-        const trelloCheckbox = document.getElementById('create_trello');
-        const trelloOptions = document.getElementById('trello-options');
-        
-        if (trelloCheckbox && trelloOptions) {
-            trelloCheckbox.addEventListener('change', function() {
-                trelloOptions.classList.toggle('hidden', !this.checked);
-                // Disable/enable validation based on visibility
-                const trelloBoard = document.getElementById('trello-board');
-                const trelloList = document.getElementById('trello-list');
-                if (this.checked) {
-                    trelloBoard.setAttribute('required', 'required');
-                    trelloList.setAttribute('required', 'required');
-                } else {
-                    trelloBoard.removeAttribute('required');
-                    trelloList.removeAttribute('required');
-                }
-            });
-        }
+function handleFileSelect(input) {
+    const fileLabel = document.getElementById('fileLabel');
+    if (input.files && input.files[0]) {
+        fileLabel.textContent = input.files[0].name;
+    } else {
+        fileLabel.textContent = 'Click to upload or drag and drop';
+    }
+}
 
-        const jiraCheckbox = document.getElementById('create_jira');
-        const jiraOptions = document.getElementById('jira-options');
-        
-        if (jiraCheckbox && jiraOptions) {
-            jiraCheckbox.addEventListener('change', function() {
-                jiraOptions.classList.toggle('hidden', !this.checked);
-                // Disable/enable validation based on visibility
-                const jiraProject = document.getElementById('jira-project');
-                const jiraIssueType = document.getElementById('jira-issue-type');
-                if (this.checked) {
-                    jiraProject.setAttribute('required', 'required');
-                    jiraIssueType.setAttribute('required', 'required');
-                    if (!window.jiraProjectsLoaded) {
-                        loadJiraProjects();
-                    }
-                } else {
-                    jiraProject.removeAttribute('required');
-                    jiraIssueType.removeAttribute('required');
-                }
-            });
-        }
-
-        // Form submission handler
-        const analysisForm = document.getElementById('analysisForm');
-        if (analysisForm) {
-            analysisForm.addEventListener('submit', function(e) {
-                const transcriptField = document.getElementById('transcript');
-                
-                // Check if transcript is empty
-                if (!transcriptField.value.trim()) {
-                    e.preventDefault();
-                    if (typeof showToast === 'function') {
-                        showToast('Please provide a meeting transcript to analyze.', 'error');
-                    }
-                    return false;
-                }
-                
-                // Check Trello validation
-                if (trelloCheckbox && trelloCheckbox.checked) {
-                    const boardSelect = document.getElementById('trello-board');
-                    const listSelect = document.getElementById('trello-list');
-                    if (!boardSelect.value || !listSelect.value) {
-                        e.preventDefault();
-                        if (typeof showToast === 'function') {
-                            showToast('Please select both Trello board and list.', 'error');
-                        }
-                        return false;
-                    }
-                }
-                
-                // Check Jira validation
-                if (jiraCheckbox && jiraCheckbox.checked) {
-                    const projectSelect = document.getElementById('jira-project');
-                    const issueTypeSelect = document.getElementById('jira-issue-type');
-                    if (!projectSelect.value || !issueTypeSelect.value) {
-                        e.preventDefault();
-                        if (typeof showToast === 'function') {
-                            showToast('Please select both Jira project and issue type.', 'error');
-                        }
-                        return false;
-                    }
-                }
-                
-                // Show loading modal
-                const loadingModal = document.getElementById('loadingModal');
-                if (loadingModal) {
-                    loadingModal.classList.add('active');
-                }
-                
-                // Let form submit normally
-                return true;
-            });
-        }
-
-        // Trello board/list logic
-        const boardSelect = document.getElementById('trello-board');
-        if (boardSelect) {
-            boardSelect.addEventListener('change', function() {
-                const listSelect = document.getElementById('trello-list');
-                listSelect.innerHTML = '<option value="">Loading...</option>';
-                
-                if (this.value) {
-                    fetch(`/get_lists/${this.value}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            listSelect.innerHTML = '<option value="">-- Select a List --</option>';
-                            data.forEach(list => {
-                                const option = document.createElement('option');
-                                option.value = list.id;
-                                option.textContent = list.name;
-                                listSelect.appendChild(option);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            listSelect.innerHTML = '<option value="">Error loading lists</option>';
-                        });
-                } else {
-                    listSelect.innerHTML = '<option value="">-- Select a Board First --</option>';
-                }
-            });
-        }
-
-        // Jira project/issue type logic
-        window.loadJiraProjects = function() {
-            const projectSelect = document.getElementById('jira-project');
-            const issueTypeSelect = document.getElementById('jira-issue-type');
-            
-            projectSelect.innerHTML = '<option value="">Loading Projects...</option>';
-            issueTypeSelect.innerHTML = '<option value="">-- Select Project First --</option>';
-            
-            fetch('/get_jira_projects')
-                .then(response => response.json())
-                .then(data => {
-                    projectSelect.innerHTML = '<option value="">-- Select a Project --</option>';
-                    if (data.error) {
-                        projectSelect.innerHTML = `<option value="">Error: ${data.error}</option>`;
-                    } else {
-                        data.forEach(project => {
-                            const option = document.createElement('option');
-                            option.value = project.key;
-                            option.textContent = `${project.name} (${project.key})`;
-                            projectSelect.appendChild(option);
-                        });
-                        window.jiraProjectsLoaded = true;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    projectSelect.innerHTML = '<option value="">Network Error</option>';
-                });
-        };
-
-        const projectSelect = document.getElementById('jira-project');
-        if (projectSelect) {
-            projectSelect.addEventListener('change', function() {
-                const issueTypeSelect = document.getElementById('jira-issue-type');
-                issueTypeSelect.innerHTML = '<option value="">Loading...</option>';
-                
-                if (this.value) {
-                    fetch(`/get_jira_issue_types/${this.value}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            issueTypeSelect.innerHTML = '<option value="">-- Select Issue Type --</option>';
-                            if (data.error) {
-                                issueTypeSelect.innerHTML = `<option value="">Error: ${data.error}</option>`;
-                            } else {
-                                data.forEach(issueType => {
-                                    const option = document.createElement('option');
-                                    option.value = issueType.name;
-                                    option.textContent = issueType.name;
-                                    issueTypeSelect.appendChild(option);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            issueTypeSelect.innerHTML = '<option value="">Network Error</option>';
-                        });
-                } else {
-                    issueTypeSelect.innerHTML = '<option value="">-- Select Project First --</option>';
-                }
-            });
-        }
-
-        // Modal functions
-        window.closeModal = function() {
-            const modal = document.getElementById('resultsModal');
-            if (modal) {
-                modal.classList.remove('active');
-                // Optional: Redirect to clear URL after closing
-                window.history.pushState({}, document.title, "{{ url_for('dashboard') }}");
-            }
-        };
-
-        // Close modal on background click
-        const modal = document.getElementById('resultsModal');
-        if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeModal();
-                }
-            });
-        }
-
-        // Close modal on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
+// Handle form submission with AJAX
+document.getElementById('transcriptForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = document.getElementById('analyzeBtn');
+    
+    // Show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner w-5 h-5"></span> Analyzing...';
+    showLoading();
+    
+    try {
+        const response = await fetch('{{ url_for("analyze") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
             }
         });
-
-        // Optimized typewriter effect with requestAnimationFrame
-        function typeWriter(element, text, speed = 20) {
-            let i = 0;
-            element.textContent = '';
-            element.style.opacity = '1';
-            
-            function type() {
-                if (i < text.length) {
-                    element.textContent += text.charAt(i);
-                    i++;
-                    requestAnimationFrame(() => setTimeout(type, speed));
-                }
-            }
-            requestAnimationFrame(type);
+        
+        // Check if response is actually JSON
+        const contentType = response.headers.get('Content-Type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Server returned non-JSON response');
         }
-
-        // Apply typewriter effect to summary if modal is active
-        {% if analysis and not analysis.error %}
-        function initializeResults() {
-            // Hide loading modal
-            const loadingModal = document.getElementById('loadingModal');
-            if (loadingModal) {
-                loadingModal.classList.remove('active');
-            }
-
-            // Apply typewriter effect to summary
-            const summaryElement = document.querySelector('.text-gray-300.leading-relaxed');
-            if (summaryElement) {
-                const originalText = summaryElement.textContent;
-                summaryElement.style.opacity = '0';
-                setTimeout(() => {
-                    typeWriter(summaryElement, originalText, 15);
-                }, 300);
-            }
-
-            // Animate decisions with stagger using requestAnimationFrame
-            const decisions = document.querySelectorAll('.bg-black\\/20.rounded-xl.p-5');
-            decisions.forEach((decision, index) => {
-                decision.style.opacity = '0';
-                decision.style.transform = 'translate3d(0, 20px, 0)';
-                setTimeout(() => {
-                    requestAnimationFrame(() => {
-                        decision.style.transition = 'all 0.5s ease-out';
-                        decision.style.opacity = '1';
-                        decision.style.transform = 'translate3d(0, 0, 0)';
-                    });
-                }, 500 + (index * 100));
-            });
-        }
-
-        // Initialize on DOM ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeResults);
+        
+        const data = await response.json();
+        hideLoading();
+        
+        if (data.success && data.analysis) {
+            showResultsModal(data.analysis);
         } else {
-            initializeResults();
+            showToast(data.error || 'Analysis failed. Please try again.', 'error');
         }
-        {% endif %}
-    })();
+    } catch (error) {
+        hideLoading();
+        console.error('Error details:', error);
+        
+        // More specific error messages
+        if (error.message.includes('non-JSON response')) {
+            showToast('Server error: Please refresh the page and try again.', 'error');
+        } else if (error.message.includes('JSON')) {
+            showToast('Invalid server response. Please try again.', 'error');
+        } else {
+            showToast('An error occurred. Please try again.', 'error');
+        }
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i data-lucide="sparkles" class="w-5 h-5"></i> Analyze with AI';
+        lucide.createIcons();
+    }
+});
+
+// Show Results Modal with Typewriter Effect
+function showResultsModal(analysis) {
+    const modal = document.getElementById('resultsModal');
+    const body = document.getElementById('resultsBody');
+    
+    // Clear previous content
+    body.innerHTML = '';
+    
+    // Build results HTML
+    let html = '';
+    
+    // Summary Section
+    if (analysis.summary) {
+        html += `
+            <div class="result-section" id="summarySection">
+                <div class="result-section-header">
+                    <div class="result-section-icon bg-purple-100 dark:bg-purple-900/30">
+                        <i data-lucide="file-text" class="w-5 h-5 text-purple-600 dark:text-purple-400"></i>
+                    </div>
+                    <h3 class="result-section-title">Summary</h3>
+                </div>
+                <div class="result-section-content">
+                    <p class="body-text text-gray-700 dark:text-gray-300 leading-relaxed typewriter" id="summaryText"></p>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Action Items Section
+    if (analysis.action_items && analysis.action_items.length > 0) {
+        html += `
+            <div class="result-section" id="actionsSection">
+                <div class="result-section-header">
+                    <div class="result-section-icon bg-blue-100 dark:bg-blue-900/30">
+                        <i data-lucide="check-square" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                    <h3 class="result-section-title">Action Items</h3>
+                </div>
+                <div class="result-section-content" id="actionItemsContainer">
+                </div>
+            </div>
+        `;
+    }
+    
+    // Key Topics Section
+    if (analysis.topics && analysis.topics.length > 0) {
+        html += `
+            <div class="result-section" id="topicsSection">
+                <div class="result-section-header">
+                    <div class="result-section-icon bg-green-100 dark:bg-green-900/30">
+                        <i data-lucide="tag" class="w-5 h-5 text-green-600 dark:text-green-400"></i>
+                    </div>
+                    <h3 class="result-section-title">Key Topics</h3>
+                </div>
+                <div class="result-section-content" id="topicsContainer">
+                </div>
+            </div>
+        `;
+    }
+    
+    // Key Decisions Section
+    if (analysis.decisions && analysis.decisions.length > 0) {
+        html += `
+            <div class="result-section" id="decisionsSection">
+                <div class="result-section-header">
+                    <div class="result-section-icon bg-orange-100 dark:bg-orange-900/30">
+                        <i data-lucide="lightbulb" class="w-5 h-5 text-orange-600 dark:text-orange-400"></i>
+                    </div>
+                    <h3 class="result-section-title">Key Decisions</h3>
+                </div>
+                <div class="result-section-content" id="decisionsContainer">
+                </div>
+            </div>
+        `;
+    }
+    
+    body.innerHTML = html;
+    lucide.createIcons();
+    
+    // Show modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Animate content with typewriter effect
+    animateResults(analysis);
+}
+
+// Typewriter Effect Function
+function typeWriter(element, text, speed = 20, callback) {
+    let i = 0;
+    element.innerHTML = '';
+    
+    function type() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        } else {
+            if (callback) callback();
+        }
+    }
+    
+    type();
+}
+
+// Animate Results
+async function animateResults(analysis) {
+    // Show summary section with typewriter
+    const summarySection = document.getElementById('summarySection');
+    if (summarySection) {
+        summarySection.classList.add('visible');
+        const summaryText = document.getElementById('summaryText');
+        await new Promise(resolve => {
+            typeWriter(summaryText, analysis.summary, 15, resolve);
+        });
+    }
+    
+    // Delay before next section
+    await sleep(300);
+    
+    // Show action items
+    const actionsSection = document.getElementById('actionsSection');
+    if (actionsSection) {
+        actionsSection.classList.add('visible');
+        const container = document.getElementById('actionItemsContainer');
+        
+        for (let i = 0; i < analysis.action_items.length; i++) {
+            const item = analysis.action_items[i];
+            let itemHtml = '';
+            
+            // Check if item is an object or string
+            if (typeof item === 'object' && item !== null) {
+                itemHtml = `
+                    <div class="action-item-card" id="actionItem${i}">
+                        <div class="action-item-number">${i + 1}</div>
+                        <div class="action-item-content">
+                            <div class="action-item-task">${item.task || item.description || JSON.stringify(item)}</div>
+                            <div class="action-item-meta">
+                                ${item.assignee ? `<span><i data-lucide="user" class="w-3 h-3"></i> ${item.assignee}</span>` : ''}
+                                ${item.due_date ? `<span><i data-lucide="calendar" class="w-3 h-3"></i> ${item.due_date}</span>` : ''}
+                                ${item.priority ? `<span><i data-lucide="flag" class="w-3 h-3"></i> ${item.priority}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                itemHtml = `
+                    <div class="action-item-card" id="actionItem${i}">
+                        <div class="action-item-number">${i + 1}</div>
+                        <div class="action-item-content">
+                            <div class="action-item-task">${item}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML += itemHtml;
+            lucide.createIcons();
+            
+            await sleep(150);
+            document.getElementById(`actionItem${i}`).classList.add('visible');
+        }
+    }
+    
+    // Delay before next section
+    await sleep(300);
+    
+    // Show topics
+    const topicsSection = document.getElementById('topicsSection');
+    if (topicsSection && analysis.topics) {
+        topicsSection.classList.add('visible');
+        const container = document.getElementById('topicsContainer');
+        
+        for (let i = 0; i < analysis.topics.length; i++) {
+            const topic = analysis.topics[i];
+            container.innerHTML += `<span class="topic-badge" id="topic${i}">${topic}</span>`;
+            
+            await sleep(100);
+            document.getElementById(`topic${i}`).classList.add('visible');
+        }
+    }
+    
+    // Delay before next section
+    await sleep(300);
+    
+    // Show decisions
+    const decisionsSection = document.getElementById('decisionsSection');
+    if (decisionsSection && analysis.decisions) {
+        decisionsSection.classList.add('visible');
+        const container = document.getElementById('decisionsContainer');
+        
+        for (let i = 0; i < analysis.decisions.length; i++) {
+            const decision = analysis.decisions[i];
+            container.innerHTML += `
+                <div class="decision-card" id="decision${i}">
+                    <i data-lucide="arrow-right" class="w-4 h-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0"></i>
+                    <span class="body-text text-gray-700 dark:text-gray-300">${decision}</span>
+                </div>
+            `;
+            lucide.createIcons();
+            
+            await sleep(150);
+            document.getElementById(`decision${i}`).classList.add('visible');
+        }
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function closeResultsModal() {
+    const modal = document.getElementById('resultsModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function analyzeAnother() {
+    closeResultsModal();
+    document.getElementById('transcript').value = '';
+    document.getElementById('transcript').focus();
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeResultsModal();
+    }
+});
 </script>
 {% endblock %}

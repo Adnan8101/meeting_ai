@@ -1,596 +1,273 @@
 {% extends "base.html" %}
+
 {% block title %}Documentation - AI Meeting Agent{% endblock %}
 
 {% block content %}
-<div class="fade-in">
-    <!-- Hero Section -->
-    <div class="text-center mb-16">
-        <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">
-            Documentation
-        </h1>
-        <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-            Complete guide to understanding and using AI Meeting Agent
-        </p>
-    </div>
-
-    <!-- Table of Contents -->
-    <div class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="list" class="w-6 h-6 text-blue-400"></i>
-            Table of Contents
-        </h2>
-        <div class="grid md:grid-cols-2 gap-4">
-            <a href="#overview" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                <i data-lucide="file-text" class="w-4 h-4"></i>
-                1. Overview
-            </a>
-            <a href="#features" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                <i data-lucide="sparkles" class="w-4 h-4"></i>
-                2. Key Features
-            </a>
-            <a href="#architecture" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                <i data-lucide="box" class="w-4 h-4"></i>
-                3. Architecture
-            </a>
-            <a href="#data-flow" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                <i data-lucide="repeat" class="w-4 h-4"></i>
-                4. Data Flow
-            </a>
-            <a href="#tech-stack" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                <i data-lucide="layers" class="w-4 h-4"></i>
-                5. Tech Stack
-            </a>
-            <a href="#routes" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                <i data-lucide="route" class="w-4 h-4"></i>
-                6. API Routes
-            </a>
-            <a href="#integrations" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                <i data-lucide="plug" class="w-4 h-4"></i>
-                7. Integrations
-            </a>
-            <a href="#design" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                <i data-lucide="palette" class="w-4 h-4"></i>
-                8. UI/UX Design
-            </a>
-            <a href="#developers" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                <i data-lucide="users" class="w-4 h-4"></i>
-                9. Developers
-            </a>
-        </div>
-    </div>
-
-    <!-- Overview Section -->
-    <div id="overview" class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="file-text" class="w-8 h-8 text-blue-400"></i>
-            Overview
-        </h2>
-        <div class="space-y-4 text-gray-300">
-            <p class="text-lg leading-relaxed">
-                <strong class="text-white">AI Meeting Agent</strong> is an intelligent automation platform that leverages advanced AI to analyze meeting transcripts, extract actionable insights, and automatically integrate with your favorite productivity tools.
-            </p>
-            <p class="leading-relaxed">
-                The platform uses Google's Gemini AI to process natural language and identify key decisions, action items, and summaries from your meeting discussions. It then seamlessly distributes this information across your team's workflow tools.
+<div class="container-custom section-padding">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="mb-12 animate-fade-in text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-apple-blue/10 mb-4">
+                <i data-lucide="book-open" class="w-8 h-8 text-apple-blue"></i>
+            </div>
+            <h1 class="heading-1 mb-3">Documentation</h1>
+            <p class="body-text text-gray-600 dark:text-gray-400">
+                Everything you need to know about AI Meeting Agent
             </p>
         </div>
-    </div>
 
-    <!-- Features Section -->
-    <div id="features" class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="sparkles" class="w-8 h-8 text-yellow-400"></i>
-            Key Features
-        </h2>
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10 hover:border-blue-500/30 transition-all">
-                <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4">
-                    <i data-lucide="brain" class="w-6 h-6 text-blue-400"></i>
+        <!-- Quick Start -->
+        <div class="card hover-lift mb-8 animate-fade-in">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                    <i data-lucide="rocket" class="w-5 h-5 text-green-600 dark:text-green-400"></i>
                 </div>
-                <h3 class="text-xl font-semibold text-white mb-2">AI-Powered Analysis</h3>
-                <p class="text-gray-400">Automatically extract summaries, decisions, and action items from meeting transcripts using LLM.</p>
+                <h2 class="heading-2">Getting Started</h2>
             </div>
 
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10 hover:border-green-500/30 transition-all">
-                <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-4">
-                    <i data-lucide="users" class="w-6 h-6 text-green-400"></i>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="heading-3 mb-3">1. Create an Account</h3>
+                    <p class="body-text text-gray-600 dark:text-gray-400 mb-2">
+                        Sign up for a free account to start analyzing your meeting transcripts with AI.
+                    </p>
+                    <a href="{{ url_for('register') }}" class="text-apple-blue hover:text-apple-blue-dark text-sm font-medium">
+                        Sign up now →
+                    </a>
                 </div>
-                <h3 class="text-xl font-semibold text-white mb-2">Team Collaboration</h3>
-                <p class="text-gray-400">Create teams, invite members, and automatically distribute meeting summaries via email.</p>
-            </div>
 
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10 hover:border-purple-500/30 transition-all">
-                <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
-                    <i data-lucide="zap" class="w-6 h-6 text-purple-400"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-white mb-2">Multi-Platform Integration</h3>
-                <p class="text-gray-400">Connect with Trello, Slack, and Jira to automate task creation and notifications.</p>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-all">
-                <div class="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center mb-4">
-                    <i data-lucide="shield-check" class="w-6 h-6 text-orange-400"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-white mb-2">Secure & Private</h3>
-                <p class="text-gray-400">Enterprise-grade security with encrypted credentials and secure OAuth integrations.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Architecture Section -->
-    <div id="architecture" class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="box" class="w-8 h-8 text-purple-400"></i>
-            Architecture
-        </h2>
-        <div class="space-y-6 text-gray-300">
-            <div>
-                <h3 class="text-xl font-semibold text-white mb-3">System Components</h3>
-                <ul class="space-y-3 ml-6">
-                    <li class="flex items-start gap-3">
-                        <span class="text-blue-400 mt-1">•</span>
-                        <div>
-                            <strong class="text-white">Frontend Layer:</strong> Server-side rendered templates using Jinja2 with TailwindCSS for styling
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="text-blue-400 mt-1">•</span>
-                        <div>
-                            <strong class="text-white">Application Layer:</strong> Flask web framework handling routing, authentication, and business logic
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="text-blue-400 mt-1">•</span>
-                        <div>
-                            <strong class="text-white">Database Layer:</strong> SQLAlchemy ORM with SQLite (dev) or PostgreSQL (production)
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="text-blue-400 mt-1">•</span>
-                        <div>
-                            <strong class="text-white">AI Layer:</strong> Google Gemini 2.0 for natural language processing
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="text-blue-400 mt-1">•</span>
-                        <div>
-                            <strong class="text-white">Integration Layer:</strong> REST API clients for Trello, Slack, and Jira
-                        </div>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10 mt-6">
-                <h3 class="text-lg font-semibold text-white mb-4">Database Schema</h3>
-                <div class="space-y-3 text-sm font-mono">
-                    <div><span class="text-blue-400">User</span> → username, email, password_hash, team_id</div>
-                    <div><span class="text-green-400">Team</span> → name, slack_webhook_url, members[]</div>
-                    <div><span class="text-purple-400">TrelloCredentials</span> → token, trello_username, user_id</div>
-                    <div><span class="text-orange-400">JiraCredentials</span> → jira_url, email, api_token, user_id</div>
-                    <div><span class="text-pink-400">TrelloCard</span> → card_id, task_description, assignee, due_date</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Data Flow Section -->
-    <div id="data-flow" class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="repeat" class="w-8 h-8 text-green-400"></i>
-            Data Flow
-        </h2>
-        <div class="space-y-6">
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10">
-                <h3 class="text-lg font-semibold text-white mb-4">Meeting Analysis Workflow</h3>
-                <ol class="space-y-4 text-gray-300">
-                    <li class="flex gap-4">
-                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">1</span>
-                        <div>
-                            <strong class="text-white">Transcript Input:</strong> User pastes meeting transcript into the web interface
-                        </div>
-                    </li>
-                    <li class="flex gap-4">
-                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">2</span>
-                        <div>
-                            <strong class="text-white">Automation Selection:</strong> User enables desired integrations (Trello, Slack, Jira, Email)
-                        </div>
-                    </li>
-                    <li class="flex gap-4">
-                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">3</span>
-                        <div>
-                            <strong class="text-white">AI Processing:</strong> Gemini AI analyzes transcript and extracts structured data (summary, decisions, action items)
-                        </div>
-                    </li>
-                    <li class="flex gap-4">
-                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">4</span>
-                        <div>
-                            <strong class="text-white">Results Display:</strong> Analysis results are rendered on the web page in a structured format
-                        </div>
-                    </li>
-                    <li class="flex gap-4">
-                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-semibold">5</span>
-                        <div>
-                            <strong class="text-white">Automation Execution:</strong> Background tasks create Trello cards, send emails, post to Slack, and create Jira issues based on selected options
-                        </div>
-                    </li>
-                </ol>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tech Stack Section -->
-    <div id="tech-stack" class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="layers" class="w-8 h-8 text-orange-400"></i>
-            Tech Stack
-        </h2>
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-white">Backend</h3>
-                <ul class="space-y-2 text-gray-300">
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
-                        Python 3.x
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
-                        Flask (Web Framework)
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
-                        SQLAlchemy (ORM)
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
-                        Flask-Login (Auth)
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
-                        Flask-Bcrypt (Password Hashing)
-                    </li>
-                </ul>
-            </div>
-
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-white">Frontend</h3>
-                <ul class="space-y-2 text-gray-300">
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                        HTML5/CSS3
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                        TailwindCSS
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                        Jinja2 Templates
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                        Vanilla JavaScript
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                        Glassmorphism UI
-                    </li>
-                </ul>
-            </div>
-
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-white">AI & Integrations</h3>
-                <ul class="space-y-2 text-gray-300">
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
-                        LLM
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
-                        Trello API
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
-                        Slack Webhooks
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
-                        Jira REST API
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
-                        SMTP (Email)
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- API Routes Section -->
-    <div id="routes" class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="route" class="w-8 h-8 text-pink-400"></i>
-            API Routes
-        </h2>
-        <div class="space-y-4">
-            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
-                    <code class="text-gray-300">/</code>
-                </div>
-                <p class="text-gray-400 text-sm">Home page - Meeting transcript analysis interface</p>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-sm font-semibold">POST</span>
-                    <code class="text-gray-300">/analyze</code>
-                </div>
-                <p class="text-gray-400 text-sm">Analyzes transcript and executes selected automations</p>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
-                    <code class="text-gray-300">/team</code>
-                </div>
-                <p class="text-gray-400 text-sm">Team management page - View/create team and invite members</p>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
-                    <code class="text-gray-300">/integrations</code>
-                </div>
-                <p class="text-gray-400 text-sm">Integration management - Connect/disconnect Trello, Slack, and Jira</p>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
-                    <code class="text-gray-300">/get_lists/&lt;board_id&gt;</code>
-                </div>
-                <p class="text-gray-400 text-sm">Fetch Trello lists for a specific board (JSON response)</p>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-sm font-semibold">GET</span>
-                    <code class="text-gray-300">/get_jira_projects</code>
-                </div>
-                <p class="text-gray-400 text-sm">Fetch all Jira projects for authenticated user (JSON response)</p>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-5 border border-white/10">
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-lg text-sm font-semibold">AUTH</span>
-                    <code class="text-gray-300">/login, /register, /logout</code>
-                </div>
-                <p class="text-gray-400 text-sm">Authentication routes for user management</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Integrations Section -->
-    <div id="integrations" class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="plug" class="w-8 h-8 text-blue-400"></i>
-            Integration Details
-        </h2>
-        <div class="space-y-6">
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10">
-                <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                        <rect width="8" height="10" x="3" y="3" rx="1.5" fill="currentColor"/>
-                        <rect width="8" height="16" x="13" y="3" rx="1.5" fill="currentColor"/>
-                    </svg>
-                    Trello
-                </h3>
-                <p class="text-gray-400 mb-3">Automatically creates cards for each action item with assignee and due date information.</p>
-                <ul class="space-y-2 text-gray-300 text-sm">
-                    <li>• Uses OAuth 1.0a for secure authentication</li>
-                    <li>• Stores user tokens encrypted in database</li>
-                    <li>• Allows board and list selection per analysis</li>
-                </ul>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10">
-                <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313z"/>
-                    </svg>
-                    Slack
-                </h3>
-                <p class="text-gray-400 mb-3">Posts formatted meeting summaries to a designated Slack channel using Incoming Webhooks.</p>
-                <ul class="space-y-2 text-gray-300 text-sm">
-                    <li>• Uses Incoming Webhooks (no OAuth required)</li>
-                    <li>• Rich message formatting with Slack Block Kit</li>
-                    <li>• Team-level integration (not user-level)</li>
-                </ul>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10">
-                <h3 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M11.571 11.513H0a5.218 5.218 0 0 0 5.232 5.215h2.13v2.057A5.215 5.215 0 0 0 12.575 24V12.518a1.005 1.005 0 0 0-1.005-1.005zm5.723-5.756H24a5.218 5.218 0 0 0-5.231-5.214h-2.105V2.6A5.214 5.214 0 0 0 11.456 0v11.507a1.005 1.005 0 0 0 1.006 1.005h4.832z"/>
-                    </svg>
-                    Jira
-                </h3>
-                <p class="text-gray-400 mb-3">Creates issues for action items in specified Jira projects with custom issue types.</p>
-                <ul class="space-y-2 text-gray-300 text-sm">
-                    <li>• Uses Jira Cloud REST API with API tokens</li>
-                    <li>• Dynamic project and issue type selection</li>
-                    <li>• Supports multiple Jira instances per user</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- UI/UX Design Section -->
-    <div id="design" class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="palette" class="w-8 h-8 text-purple-400"></i>
-            UI/UX Design
-        </h2>
-        <div class="space-y-6 text-gray-300">
-            <div>
-                <h3 class="text-2xl font-semibold text-white mb-3">iPhone 15 Pro Space Black Theme</h3>
-                <p class="leading-relaxed mb-4">
-                    AI Meeting Agent features a modern, minimalist design inspired by Apple's iPhone 15 Pro Space Black aesthetic. The interface combines pure black backgrounds with subtle blue accents to create a premium, sophisticated user experience.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-black/30 rounded-xl p-6 border border-white/10">
-                    <h4 class="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                        <i data-lucide="droplet" class="w-5 h-5 text-blue-400"></i>
-                        Color Palette
-                    </h4>
-                    <ul class="space-y-2 text-sm">
+                <div>
+                    <h3 class="heading-3 mb-3">2. Upload a Transcript</h3>
+                    <p class="body-text text-gray-600 dark:text-gray-400 mb-3">
+                        Paste your meeting transcript or upload a file. We support:
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                         <li class="flex items-center gap-2">
-                            <div class="w-6 h-6 bg-black rounded border border-white/30"></div>
-                            <span><strong class="text-white">#000000</strong> - Pure Black Background</span>
+                            <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                            Google Meet transcripts
                         </li>
                         <li class="flex items-center gap-2">
-                            <div class="w-6 h-6 bg-blue-500 rounded"></div>
-                            <span><strong class="text-white">#0a84ff</strong> - iPhone Blue Accents</span>
+                            <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                            Zoom transcripts
                         </li>
                         <li class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded" style="background: rgba(28, 28, 30, 0.6); border: 1px solid rgba(255,255,255,0.1);"></div>
-                            <span><strong class="text-white">rgba(28, 28, 30, 0.6)</strong> - Glass Cards</span>
+                            <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                            Microsoft Teams transcripts
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                            Plain text files (.txt, .doc, .docx, .pdf)
                         </li>
                     </ul>
                 </div>
 
-                <div class="bg-black/30 rounded-xl p-6 border border-white/10">
-                    <h4 class="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                        <i data-lucide="layers" class="w-5 h-5 text-purple-400"></i>
-                        Design Elements
-                    </h4>
-                    <ul class="space-y-2 text-sm">
-                        <li>• <strong class="text-white">Glass Morphism</strong> - backdrop-filter: blur(40px)</li>
-                        <li>• <strong class="text-white">Subtle Gradients</strong> - Radial blue overlays</li>
-                        <li>• <strong class="text-white">Smooth Transitions</strong> - 300ms ease-in-out</li>
-                        <li>• <strong class="text-white">Rounded Corners</strong> - border-radius: 1.5rem</li>
-                    </ul>
+                <div>
+                    <h3 class="heading-3 mb-3">3. Get AI Insights</h3>
+                    <p class="body-text text-gray-600 dark:text-gray-400">
+                        Our AI will automatically extract:
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-3 mt-3">
+                        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                            <div class="flex items-center gap-2 text-sm font-medium mb-1">
+                                <i data-lucide="file-text" class="w-4 h-4 text-purple-600"></i>
+                                Meeting Summary
+                            </div>
+                            <p class="text-xs text-gray-600 dark:text-gray-400">Concise overview of key points</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                            <div class="flex items-center gap-2 text-sm font-medium mb-1">
+                                <i data-lucide="check-square" class="w-4 h-4 text-blue-600"></i>
+                                Action Items
+                            </div>
+                            <p class="text-xs text-gray-600 dark:text-gray-400">Tasks and follow-ups</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                            <div class="flex items-center gap-2 text-sm font-medium mb-1">
+                                <i data-lucide="tag" class="w-4 h-4 text-green-600"></i>
+                                Key Topics
+                            </div>
+                            <p class="text-xs text-gray-600 dark:text-gray-400">Main discussion themes</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                            <div class="flex items-center gap-2 text-sm font-medium mb-1">
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-orange-600"></i>
+                                Decisions Made
+                            </div>
+                            <p class="text-xs text-gray-600 dark:text-gray-400">Important conclusions</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-xl p-6 border border-blue-500/20">
-                <h4 class="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                    <i data-lucide="smartphone" class="w-5 h-5 text-blue-400"></i>
-                    Responsive Design
-                </h4>
-                <p class="text-sm leading-relaxed">
-                    The interface is fully responsive and optimized for all screen sizes, from mobile phones to desktop displays. The design maintains the premium iPhone aesthetic across all breakpoints with adaptive layouts and touch-friendly interactive elements.
-                </p>
-            </div>
-
-            <div class="bg-black/30 rounded-xl p-6 border border-white/10">
-                <h4 class="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                    <i data-lucide="accessibility" class="w-5 h-5 text-green-400"></i>
-                    Accessibility Features
-                </h4>
-                <ul class="space-y-2 text-sm">
-                    <li>• High contrast ratios for readability (WCAG AA compliant)</li>
-                    <li>• Semantic HTML structure for screen readers</li>
-                    <li>• Keyboard navigation support</li>
-                    <li>• Focus indicators on interactive elements</li>
-                    <li>• Responsive font sizes for better legibility</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Developers Section -->
-    <div id="developers" class="glass-card rounded-2xl p-8 mb-12">
-        <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-2">
-            <i data-lucide="users" class="w-8 h-8 text-purple-400"></i>
-            Development Team
-        </h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl p-6 border border-blue-500/20 text-center hover:border-blue-500/50 transition-all">
-                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-white">
-                    <i data-lucide="code" class="w-8 h-8"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Hamza Sayyad</h3>
-                <p class="text-blue-400 font-semibold mb-3">Frontend Developer</p>
-                <div class="flex flex-wrap justify-center gap-2 text-gray-400 text-xs">
-                    <span class="px-2 py-1 bg-blue-500/20 rounded-lg">HTML/CSS</span>
-                    <span class="px-2 py-1 bg-blue-500/20 rounded-lg">JavaScript</span>
-                    <span class="px-2 py-1 bg-blue-500/20 rounded-lg">UI/UX</span>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20 text-center hover:border-purple-500/50 transition-all">
-                <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-white">
-                    <i data-lucide="server" class="w-8 h-8"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Hasan Shaikh</h3>
-                <p class="text-purple-400 font-semibold mb-3">Backend Developer</p>
-                <div class="flex flex-wrap justify-center gap-2 text-gray-400 text-xs">
-                    <span class="px-2 py-1 bg-purple-500/20 rounded-lg">Python</span>
-                    <span class="px-2 py-1 bg-purple-500/20 rounded-lg">Flask</span>
-                    <span class="px-2 py-1 bg-purple-500/20 rounded-lg">AI/ML</span>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20 text-center hover:border-green-500/50 transition-all">
-                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-white">
-                    <i data-lucide="database" class="w-8 h-8"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Ujjval Shrivastav</h3>
-                <p class="text-green-400 font-semibold mb-3">Cloud & Database Architect</p>
-                <div class="flex flex-wrap justify-center gap-2 text-gray-400 text-xs">
-                    <span class="px-2 py-1 bg-green-500/20 rounded-lg">PostgreSQL</span>
-                    <span class="px-2 py-1 bg-green-500/20 rounded-lg">Cloud</span>
-                    <span class="px-2 py-1 bg-green-500/20 rounded-lg">DevOps</span>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-2xl p-6 border border-orange-500/20 text-center hover:border-orange-500/50 transition-all">
-                <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-white">
-                    <i data-lucide="cloud" class="w-8 h-8"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Rahul Rathod</h3>
-                <p class="text-orange-400 font-semibold mb-3">Cloud & Database Architect</p>
-                <div class="flex flex-wrap justify-center gap-2 text-gray-400 text-xs">
-                    <span class="px-2 py-1 bg-orange-500/20 rounded-lg">Database</span>
-                    <span class="px-2 py-1 bg-orange-500/20 rounded-lg">Cloud</span>
-                    <span class="px-2 py-1 bg-orange-500/20 rounded-lg">Infrastructure</span>
+                <div>
+                    <h3 class="heading-3 mb-3">4. Connect Integrations</h3>
+                    <p class="body-text text-gray-600 dark:text-gray-400 mb-2">
+                        Automate your workflow by connecting Trello or Jira to automatically create tasks from action items.
+                    </p>
+                    <a href="{{ url_for('integrations') }}" class="text-apple-blue hover:text-apple-blue-dark text-sm font-medium">
+                        View integrations →
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="mt-8 text-center bg-black/30 rounded-xl p-6 border border-white/10">
-            <div class="flex items-center justify-center gap-2 mb-3">
-                <i data-lucide="graduation-cap" class="w-6 h-6 text-blue-400"></i>
-                <h3 class="text-xl font-semibold text-white">L.R. Tiwari College of Engineering</h3>
+        <!-- API Documentation -->
+        <div class="card hover-lift mb-8 animate-slide-up">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                    <i data-lucide="code" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
+                </div>
+                <h2 class="heading-2">API Reference</h2>
             </div>
-            <p class="text-gray-400">This project was developed as part of our academic curriculum, showcasing the integration of modern web technologies with artificial intelligence.</p>
-        </div>
-    </div>
 
-    <!-- Back to Top -->
-    <div class="text-center">
-        <a href="#" class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors px-6 py-3 glass rounded-xl hover:bg-white/10">
-            <i data-lucide="arrow-up" class="w-5 h-5"></i>
-            Back to Top
-        </a>
+            <p class="body-text text-gray-600 dark:text-gray-400 mb-6">
+                Integrate AI Meeting Agent into your applications with our REST API.
+            </p>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="heading-3 mb-3">Authentication</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        Include your API key in the Authorization header:
+                    </p>
+                    <div class="p-4 rounded-lg bg-gray-900 dark:bg-black text-green-400 font-mono text-sm overflow-x-auto">
+                        <code>Authorization: Bearer YOUR_API_KEY</code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="heading-3 mb-3">Analyze Transcript</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                <span class="font-mono font-semibold text-blue-600">POST</span> /api/analyze
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <p class="text-sm font-medium mb-2">Request Body:</p>
+                            <div class="p-4 rounded-lg bg-gray-900 dark:bg-black text-gray-300 font-mono text-xs overflow-x-auto">
+<pre>{
+  "transcript": "John: Let's discuss the Q1 roadmap...",
+  "options": {
+    "create_trello_cards": true,
+    "create_jira_tickets": false
+  }
+}</pre>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-sm font-medium mb-2">Response:</p>
+                            <div class="p-4 rounded-lg bg-gray-900 dark:bg-black text-gray-300 font-mono text-xs overflow-x-auto">
+<pre>{
+  "summary": "Team discussed Q1 roadmap priorities...",
+  "action_items": [
+    "John to finalize roadmap by Friday",
+    "Sarah to prepare presentation"
+  ],
+  "topics": ["Q1 Planning", "Product Roadmap"],
+  "decisions": [
+    "Approved budget for Q1",
+    "Selected new design system"
+  ]
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="heading-3 mb-3">Get Team Members</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                <span class="font-mono font-semibold text-green-600">GET</span> /api/teams/:id/members
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <p class="text-sm font-medium mb-2">Response:</p>
+                            <div class="p-4 rounded-lg bg-gray-900 dark:bg-black text-gray-300 font-mono text-xs overflow-x-auto">
+<pre>{
+  "team_id": "123abc",
+  "members": [
+    {
+      "id": "user1",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "role": "owner"
+    }
+  ]
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="info" class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"></i>
+                        <div class="text-sm">
+                            <p class="font-medium text-blue-900 dark:text-blue-300 mb-1">API Keys</p>
+                            <p class="text-blue-700 dark:text-blue-400">
+                                Generate your API key in your account settings. Keep it secure and never share it publicly.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="card hover-lift animate-slide-up">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                    <i data-lucide="help-circle" class="w-5 h-5 text-purple-600 dark:text-purple-400"></i>
+                </div>
+                <h2 class="heading-2">Frequently Asked Questions</h2>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="heading-3 mb-2">What transcript formats are supported?</h3>
+                    <p class="body-text text-gray-600 dark:text-gray-400">
+                        We support plain text files and transcripts from Google Meet, Zoom, and Microsoft Teams. You can paste text directly or upload files in TXT, DOC, DOCX, or PDF format.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="heading-3 mb-2">Is my data secure?</h3>
+                    <p class="body-text text-gray-600 dark:text-gray-400">
+                        Yes! All data is encrypted in transit and at rest. We use industry-standard security practices and never share your data with third parties.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="heading-3 mb-2">How accurate is the AI analysis?</h3>
+                    <p class="body-text text-gray-600 dark:text-gray-400">
+                        Our AI models are trained on millions of meeting transcripts and achieve high accuracy for action item extraction and summarization. However, we always recommend reviewing the output.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="heading-3 mb-2">Can I use this for free?</h3>
+                    <p class="body-text text-gray-600 dark:text-gray-400">
+                        Yes! We offer a free tier with limited analyses per month. For unlimited usage and advanced features, check out our premium plans.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support -->
+        <div class="mt-8 text-center">
+            <p class="body-text text-gray-600 dark:text-gray-400 mb-4">
+                Still have questions?
+            </p>
+            <a href="mailto:support@aimeetingagent.com" class="btn btn-secondary inline-flex">
+                <i data-lucide="mail" class="w-4 h-4"></i>
+                Contact Support
+            </a>
+        </div>
     </div>
 </div>
-
-<style>html{scroll-behavior:smooth;}body:not(.light-mode) .text-gray-300,body:not(.light-mode) .text-gray-400{color:rgba(209,213,219,0.9) !important;}body:not(.light-mode) .text-white{color:rgba(255,255,255,0.95) !important;}</style>
-
-<script>
-        (function() {
-            'use strict';
-            try {
-                // Initialize Lucide icons when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        lucide.createIcons();
-    });
-            } catch(e) {
-                console.error('Script error:', e);
-            }
-        })();
-        </script>
 {% endblock %}

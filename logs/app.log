@@ -1,0 +1,1739 @@
+[INFO] 2026-03-02 00:16:02 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:16:02 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:16:02 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:16:02 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:16:02 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:16:02 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:16:02 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:16:02 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:16:02 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:16:02 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:16:02 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:16:02 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:16:02 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:16:02 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:16:02 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:16:02 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:16:02 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:16:02 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:16:03 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:16:03 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:16:03 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:16:03 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:16:03 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:16:03 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:16:03 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:16:03 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:16:03 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:16:03 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:16:03 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5001
+[INFO] 2026-03-02 00:16:19 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:16:19 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:16:19 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:16:19 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:16:19 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:16:19 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:16:19 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:16:19 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:16:19 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:16:19 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:16:19 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:16:19 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:16:19 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:16:19 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:16:19 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:16:19 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:16:19 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:16:19 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:16:20 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:16:20 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:16:20 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:16:20 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:16:20 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:16:20 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:16:20 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:16:20 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:16:20 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:16:20 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:16:20 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:16:21 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:16:21 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:16:21 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:16:21 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:16:21 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:16:21 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:16:21 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:16:21 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:16:21 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:16:21 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:16:21 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:16:21 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:16:21 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:16:21 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:16:21 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:16:21 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:16:21 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:16:21 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:16:21 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[ERROR] 2026-03-02 00:18:11 - app - logger_config.log_error:182 - ERROR - BuildError: Could not build url for endpoint 'verify_email'. Did you forget to specify values ['email']? - Context: {'path': '/verify_email/dankmemer020@gmail.com', 'method': 'GET', 'user': 'Anonymous'}
+Traceback:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/main_app.py", line 846, in verify_email
+    return render_template('verify_email.html', email=email)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/verify_email.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/base.html", line 259, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/verify_email.html", line 46, in block 'content'
+    <form method="POST" action="{{ url_for('verify_email') }}">
+    ^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+        endpoint,
+    ...<3 lines>...
+        force_external=_external,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'verify_email'. Did you forget to specify values ['email']?
+
+[INFO] 2026-03-02 00:18:57 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:18:57 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:18:57 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:18:57 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:18:57 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:18:57 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:18:57 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:18:57 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:18:57 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:18:57 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:18:57 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:18:57 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:18:57 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:18:57 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:18:57 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:18:57 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:18:57 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:18:57 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:18:58 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:18:58 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:18:58 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:18:58 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:18:58 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:18:58 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:18:58 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:18:58 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:18:58 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:18:58 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:18:58 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:18:58 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:18:58 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:18:58 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:18:58 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:18:58 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:18:58 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:18:58 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:18:58 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:18:58 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:18:58 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:18:58 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:20:10 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:20:10 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:20:10 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:20:10 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:20:10 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:20:10 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:20:10 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:20:10 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:20:10 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:20:10 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:20:10 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:20:10 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:20:10 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:20:10 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:20:10 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:20:10 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:20:10 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:20:10 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:20:10 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:20:11 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:20:11 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:20:11 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:20:11 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:20:11 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:20:11 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:20:11 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:20:11 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:20:11 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:20:11 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:20:11 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:20:11 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:20:11 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:20:11 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:20:11 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:20:11 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:20:11 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:20:11 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:20:12 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:20:12 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:20:12 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:20:12 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:20:12 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:20:12 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:20:12 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:20:12 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:20:12 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:20:12 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:20:12 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[ERROR] 2026-03-02 00:20:20 - app - logger_config.log_error:182 - ERROR - NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again. - Context: {'path': '/favicon.ico', 'method': 'GET', 'user': 'Anonymous'}
+Traceback:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/werkzeug/routing/map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+
+[ERROR] 2026-03-02 00:21:27 - app - logger_config.log_error:182 - ERROR - MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL. - Context: {'path': '/dashboard', 'method': 'POST', 'user': 'byte'}
+Traceback:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/werkzeug/routing/map.py", line 624, in match
+    raise MethodNotAllowed(valid_methods=list(e.have_match_for)) from None
+werkzeug.exceptions.MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL.
+
+[ERROR] 2026-03-02 00:21:39 - app - logger_config.log_error:182 - ERROR - BuildError: Could not build url for endpoint 'connect_trello'. Did you mean 'jira_connect' instead? - Context: {'path': '/integrations', 'method': 'GET', 'user': 'byte'}
+Traceback:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/main_app.py", line 1076, in integrations
+    return render_template('integrations.html',
+                         trello_credentials=trello_creds,
+                         jira_credentials=jira_creds,
+                         team=team_data)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/integrations.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/base.html", line 259, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/integrations.html", line 85, in block 'content'
+    <a href="{{ url_for('connect_trello') }}" class="btn btn-primary w-full">
+    ^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+        endpoint,
+    ...<3 lines>...
+        force_external=_external,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'connect_trello'. Did you mean 'jira_connect' instead?
+
+[INFO] 2026-03-02 00:21:56 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:21:56 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:21:56 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:21:56 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:21:56 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:21:56 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:21:56 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:21:56 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:21:56 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:21:56 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:21:56 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:21:56 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:21:56 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:21:56 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:21:56 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:21:56 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:21:56 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:21:56 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:21:56 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:22:06 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:22:06 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:22:06 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:22:06 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:22:06 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:22:06 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:22:06 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:22:06 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:22:06 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:22:06 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:22:06 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:22:06 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:22:06 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:22:06 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:22:06 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:22:06 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:22:06 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:22:06 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:22:06 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[ERROR] 2026-03-02 00:22:11 - app - logger_config.log_error:182 - ERROR - BuildError: Could not build url for endpoint 'connect_trello'. Did you mean 'jira_connect' instead? - Context: {'path': '/integrations', 'method': 'GET', 'user': 'byte'}
+Traceback:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/main_app.py", line 1080, in integrations
+    return render_template('integrations.html',
+                         trello_credentials=trello_creds,
+                         jira_credentials=jira_creds,
+                         team=team_data)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/integrations.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/base.html", line 259, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/integrations.html", line 85, in block 'content'
+    <a href="{{ url_for('connect_trello') }}" class="btn btn-primary w-full">
+    ^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+        endpoint,
+    ...<3 lines>...
+        force_external=_external,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'connect_trello'. Did you mean 'jira_connect' instead?
+
+[INFO] 2026-03-02 00:23:53 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:23:53 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:23:53 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:23:53 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:23:53 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:23:53 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:23:53 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:23:53 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:23:53 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:23:53 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:23:53 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:23:53 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:23:53 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:23:53 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:23:53 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:23:53 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:23:53 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:23:53 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:23:53 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:23:54 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:23:54 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:23:54 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:23:54 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:23:54 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:23:54 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:23:54 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:23:54 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:23:54 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:23:54 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:23:54 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:23:54 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:23:54 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:23:54 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:23:54 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:23:54 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:23:54 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:23:54 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:23:55 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:23:55 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:23:55 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:23:55 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:23:55 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:23:55 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:23:55 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:23:55 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:23:55 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:23:55 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:23:55 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[ERROR] 2026-03-02 00:24:10 - app - logger_config.log_error:182 - ERROR - BuildError: Could not build url for endpoint 'connect_trello'. Did you mean 'jira_connect' instead? - Context: {'path': '/trello/connect', 'method': 'GET', 'user': 'byte'}
+Traceback:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/main_app.py", line 1095, in trello_connect
+    return render_template('connect_trello.html', auth_url=auth_url)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/connect_trello.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/base.html", line 259, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/templates/connect_trello.html", line 78, in block 'content'
+    <a href="{{ url_for('connect_trello') }}" class="btn btn-primary w-full">
+    ^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+        endpoint,
+    ...<3 lines>...
+        force_external=_external,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'connect_trello'. Did you mean 'jira_connect' instead?
+
+[ERROR] 2026-03-02 00:25:12 - app - logger_config.log_error:182 - ERROR - MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL. - Context: {'path': '/dashboard', 'method': 'POST', 'user': 'byte'}
+Traceback:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/werkzeug/routing/map.py", line 624, in match
+    raise MethodNotAllowed(valid_methods=list(e.have_match_for)) from None
+werkzeug.exceptions.MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL.
+
+[INFO] 2026-03-02 00:26:09 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:26:09 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:26:09 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:26:09 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:26:09 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:26:09 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:26:09 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:26:09 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:26:09 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:26:09 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:26:09 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:26:09 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:26:09 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:26:09 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:26:09 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:26:09 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:26:09 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:26:09 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:26:09 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:26:10 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:26:10 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:26:10 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:26:10 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:26:10 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:26:10 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:26:10 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:26:10 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:26:10 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:26:10 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:26:10 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:26:10 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:26:10 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:26:10 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:26:10 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:26:10 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:26:10 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:26:10 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:26:10 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[ERROR] 2026-03-02 00:26:27 - app - logger_config.log_error:182 - ERROR - MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL. - Context: {'path': '/dashboard', 'method': 'POST', 'user': 'byte'}
+Traceback:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/werkzeug/routing/map.py", line 624, in match
+    raise MethodNotAllowed(valid_methods=list(e.have_match_for)) from None
+werkzeug.exceptions.MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL.
+
+[INFO] 2026-03-02 00:27:09 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:27:09 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:27:09 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:27:09 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:27:09 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:27:09 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:27:09 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:27:09 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:27:09 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:27:09 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:27:09 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:27:09 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:27:09 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:27:09 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:27:09 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:27:09 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:27:09 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:27:09 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:27:09 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:27:22 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:27:22 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:27:22 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:27:22 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:27:22 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:27:22 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:27:22 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:27:22 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:27:22 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:27:22 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:27:22 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:27:22 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:27:22 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:27:22 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:27:22 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:27:22 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:27:22 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:27:22 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:27:23 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:27:23 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:27:23 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:27:23 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:27:23 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:27:23 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:27:23 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:27:23 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:27:23 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:27:23 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:27:23 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:27:24 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:27:24 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:27:24 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:27:24 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:27:24 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:27:24 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:27:24 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:27:24 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:27:24 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:27:24 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:27:24 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:27:24 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:27:24 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:27:24 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:27:24 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:27:24 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:27:24 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:27:24 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:27:24 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[ERROR] 2026-03-02 00:27:42 - app - logger_config.log_error:182 - ERROR - MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL. - Context: {'path': '/dashboard', 'method': 'POST', 'user': 'byte'}
+Traceback:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/werkzeug/routing/map.py", line 624, in match
+    raise MethodNotAllowed(valid_methods=list(e.have_match_for)) from None
+werkzeug.exceptions.MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL.
+
+[INFO] 2026-03-02 00:28:58 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:28:58 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:28:58 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:28:58 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:28:58 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:28:58 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:28:58 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:28:58 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:28:58 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:28:58 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:28:58 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:28:58 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:28:58 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:28:58 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:28:58 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:28:58 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:28:58 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:28:58 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:28:58 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:29:24 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:29:24 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:29:24 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:29:24 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:29:24 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:29:24 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:29:24 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:29:24 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:29:24 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:29:24 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:29:24 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:29:24 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:29:24 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:29:24 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:29:24 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:29:24 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:29:24 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:29:24 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:29:25 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:29:25 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:29:25 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:29:25 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:29:25 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:29:25 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:29:25 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:29:25 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:29:25 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:29:25 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:29:25 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:29:41 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:29:41 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:29:41 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:29:41 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:29:41 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:29:41 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:29:41 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:29:41 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:29:41 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:29:41 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:29:41 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:29:41 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:29:41 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:29:41 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:29:41 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:29:41 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:29:41 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:29:41 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:29:42 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:29:42 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:29:42 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:29:42 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:29:42 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:29:42 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:29:42 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:29:42 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:29:42 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:29:42 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:29:42 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:29:56 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:29:56 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:29:56 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:29:56 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:29:56 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:29:56 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:29:56 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:29:56 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:29:56 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:29:56 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:29:56 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:29:56 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:29:56 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:29:56 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:29:56 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:29:56 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:29:56 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:29:56 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:29:57 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:29:57 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:29:57 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:29:57 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:29:57 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:29:57 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:29:57 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:29:57 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:29:57 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:29:57 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:29:57 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:30:06 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:30:06 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:30:06 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:30:06 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:30:06 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:30:06 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:30:06 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:30:06 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:30:06 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:30:06 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:30:06 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:30:06 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:30:06 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:30:06 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:30:06 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:30:06 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:30:06 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:30:06 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:30:07 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:30:07 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:30:07 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:30:07 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:30:07 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:30:07 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:30:07 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:30:07 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:30:07 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:30:07 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:30:07 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:30:34 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:30:34 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:30:34 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:30:34 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:30:34 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:30:34 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:30:34 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:30:34 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:30:34 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:30:34 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:30:34 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:30:34 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:30:34 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:30:34 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:30:34 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:30:34 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:30:34 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:30:34 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:30:34 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:30:35 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:30:35 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:30:35 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:30:35 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:30:35 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:30:35 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:30:35 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:30:35 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:30:35 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:30:35 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:30:35 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:30:35 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:30:35 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:30:35 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:30:35 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:30:35 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:30:35 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:30:35 - app - main_app.create_app:179 - Gemini AI model configured successfully
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:30:35 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:31:03 - app - main_app.analyze_transcript_with_ai:191 - Starting AI transcript analysis
+[DEBUG] 2026-03-02 00:31:03 - app - main_app.analyze_transcript_with_ai:215 - Sending 2088 characters to AI model
+[ERROR] 2026-03-02 00:31:03 - app - main_app.analyze_transcript_with_ai:238 - AI analysis error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+[ERROR] 2026-03-02 00:31:03 - app - logger_config.log_error:182 - ERROR - NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback:
+Traceback (most recent call last):
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/main_app.py", line 216, in analyze_transcript_with_ai
+    response = model.generate_content(prompt)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/google/generativeai/generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/google/api_core/retry/retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/google/api_core/retry/retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/google/api_core/retry/retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/google/api_core/retry/retry_unary.py", line 147, in retry_target
+    result = target()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/google/api_core/timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/google/api_core/grpc_helpers.py", line 78, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+
+[INFO] 2026-03-02 00:33:10 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:33:10 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:33:10 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:33:10 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:33:10 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:33:10 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:33:10 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:33:10 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:33:10 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:33:10 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:33:10 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:33:10 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:33:10 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:33:10 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:33:10 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:33:10 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:33:10 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:33:10 - app - main_app.create_app:179 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:33:10 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:33:11 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:33:11 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:33:11 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:33:11 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:33:11 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:33:11 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:33:11 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:33:11 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:33:11 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:33:11 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:33:11 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:33:11 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:33:11 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:33:11 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:33:11 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:33:11 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:33:11 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:33:11 - app - main_app.create_app:179 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:33:11 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:33:26 - app - main_app.analyze_transcript_with_ai:191 - Starting AI transcript analysis
+[DEBUG] 2026-03-02 00:33:26 - app - main_app.analyze_transcript_with_ai:215 - Sending 2088 characters to AI model
+[INFO] 2026-03-02 00:33:28 - app - main_app.analyze_transcript_with_ai:219 - AI analysis completed in 1431.88ms
+[DEBUG] 2026-03-02 00:33:28 - app - main_app.analyze_transcript_with_ai:220 - Raw AI response: ```json
+{
+  "summary": "This weekly project sync meeting covered development progress, marketing updates, and upcoming deadlines. The authentication module is complete, and the dashboard API integrati...
+[INFO] 2026-03-02 00:33:28 - app - main_app.analyze_transcript_with_ai:230 - AI analysis successful: 4 action items, 2 decisions
+[INFO] 2026-03-02 00:39:46 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:39:46 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:39:46 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:39:46 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:39:46 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:39:46 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:39:46 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:39:46 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:39:46 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:39:46 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:39:46 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:39:46 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:39:46 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:39:46 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:39:46 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:39:46 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:39:46 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:39:46 - app - main_app.create_app:179 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:39:46 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:39:55 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:39:55 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:39:55 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:39:55 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:39:55 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:39:55 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:39:55 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:39:55 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:39:55 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:39:55 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:39:55 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:39:55 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:39:55 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:39:55 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:39:55 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:39:55 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:39:55 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:39:55 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:39:58 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:39:58 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:39:58 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:39:58 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:39:58 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:39:58 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:39:58 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:39:58 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:39:58 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:39:58 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:39:58 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:39:58 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:39:58 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:39:58 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:39:58 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:39:58 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:39:58 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:39:58 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:39:59 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:39:59 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:39:59 - app - main_app.create_app:179 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:39:59 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:39:59 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:39:59 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:39:59 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:39:59 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:39:59 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:39:59 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:39:59 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:39:59 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:39:59 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:39:59 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:39:59 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:39:59 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:39:59 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:39:59 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:39:59 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:40:00 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:40:00 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:40:00 - app - main_app.create_app:179 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 00:40:00 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:40:00 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:40:00 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:40:00 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:40:00 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:40:00 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:40:00 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:40:00 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:43:03 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:43:03 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:43:03 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:43:03 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:43:03 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:43:03 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:43:03 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:43:03 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:43:03 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:43:03 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:43:03 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:43:03 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:43:03 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:43:03 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:43:03 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:43:03 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:43:03 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:43:03 - app - main_app.create_app:179 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:43:03 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:43:04 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 00:43:04 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 00:43:04 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 00:43:04 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 00:43:04 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 00:43:04 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 00:43:04 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 00:43:04 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 00:43:04 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:43:04 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 00:43:04 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 00:43:04 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 00:43:04 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 00:43:04 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 00:43:04 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 00:43:04 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 00:43:04 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 00:43:04 - app - main_app.create_app:179 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 00:43:04 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 00:43:45 - app - main_app.analyze_transcript_with_ai:191 - Starting AI transcript analysis
+[DEBUG] 2026-03-02 00:43:45 - app - main_app.analyze_transcript_with_ai:215 - Sending 2088 characters to AI model
+[INFO] 2026-03-02 00:43:47 - app - main_app.analyze_transcript_with_ai:219 - AI analysis completed in 1728.39ms
+[DEBUG] 2026-03-02 00:43:47 - app - main_app.analyze_transcript_with_ai:220 - Raw AI response: ```json
+{
+  "summary": "The weekly project sync meeting covered development progress, marketing updates, and upcoming deadlines. The authentication module is complete, and the dashboard API integratio...
+[INFO] 2026-03-02 00:43:47 - app - main_app.analyze_transcript_with_ai:230 - AI analysis successful: 4 action items, 2 decisions
+[INFO] 2026-03-02 11:17:53 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:17:53 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:17:53 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:17:53 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:17:53 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:17:53 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:17:53 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:17:53 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:17:53 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:17:53 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:17:53 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:17:53 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:17:53 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:17:53 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:17:53 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:19:05 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:19:05 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:19:05 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:19:05 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:19:05 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:19:05 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:19:05 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:19:05 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:19:05 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:19:05 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:19:05 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:19:05 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:19:05 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:19:05 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:19:05 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:19:05 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:19:05 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:19:05 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:19:35 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:19:35 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:19:35 - app - main_app.create_app:179 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:19:35 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:19:35 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:19:35 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:19:35 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:19:35 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:19:35 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:19:35 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:19:35 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:19:36 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:19:36 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:19:36 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:19:36 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:19:36 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:19:36 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:19:36 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:19:36 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:19:36 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:19:36 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:19:36 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:19:36 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:19:36 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:19:36 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:19:36 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:19:36 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:19:36 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:19:36 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:20:07 - app - main_app.create_app:139 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:20:07 - app - main_app.create_app:176 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:20:07 - app - main_app.create_app:179 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:20:07 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:20:07 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:20:07 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:20:07 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:20:07 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:20:07 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:20:07 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:20:07 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:21:48 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:21:48 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:21:48 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:21:48 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:21:48 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:21:48 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:21:48 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:21:48 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:21:48 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:21:48 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:21:48 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:21:48 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:21:48 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:21:48 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:21:48 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:21:48 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:21:48 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:21:48 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:21:49 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:21:49 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:21:49 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:21:49 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:21:49 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:21:49 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:21:49 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:21:49 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:21:49 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:21:49 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:21:49 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:22:12 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:22:12 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:22:12 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:22:12 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:22:12 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:22:12 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:22:12 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:22:12 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:22:12 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:22:12 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:22:12 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:22:12 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:22:12 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:22:12 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:22:12 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:22:12 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:22:12 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:22:12 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:22:12 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:22:25 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:22:25 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:22:25 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:22:25 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:22:25 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:22:25 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:22:25 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:22:25 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:22:25 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:22:25 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:22:25 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:22:25 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:22:25 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:22:25 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:22:25 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:22:25 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:22:25 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:22:25 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:22:25 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:22:26 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:22:26 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:22:26 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:22:26 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:22:26 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:22:26 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:22:26 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:22:26 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:22:26 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:22:26 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:22:26 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:22:26 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:22:26 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:22:26 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:22:26 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:22:26 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:22:26 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:22:26 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:22:26 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:23:07 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:23:07 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:23:07 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:23:07 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:23:07 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:23:07 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:23:07 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:23:07 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:23:07 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:23:07 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:23:07 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:23:39 - app - main_app.analyze_transcript_with_ai:192 - Starting AI transcript analysis
+[DEBUG] 2026-03-02 11:23:39 - app - main_app.analyze_transcript_with_ai:216 - Sending 1560 characters to AI model
+[INFO] 2026-03-02 11:23:40 - app - main_app.analyze_transcript_with_ai:220 - AI analysis completed in 1134.60ms
+[DEBUG] 2026-03-02 11:23:40 - app - main_app.analyze_transcript_with_ai:221 - Raw AI response: ```json
+{
+  "summary": "The weekly project sync covered development progress, marketing updates, and deadlines. The authentication module is complete, and the dashboard API integration is in progress....
+[INFO] 2026-03-02 11:23:40 - app - main_app.analyze_transcript_with_ai:231 - AI analysis successful: 4 action items, 2 decisions
+[INFO] 2026-03-02 11:24:12 - app - main_app.analyze_transcript_with_ai:192 - Starting AI transcript analysis
+[DEBUG] 2026-03-02 11:24:12 - app - main_app.analyze_transcript_with_ai:216 - Sending 1560 characters to AI model
+[INFO] 2026-03-02 11:24:14 - app - main_app.analyze_transcript_with_ai:220 - AI analysis completed in 1141.80ms
+[DEBUG] 2026-03-02 11:24:14 - app - main_app.analyze_transcript_with_ai:221 - Raw AI response: ```json
+{
+  "summary": "The weekly project sync focused on development progress, marketing updates, and upcoming deadlines. The authentication module is complete, and the login bug is fixed. The dashb...
+[INFO] 2026-03-02 11:24:14 - app - main_app.analyze_transcript_with_ai:231 - AI analysis successful: 4 action items, 3 decisions
+[ERROR] 2026-03-02 11:24:35 - app - logger_config.log_error:182 - ERROR - NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again. - Context: {'path': '/.well-known/appspecific/com.chrome.devtools.json', 'method': 'GET', 'user': 'adnan'}
+Traceback:
+Traceback (most recent call last):
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/flask/app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/flask/app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/flask/ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/werkzeug/routing/map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+
+[INFO] 2026-03-02 11:25:21 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:25:21 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:25:21 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:25:21 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:25:21 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:25:21 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:25:21 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:25:21 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:25:21 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:25:21 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:25:21 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:25:21 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:25:21 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:25:21 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:25:21 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:25:21 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:25:21 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:25:21 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:25:21 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:25:48 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:25:48 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:25:48 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:25:48 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:25:48 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:25:48 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:25:48 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:25:48 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:25:48 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:25:48 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:25:48 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:25:48 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:25:48 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:25:48 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:25:48 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:25:48 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:25:48 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:25:48 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:25:49 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:25:49 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:25:49 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:25:49 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:25:49 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:25:49 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:25:49 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:25:49 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:25:49 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:25:49 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:25:49 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:25:56 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:25:56 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:25:56 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:25:56 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:25:56 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:25:56 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:25:56 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:25:56 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:25:56 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:25:56 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:25:56 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:25:56 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:25:56 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:25:56 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:25:56 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:25:56 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:25:56 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:25:56 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:25:56 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:26:02 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:26:02 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:26:02 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:26:02 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:26:02 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:26:02 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:26:02 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:26:02 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:26:02 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:02 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:02 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:26:02 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:26:02 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:26:02 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:26:02 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:26:02 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:26:02 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:26:02 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:26:02 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:26:07 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:26:07 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:26:07 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:26:07 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:26:07 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:26:07 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:26:07 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:26:07 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:26:07 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:07 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:07 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:26:07 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:26:07 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:26:07 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:26:07 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:26:07 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:26:07 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:26:07 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:26:07 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:26:10 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:26:10 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:26:10 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:26:10 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:26:10 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:26:10 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:26:10 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:26:10 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:26:10 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:10 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:10 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:26:10 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:26:10 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:26:10 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:26:10 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:26:10 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:26:10 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:26:10 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:26:10 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:26:15 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:26:15 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:26:15 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:26:15 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:26:15 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:26:15 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:26:15 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:26:15 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:26:15 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:15 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:15 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:26:15 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:26:15 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:26:15 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:26:15 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:26:15 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:26:15 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:26:15 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:26:15 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[INFO] 2026-03-02 11:26:22 - app - logger_config.<module>:300 - ================================================================================
+[INFO] 2026-03-02 11:26:22 - app - logger_config.<module>:301 - AI Meeting Agent - Logging System Initialized
+[INFO] 2026-03-02 11:26:22 - app - logger_config.<module>:302 - Log Directory: /Users/adnan/Downloads/AI-Meeting-Agent-Live/logs
+[INFO] 2026-03-02 11:26:22 - app - logger_config.<module>:303 - ================================================================================
+[INFO] 2026-03-02 11:26:22 - app - main_app.<module>:29 - Starting AI Meeting Agent application initialization
+[INFO] 2026-03-02 11:26:22 - app - main_app.<module>:43 - ============================================================
+[INFO] 2026-03-02 11:26:22 - app - main_app.<module>:44 - CONFIGURATION STATUS
+[INFO] 2026-03-02 11:26:22 - app - main_app.<module>:45 - ============================================================
+[INFO] 2026-03-02 11:26:22 - app - main_app.<module>:46 - TRELLO_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:22 - app - main_app.<module>:47 - GEMINI_API_KEY: ✓ Set
+[INFO] 2026-03-02 11:26:22 - app - main_app.<module>:48 - MONGO_URL: ✓ Set
+[INFO] 2026-03-02 11:26:22 - app - main_app.<module>:49 - EMAIL: ✓ Set
+[INFO] 2026-03-02 11:26:22 - app - main_app.<module>:50 - ============================================================
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:12 - ================================================================================
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:13 - 🚀 Starting AI Meeting Agent with MongoDB...
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:14 - ================================================================================
+[INFO] 2026-03-02 11:26:22 - app - main_app.create_app:62 - Creating Flask application instance
+[INFO] 2026-03-02 11:26:22 - app - main_app.create_app:69 - Session configuration applied
+[INFO] 2026-03-02 11:26:22 - app - main_app.create_app:140 - Flask extensions initialized (bcrypt, login_manager)
+[INFO] 2026-03-02 11:26:22 - app - main_app.create_app:177 - Configuring Gemini AI model...
+[INFO] 2026-03-02 11:26:22 - app - main_app.create_app:180 - Gemini AI model configured successfully (gemini-2.5-flash-lite)
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:34 - All required environment variables are set
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:37 - Feature Status:
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:38 - - MongoDB integration: Enabled
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:39 - - Email notifications: Enabled
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:40 - - Password reset: Enabled
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:41 - - Trello integration: Available
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:42 - - Slack integration: Available
+[INFO] 2026-03-02 11:26:22 - app - run.<module>:51 - Starting Flask server on 0.0.0.0:5002
+[ERROR] 2026-03-02 11:26:28 - app - logger_config.log_error:182 - ERROR - NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again. - Context: {'path': '/.well-known/appspecific/com.chrome.devtools.json', 'method': 'GET', 'user': 'adnan'}
+Traceback:
+Traceback (most recent call last):
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/flask/app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/flask/app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/flask/ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/werkzeug/routing/map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+
+[INFO] 2026-03-02 11:26:37 - app - main_app.analyze_transcript_with_ai:192 - Starting AI transcript analysis
+[DEBUG] 2026-03-02 11:26:37 - app - main_app.analyze_transcript_with_ai:216 - Sending 1560 characters to AI model
+[INFO] 2026-03-02 11:26:39 - app - main_app.analyze_transcript_with_ai:220 - AI analysis completed in 2417.85ms
+[DEBUG] 2026-03-02 11:26:39 - app - main_app.analyze_transcript_with_ai:221 - Raw AI response: ```json
+{
+  "summary": "The weekly project sync meeting covered development progress, with the authentication module complete and the dashboard API integration underway, pending UI assets from design....
+[INFO] 2026-03-02 11:26:39 - app - main_app.analyze_transcript_with_ai:231 - AI analysis successful: 4 action items, 2 decisions

@@ -1,0 +1,478 @@
+[INFO] 2026-03-02 00:16:02 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:16:02 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:16:02 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:16:02 - database - main_app.create_app:92 - Successfully connected to MongoDB in 153.21ms
+[INFO] 2026-03-02 00:16:02 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:16:03 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:16:03 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:16:19 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:16:19 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:16:19 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:16:20 - database - main_app.create_app:92 - Successfully connected to MongoDB in 268.52ms
+[INFO] 2026-03-02 00:16:20 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:16:20 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:16:20 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:16:21 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:16:21 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:16:21 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:16:21 - database - main_app.create_app:92 - Successfully connected to MongoDB in 86.22ms
+[INFO] 2026-03-02 00:16:21 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:16:21 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:16:21 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:18:57 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:18:57 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:18:57 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:18:57 - database - main_app.create_app:92 - Successfully connected to MongoDB in 163.52ms
+[INFO] 2026-03-02 00:18:57 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:18:58 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:18:58 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:18:58 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:18:58 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:18:58 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:18:58 - database - main_app.create_app:92 - Successfully connected to MongoDB in 80.37ms
+[INFO] 2026-03-02 00:18:58 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:18:58 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:18:58 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:20:10 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:20:10 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:20:10 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:20:10 - database - main_app.create_app:92 - Successfully connected to MongoDB in 264.57ms
+[INFO] 2026-03-02 00:20:10 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:20:10 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:20:10 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:20:11 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:20:11 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:20:11 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:20:11 - database - main_app.create_app:92 - Successfully connected to MongoDB in 98.38ms
+[INFO] 2026-03-02 00:20:11 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:20:12 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:20:12 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:21:56 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:21:56 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:21:56 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:21:56 - database - main_app.create_app:92 - Successfully connected to MongoDB in 166.05ms
+[INFO] 2026-03-02 00:21:56 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:21:56 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:21:56 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:22:06 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:22:06 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:22:06 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:22:06 - database - main_app.create_app:92 - Successfully connected to MongoDB in 99.31ms
+[INFO] 2026-03-02 00:22:06 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:22:06 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:22:06 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:23:53 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:23:53 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:23:53 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:23:53 - database - main_app.create_app:92 - Successfully connected to MongoDB in 313.48ms
+[INFO] 2026-03-02 00:23:53 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:23:53 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:23:53 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:23:54 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:23:54 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:23:54 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:23:54 - database - main_app.create_app:92 - Successfully connected to MongoDB in 75.86ms
+[INFO] 2026-03-02 00:23:54 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:23:55 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:23:55 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:26:09 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:26:09 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:26:09 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:26:09 - database - main_app.create_app:92 - Successfully connected to MongoDB in 228.14ms
+[INFO] 2026-03-02 00:26:09 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:26:09 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:26:09 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:26:10 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:26:10 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:26:10 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:26:10 - database - main_app.create_app:92 - Successfully connected to MongoDB in 86.99ms
+[INFO] 2026-03-02 00:26:10 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:26:10 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:26:10 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:27:09 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:27:09 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:27:09 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:27:09 - database - main_app.create_app:92 - Successfully connected to MongoDB in 183.28ms
+[INFO] 2026-03-02 00:27:09 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:27:09 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:27:09 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:27:22 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:27:22 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:27:22 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:27:23 - database - main_app.create_app:92 - Successfully connected to MongoDB in 282.03ms
+[INFO] 2026-03-02 00:27:23 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:27:23 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:27:23 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:27:24 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:27:24 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:27:24 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:27:24 - database - main_app.create_app:92 - Successfully connected to MongoDB in 82.20ms
+[INFO] 2026-03-02 00:27:24 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:27:24 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:27:24 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:28:58 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:28:58 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:28:58 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:28:58 - database - main_app.create_app:92 - Successfully connected to MongoDB in 164.04ms
+[INFO] 2026-03-02 00:28:58 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:28:58 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:28:58 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:29:24 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:29:24 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:29:24 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:29:25 - database - main_app.create_app:92 - Successfully connected to MongoDB in 798.13ms
+[INFO] 2026-03-02 00:29:25 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:29:25 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:29:25 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:29:41 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:29:41 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:29:41 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:29:41 - database - main_app.create_app:92 - Successfully connected to MongoDB in 241.14ms
+[INFO] 2026-03-02 00:29:41 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:29:42 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:29:42 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:29:56 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:29:56 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:29:56 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:29:56 - database - main_app.create_app:92 - Successfully connected to MongoDB in 255.02ms
+[INFO] 2026-03-02 00:29:56 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:29:57 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:29:57 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:30:06 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:30:06 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:30:06 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:30:06 - database - main_app.create_app:92 - Successfully connected to MongoDB in 145.22ms
+[INFO] 2026-03-02 00:30:06 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:30:07 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:30:07 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:30:34 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:30:34 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:30:34 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:30:34 - database - main_app.create_app:92 - Successfully connected to MongoDB in 360.89ms
+[INFO] 2026-03-02 00:30:34 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:30:34 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:30:34 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:30:35 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:30:35 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:30:35 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:30:35 - database - main_app.create_app:92 - Successfully connected to MongoDB in 83.01ms
+[INFO] 2026-03-02 00:30:35 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:30:35 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:30:35 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:33:10 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:33:10 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:33:10 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:33:10 - database - main_app.create_app:92 - Successfully connected to MongoDB in 148.99ms
+[INFO] 2026-03-02 00:33:10 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:33:10 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:33:10 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:33:11 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:33:11 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:33:11 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:33:11 - database - main_app.create_app:92 - Successfully connected to MongoDB in 85.17ms
+[INFO] 2026-03-02 00:33:11 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:33:11 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:33:11 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:39:46 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:39:46 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:39:46 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:39:46 - database - main_app.create_app:92 - Successfully connected to MongoDB in 228.49ms
+[INFO] 2026-03-02 00:39:46 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:39:46 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:39:46 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:39:55 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:39:55 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:39:55 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:39:58 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:39:58 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:39:58 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:39:58 - database - main_app.create_app:92 - Successfully connected to MongoDB in 152.00ms
+[INFO] 2026-03-02 00:39:58 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:39:59 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:39:59 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:39:59 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:39:59 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:39:59 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:39:59 - database - main_app.create_app:92 - Successfully connected to MongoDB in 85.82ms
+[INFO] 2026-03-02 00:39:59 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:40:00 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:40:00 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:43:03 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:43:03 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:43:03 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:43:03 - database - main_app.create_app:92 - Successfully connected to MongoDB in 249.27ms
+[INFO] 2026-03-02 00:43:03 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:43:03 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:43:03 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 00:43:04 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 00:43:04 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 00:43:04 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 00:43:04 - database - main_app.create_app:92 - Successfully connected to MongoDB in 91.02ms
+[INFO] 2026-03-02 00:43:04 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 00:43:04 - database - main_app.create_app:94 - Collections: ['users', 'jira_credentials', 'trello_credentials']
+[INFO] 2026-03-02 00:43:04 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 11:17:53 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:17:53 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:17:53 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:17:54 - database - main_app.create_app:92 - Successfully connected to MongoDB in 481.86ms
+[INFO] 2026-03-02 11:17:54 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:19:05 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:19:05 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:19:05 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:19:05 - database - main_app.create_app:92 - Successfully connected to MongoDB in 98.80ms
+[INFO] 2026-03-02 11:19:05 - database - main_app.create_app:93 - Database name: test
+[ERROR] 2026-03-02 11:19:35 - database - main_app.create_app:103 - MongoDB connection failed: ServerSelectionTimeoutError - SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 69a524d1ff24d3cb498e9d67, topology_type: ReplicaSetNoPrimary, servers: [<ServerDescription ('ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+[ERROR] 2026-03-02 11:19:35 - database - logger_config.log_error:182 - ERROR - ServerSelectionTimeoutError: SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 69a524d1ff24d3cb498e9d67, topology_type: ReplicaSetNoPrimary, servers: [<ServerDescription ('ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]> - Context: {'connection_string': 'REDACTED'}
+Traceback:
+Traceback (most recent call last):
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/main_app.py", line 94, in create_app
+    database_logger.info(f"Collections: {db.list_collection_names()}")
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/database.py", line 1154, in list_collection_names
+    return [result["name"] for result in self.list_collections(session=session, **kwargs)]
+                                         ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/database.py", line 1105, in list_collections
+    return self.__client._retryable_read(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        _cmd, read_pref, session, operation=_Op.LIST_COLLECTIONS
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 1540, in _retryable_read
+    return self._retry_internal(
+           ~~~~~~~~~~~~~~~~~~~~^
+        func,
+        ^^^^^
+    ...<7 lines>...
+        operation_id=operation_id,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/_csot.py", line 108, in csot_wrapper
+    return func(self, *args, **kwargs)
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 1507, in _retry_internal
+    ).run()
+      ~~~^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 2353, in run
+    return self._read() if self._is_read else self._write()
+           ~~~~~~~~~~^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 2483, in _read
+    self._server = self._get_server()
+                   ~~~~~~~~~~~~~~~~^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 2439, in _get_server
+    return self._client._select_server(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._server_selector,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        operation_id=self._operation_id,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 1322, in _select_server
+    server = topology.select_server(
+        server_selector,
+    ...<2 lines>...
+        operation_id=operation_id,
+    )
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/topology.py", line 368, in select_server
+    server = self._select_server(
+        selector,
+    ...<4 lines>...
+        operation_id=operation_id,
+    )
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/topology.py", line 346, in _select_server
+    servers = self.select_servers(
+        selector, operation, server_selection_timeout, address, operation_id
+    )
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/topology.py", line 253, in select_servers
+    server_descriptions = self._select_servers_loop(
+        selector, server_timeout, operation, operation_id, address
+    )
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/topology.py", line 303, in _select_servers_loop
+    raise ServerSelectionTimeoutError(
+        f"{self._error_message(selector)}, Timeout: {timeout}s, Topology Description: {self.description!r}"
+    )
+pymongo.errors.ServerSelectionTimeoutError: SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 69a524d1ff24d3cb498e9d67, topology_type: ReplicaSetNoPrimary, servers: [<ServerDescription ('ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+
+[WARNING] 2026-03-02 11:19:35 - database - main_app.create_app:113 - Continuing without MongoDB - database features will be disabled
+[INFO] 2026-03-02 11:19:35 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 11:19:36 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:19:36 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:19:36 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:19:36 - database - main_app.create_app:92 - Successfully connected to MongoDB in 200.78ms
+[INFO] 2026-03-02 11:19:36 - database - main_app.create_app:93 - Database name: test
+[ERROR] 2026-03-02 11:20:07 - database - main_app.create_app:103 - MongoDB connection failed: ServerSelectionTimeoutError - SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 69a524f08932778cb6d79c94, topology_type: ReplicaSetNoPrimary, servers: [<ServerDescription ('ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+[ERROR] 2026-03-02 11:20:07 - database - logger_config.log_error:182 - ERROR - ServerSelectionTimeoutError: SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 69a524f08932778cb6d79c94, topology_type: ReplicaSetNoPrimary, servers: [<ServerDescription ('ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]> - Context: {'connection_string': 'REDACTED'}
+Traceback:
+Traceback (most recent call last):
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/main_app.py", line 94, in create_app
+    database_logger.info(f"Collections: {db.list_collection_names()}")
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/database.py", line 1154, in list_collection_names
+    return [result["name"] for result in self.list_collections(session=session, **kwargs)]
+                                         ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/database.py", line 1105, in list_collections
+    return self.__client._retryable_read(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        _cmd, read_pref, session, operation=_Op.LIST_COLLECTIONS
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 1540, in _retryable_read
+    return self._retry_internal(
+           ~~~~~~~~~~~~~~~~~~~~^
+        func,
+        ^^^^^
+    ...<7 lines>...
+        operation_id=operation_id,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/_csot.py", line 108, in csot_wrapper
+    return func(self, *args, **kwargs)
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 1507, in _retry_internal
+    ).run()
+      ~~~^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 2353, in run
+    return self._read() if self._is_read else self._write()
+           ~~~~~~~~~~^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 2483, in _read
+    self._server = self._get_server()
+                   ~~~~~~~~~~~~~~~~^^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 2439, in _get_server
+    return self._client._select_server(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._server_selector,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        operation_id=self._operation_id,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/mongo_client.py", line 1322, in _select_server
+    server = topology.select_server(
+        server_selector,
+    ...<2 lines>...
+        operation_id=operation_id,
+    )
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/topology.py", line 368, in select_server
+    server = self._select_server(
+        selector,
+    ...<4 lines>...
+        operation_id=operation_id,
+    )
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/topology.py", line 346, in _select_server
+    servers = self.select_servers(
+        selector, operation, server_selection_timeout, address, operation_id
+    )
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/topology.py", line 253, in select_servers
+    server_descriptions = self._select_servers_loop(
+        selector, server_timeout, operation, operation_id, address
+    )
+  File "/Users/adnan/Downloads/AI-Meeting-Agent-Live/venv/lib/python3.13/site-packages/pymongo/topology.py", line 303, in _select_servers_loop
+    raise ServerSelectionTimeoutError(
+        f"{self._error_message(selector)}, Timeout: {timeout}s, Topology Description: {self.description!r}"
+    )
+pymongo.errors.ServerSelectionTimeoutError: SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms),SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 69a524f08932778cb6d79c94, topology_type: ReplicaSetNoPrimary, servers: [<ServerDescription ('ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-00.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-01.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>, <ServerDescription ('ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('SSL handshake failed: ac-9oms9fh-shard-00-02.w5yrn23.mongodb.net:27017: [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1028) (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+
+[WARNING] 2026-03-02 11:20:07 - database - main_app.create_app:113 - Continuing without MongoDB - database features will be disabled
+[INFO] 2026-03-02 11:20:07 - database - main_app.create_app:133 - ============================================================
+[INFO] 2026-03-02 11:21:48 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:21:48 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:21:48 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:21:49 - database - main_app.create_app:92 - Successfully connected to MongoDB in 558.08ms
+[INFO] 2026-03-02 11:21:49 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:21:49 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:21:49 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:22:12 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:22:12 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:22:12 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:22:12 - database - main_app.create_app:92 - Successfully connected to MongoDB in 131.05ms
+[INFO] 2026-03-02 11:22:12 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:22:12 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:22:12 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:22:25 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:22:25 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:22:25 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:22:25 - database - main_app.create_app:92 - Successfully connected to MongoDB in 100.90ms
+[INFO] 2026-03-02 11:22:25 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:22:25 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:22:25 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:22:26 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:22:26 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:22:26 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:22:26 - database - main_app.create_app:92 - Successfully connected to MongoDB in 88.63ms
+[INFO] 2026-03-02 11:22:26 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:22:26 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:22:26 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:92 - Successfully connected to MongoDB in 95.92ms
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:92 - Successfully connected to MongoDB in 72.18ms
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:23:07 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:25:21 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:25:21 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:25:21 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:25:21 - database - main_app.create_app:92 - Successfully connected to MongoDB in 133.71ms
+[INFO] 2026-03-02 11:25:21 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:25:21 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:25:21 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:25:48 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:25:48 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:25:48 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:25:49 - database - main_app.create_app:92 - Successfully connected to MongoDB in 107.75ms
+[INFO] 2026-03-02 11:25:49 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:25:49 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:25:49 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:25:56 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:25:56 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:25:56 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:25:56 - database - main_app.create_app:92 - Successfully connected to MongoDB in 103.85ms
+[INFO] 2026-03-02 11:25:56 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:25:56 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:25:56 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:26:02 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:26:02 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:26:02 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:26:02 - database - main_app.create_app:92 - Successfully connected to MongoDB in 96.57ms
+[INFO] 2026-03-02 11:26:02 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:26:02 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:26:02 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:26:07 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:26:07 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:26:07 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:26:07 - database - main_app.create_app:92 - Successfully connected to MongoDB in 111.92ms
+[INFO] 2026-03-02 11:26:07 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:26:07 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:26:07 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:26:10 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:26:10 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:26:10 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:26:10 - database - main_app.create_app:92 - Successfully connected to MongoDB in 116.55ms
+[INFO] 2026-03-02 11:26:10 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:26:10 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:26:10 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:26:15 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:26:15 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:26:15 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:26:15 - database - main_app.create_app:92 - Successfully connected to MongoDB in 105.85ms
+[INFO] 2026-03-02 11:26:15 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:26:15 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:26:15 - database - main_app.create_app:134 - ============================================================
+[INFO] 2026-03-02 11:26:22 - database - main_app.create_app:72 - ============================================================
+[INFO] 2026-03-02 11:26:22 - database - main_app.create_app:73 - MONGODB CONNECTION ATTEMPT
+[INFO] 2026-03-02 11:26:22 - database - main_app.create_app:74 - ============================================================
+[INFO] 2026-03-02 11:26:22 - database - main_app.create_app:92 - Successfully connected to MongoDB in 96.91ms
+[INFO] 2026-03-02 11:26:22 - database - main_app.create_app:93 - Database name: test
+[INFO] 2026-03-02 11:26:22 - database - main_app.create_app:95 - MongoDB connection established successfully
+[INFO] 2026-03-02 11:26:22 - database - main_app.create_app:134 - ============================================================
