@@ -95,5 +95,13 @@ except Exception as e:
     def error_handler(path=''):
         return jsonify(init_error), 500
 
+# Export the app for Vercel
+def handler(request):
+    """Vercel serverless handler"""
+    return app(request.environ, lambda status, headers: None)
+
+# Also make app available for direct import
+__all__ = ['app', 'handler']
+
 
 
