@@ -10,18 +10,33 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# Create logs directory if it doesn't exist
-LOGS_DIR = Path(__file__).parent / 'logs'
-LOGS_DIR.mkdir(exist_ok=True)
+# Detect if running in serverless environment (Vercel)
+def is_serverless():
+    """Check if running in serverless environment like Vercel"""
+    return os.environ.get('VERCEL') == '1' or '/var/task' in os.getcwd()
 
-# Log file paths
-APP_LOG_FILE = LOGS_DIR / 'app.log'
-ERROR_LOG_FILE = LOGS_DIR / 'error.log'
-ACCESS_LOG_FILE = LOGS_DIR / 'access.log'
-DATABASE_LOG_FILE = LOGS_DIR / 'database.log'
-EMAIL_LOG_FILE = LOGS_DIR / 'email.log'
-INTEGRATION_LOG_FILE = LOGS_DIR / 'integration.log'
-SECURITY_LOG_FILE = LOGS_DIR / 'security.log'
+# Only create logs directory if not in serverless environment
+if not is_serverless():
+    LOGS_DIR = Path(__file__).parent / 'logs'
+    LOGS_DIR.mkdir(exist_ok=True)
+    
+    # Log file paths
+    APP_LOG_FILE = LOGS_DIR / 'app.log'
+    ERROR_LOG_FILE = LOGS_DIR / 'error.log'
+    ACCESS_LOG_FILE = LOGS_DIR / 'access.log'
+    DATABASE_LOG_FILE = LOGS_DIR / 'database.log'
+    EMAIL_LOG_FILE = LOGS_DIR / 'email.log'
+    INTEGRATION_LOG_FILE = LOGS_DIR / 'integration.log'
+    SECURITY_LOG_FILE = LOGS_DIR / 'security.log'
+else:
+    # In serverless, logs go to stdout only
+    APP_LOG_FILE = None
+    ERROR_LOG_FILE = None
+    ACCESS_LOG_FILE = None
+    DATABASE_LOG_FILE = None
+    EMAIL_LOG_FILE = None
+    INTEGRATION_LOG_FILE = None
+    SECURITY_LOG_FILE = None
 
 # Custom formatter with detailed information
 class DetailedFormatter(logging.Formatter):
@@ -299,5 +314,8 @@ access_logger = get_access_logger()
 # Log startup
 app_logger.info("="*80)
 app_logger.info("AI Meeting Agent - Logging System Initialized")
-app_logger.info(f"Log Directory: {LOGS_DIR}")
+if not is_serverless():
+    app_logger.info(f"Log Directory: {LOGS_DIR}")
+else:
+    app_logger.info("Running in serverless mode - logs to stdout only")
 app_logger.info("="*80)
