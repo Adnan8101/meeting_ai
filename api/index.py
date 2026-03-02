@@ -30,7 +30,14 @@ def debug_handler(path=''):
         "python_version": sys.version,
         "cwd": os.getcwd(),
         "path_requested": path,
-        "main_app_exists": os.path.exists(main_app_path)
+        "main_app_exists": os.path.exists(main_app_path),
+        "import_error": getattr(debug_handler, 'import_error', None),
+        "creation_error": getattr(debug_handler, 'creation_error', None),
+        "env_vars": {
+            "FLASK_SECRET_KEY": "SET" if os.environ.get("FLASK_SECRET_KEY") else "MISSING",
+            "GEMINI_API_KEY": "SET" if os.environ.get("GEMINI_API_KEY") else "MISSING",
+            "MONGO_URI": "SET" if os.environ.get("MONGO_URI") else "MISSING"
+        }
     })
 
 app = debug_app  # Default to debug app
@@ -46,12 +53,16 @@ try:
     
 except ImportError as e:
     print(f"[ERROR] Import failed: {e}")
+    import traceback
+    traceback.print_exc()
+    debug_handler.import_error = str(e)
     # Keep debug_app as fallback
     
 except Exception as e:
     print(f"[ERROR] App creation failed: {e}")
     import traceback
     traceback.print_exc()
+    debug_handler.creation_error = str(e)
     # Keep debug_app as fallback
 
 print(f"[DEBUG] Final app object: {type(app)}")
