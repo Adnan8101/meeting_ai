@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, EmailField, DateTimeField, ReferenceField, IntField, BooleanField
+from mongoengine import Document, StringField, EmailField, DateTimeField, ListField, BooleanField
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -127,3 +127,84 @@ class JiraCredentials(Document):
     meta = {
         'collection': 'jira_credentials'
     }
+
+
+class ChatMessage(Document):
+    user_id = StringField(required=True, max_length=24)
+    role = StringField(required=True, max_length=20)
+    content = StringField(required=True)
+    selected_model = StringField(max_length=100)
+    actual_model = StringField(max_length=100)
+    created_at = DateTimeField(default=datetime.utcnow)
+
+    meta = {
+        'collection': 'chat_messages',
+        'indexes': [
+            'user_id',
+            '-created_at',
+            ('user_id', '-created_at')
+        ]
+    }
+
+
+class MeetingInsight(Document):
+    user_id = StringField(required=True, max_length=24)
+    team_id = StringField(max_length=24)
+    title = StringField(required=True, max_length=200)
+    transcript_excerpt = StringField()
+    summary = StringField(required=True)
+    topics = ListField(StringField(max_length=300), default=list)
+    decisions = ListField(StringField(max_length=500), default=list)
+    participants = ListField(StringField(max_length=100), default=list)
+    created_at = DateTimeField(default=datetime.utcnow)
+
+    meta = {
+        'collection': 'meeting_insights',
+        'indexes': [
+            'user_id',
+            'team_id',
+            '-created_at',
+            ('user_id', '-created_at')
+        ]
+    }
+
+
+class WorkActionItem(Document):
+    user_id = StringField(required=True, max_length=24)
+    meeting_id = StringField(max_length=24)
+    task = StringField(required=True, max_length=500)
+    assignee = StringField(max_length=150)
+    due_date_str = StringField(max_length=120)
+    due_date = DateTimeField()
+    priority = StringField(default='medium', choices=('high', 'medium', 'low'), max_length=10)
+    status = StringField(default='pending', choices=('pending', 'in_progress', 'done'), max_length=20)
+    context_notes = StringField()
+    source = StringField(default='meeting_ai', max_length=60)
+    created_at = DateTimeField(default=datetime.utcnow)
+    updated_at = DateTimeField(default=datetime.utcnow)
+    completed_at = DateTimeField()
+
+    meta = {
+        'collection': 'work_action_items',
+        'indexes': [
+            'user_id',
+            'meeting_id',
+            'status',
+            'priority',
+            'due_date',
+            '-updated_at',
+            '-created_at',
+            ('user_id', 'status'),
+            ('user_id', 'priority'),
+            ('user_id', 'meeting_id'),
+            ('user_id', '-updated_at')
+        ]
+    }
+
+    def save(self, *args, **kwargs):
+        self.updated_at = datetime.utcnow()
+        if self.status == 'done' and not self.completed_at:
+            self.completed_at = datetime.utcnow()
+        if self.status != 'done':
+            self.completed_at = None
+        return super().save(*args, **kwargs)
