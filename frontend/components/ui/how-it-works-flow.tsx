@@ -102,7 +102,7 @@ export function HowItWorksFlow() {
   const railProgress = (activeIndex / (flowSteps.length - 1)) * 100;
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-black p-5 md:p-8">
+    <section className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-black p-4 sm:p-5 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs uppercase tracking-[0.24em] text-white/55">Pipeline Timeline</p>
         <button
@@ -115,13 +115,13 @@ export function HowItWorksFlow() {
       </div>
 
       <div className="relative mt-8">
-        <div className="pointer-events-none absolute left-0 right-0 top-5 z-0 h-px bg-white/15" />
+        <div className="pointer-events-none absolute left-0 right-0 top-5 z-0 hidden h-px bg-white/15 md:block" />
         <div
-          className="pointer-events-none absolute left-0 top-5 z-0 h-px bg-white transition-all duration-700"
+          className="pointer-events-none absolute left-0 top-5 z-0 hidden h-px bg-white transition-all duration-700 md:block"
           style={{ width: `${railProgress}%` }}
         />
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
           {flowSteps.map((step, index) => {
             const Icon = step.icon;
             const isActive = step.id === activeStep;
@@ -135,7 +135,7 @@ export function HowItWorksFlow() {
                   setActiveStep(step.id);
                   setIsPinned(true);
                 }}
-                className={`group relative z-10 rounded-2xl border p-4 text-left transition ${
+                className={`group relative z-10 rounded-2xl border p-3.5 text-left transition sm:p-4 ${
                   isActive
                     ? "border-white bg-black/80"
                     : "border-white/10 bg-black/85 hover:border-white/35"
@@ -164,7 +164,7 @@ export function HowItWorksFlow() {
       <div className="mt-6 grid gap-4 lg:grid-cols-[1.3fr_1fr]">
         <article className="rounded-2xl border border-white/15 bg-black/60 p-5">
           <p className="text-[11px] uppercase tracking-[0.2em] text-white/55">Active Step</p>
-          <h3 className="mt-2 text-2xl font-semibold">{activeData.title}</h3>
+          <h3 className="mt-2 text-xl font-semibold sm:text-2xl">{activeData.title}</h3>
           <p className="mt-2 text-sm text-white/70">{activeData.detail}</p>
 
           <div className="mt-5 border-t border-white/10 pt-4">

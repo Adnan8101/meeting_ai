@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -12,16 +12,33 @@ import {
 import { BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { MenuItem } from '@/components/ui/glow-menu';
 import CloudWatchForm from '@/components/ui/cloud-watch-form';
-import DocumentationHub from '@/components/ui/documentation-hub';
 import { Footer } from '@/components/ui/footer-section';
 import { MenuBar } from '@/components/ui/glow-menu';
-import { HowItWorksFlow } from '@/components/ui/how-it-works-flow';
-import { RadialOrbitalTimelineDemo } from '@/components/ui/radial-orbital-timeline-demo';
-import { SplineSceneBasic } from '@/components/ui/splite-demo';
-import AssistantChatWidget from '@/components/ui/AssistantChatWidget';
-import AnalysePage from './pages/AnalysePage';
-import DashboardWorkspacePage from './pages/DashboardPage';
-import IntegrationsPage from './pages/IntegrationsPage';
+const DocumentationHub = lazy(() => import('@/components/ui/documentation-hub'));
+const HowItWorksFlow = lazy(() =>
+  import('@/components/ui/how-it-works-flow').then((module) => ({ default: module.HowItWorksFlow }))
+);
+const RadialOrbitalTimelineDemo = lazy(() =>
+  import('@/components/ui/radial-orbital-timeline-demo').then((module) => ({ default: module.RadialOrbitalTimelineDemo }))
+);
+const SplineSceneBasic = lazy(() =>
+  import('@/components/ui/splite-demo').then((module) => ({ default: module.SplineSceneBasic }))
+);
+const AssistantChatWidget = lazy(() => import('@/components/ui/AssistantChatWidget'));
+const AnalysePage = lazy(() => import('./pages/AnalysePage'));
+const DashboardWorkspacePage = lazy(() => import('./pages/DashboardPage'));
+const IntegrationsPage = lazy(() => import('./pages/IntegrationsPage'));
+
+function AppLoadingShell() {
+  return (
+    <main className="mx-auto flex min-h-[calc(100vh-72px)] max-w-6xl items-center justify-center px-6 py-12">
+      <div className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm text-white/80">
+        <LoaderCircle className="h-4 w-4 animate-spin" />
+        Loading page...
+      </div>
+    </main>
+  );
+}
 
 function Shell({ children }: { children: ReactNode }) {
   const location = useLocation();
@@ -134,8 +151,8 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-black text-white">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
-          <Link to="/" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.04] px-4 py-2 text-sm font-medium tracking-[0.14em] text-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 md:px-6">
+          <Link to="/" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.04] px-3 py-2 text-xs font-medium tracking-[0.12em] text-white sm:px-4 sm:text-sm sm:tracking-[0.14em]">
             <Rocket className="h-4 w-4" />
             AI MEETING AGENT
           </Link>
@@ -169,9 +186,41 @@ function Shell({ children }: { children: ReactNode }) {
             )}
           </nav>
         </div>
+
+        <div className="border-t border-white/10 px-4 py-2 md:hidden">
+          {authReady ? (
+            <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {menuItems.map((item) => {
+                const isActive =
+                  item.href === '/'
+                    ? location.pathname === '/' || location.pathname === '/home'
+                    : location.pathname.startsWith(item.href);
+
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => navigate(item.href)}
+                    className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition ${
+                      isActive
+                        ? 'border-white bg-white text-black'
+                        : 'border-white/25 bg-white/[0.03] text-white/85 hover:border-white/60'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="h-8 w-full animate-pulse rounded-full border border-white/10 bg-white/[0.04]" />
+          )}
+        </div>
       </header>
-      {children}
-      <AssistantChatWidget visible={Boolean(authReady && isAuthenticated)} />
+      <Suspense fallback={<AppLoadingShell />}>{children}</Suspense>
+      <Suspense fallback={null}>
+        <AssistantChatWidget visible={Boolean(authReady && isAuthenticated)} />
+      </Suspense>
     </div>
   );
 }
@@ -180,31 +229,37 @@ function MarketingPage() {
   return (
     <>
       <main>
-        <section className="mx-auto max-w-6xl px-6 pt-12 md:pt-16">
-          <SplineSceneBasic />
-        </section>
+        <Suspense fallback={<AppLoadingShell />}>
+          <section className="mx-auto max-w-6xl px-4 pt-12 sm:px-6 md:pt-16">
+            <SplineSceneBasic />
+          </section>
+        </Suspense>
 
         <section className="border-y border-white/10 bg-white/[0.02] py-20">
-          <div className="mx-auto max-w-6xl px-6">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <h2 className="text-4xl font-semibold tracking-tight md:text-6xl">How It Works</h2>
             <p className="mt-4 max-w-2xl text-white/70">Get started in minutes and transform your workflow.</p>
-            <div className="mt-8">
-              <HowItWorksFlow />
-            </div>
+            <Suspense fallback={<AppLoadingShell />}>
+              <div className="mt-8">
+                <HowItWorksFlow />
+              </div>
+            </Suspense>
           </div>
         </section>
 
         <section className="py-20">
-          <div className="mx-auto mb-8 max-w-6xl px-6">
+          <div className="mx-auto mb-8 max-w-6xl px-4 sm:px-6">
             <h2 className="text-4xl font-semibold tracking-tight md:text-6xl">Execution Timeline</h2>
             <p className="mt-4 max-w-3xl text-white/70">
               Visualize the full execution lifecycle from planning to release with a connected orbital timeline.
             </p>
           </div>
-          <RadialOrbitalTimelineDemo />
+          <Suspense fallback={<AppLoadingShell />}>
+            <RadialOrbitalTimelineDemo />
+          </Suspense>
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-8">
+        <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
           <div className="rounded-3xl border border-white/10 bg-[linear-gradient(165deg,rgba(20,20,24,0.8),rgba(10,10,12,0.95))] p-8 md:p-12">
             <div className="grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-end">
               <div>
@@ -250,7 +305,7 @@ function MarketingPage() {
 
       </main>
 
-      <div className="border-t border-white/10 bg-black px-6 pb-0 pt-12">
+      <div className="border-t border-white/10 bg-black px-4 pb-0 pt-12 sm:px-6">
         <Footer />
       </div>
     </>
@@ -417,7 +472,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
 
 function StaticPage({ title, subtitle }: { title: string; subtitle: string }) {
   return (
-    <main className="mx-auto max-w-6xl px-6 py-20">
+    <main className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
       <section className="rounded-3xl border border-white/15 bg-white/[0.03] p-10">
         <h1 className="text-3xl font-semibold tracking-tight md:text-5xl">{title}</h1>
         <p className="mt-4 text-white/70">{subtitle}</p>
@@ -441,7 +496,7 @@ function AuthCard({
   children: ReactNode;
 }) {
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-72px)] max-w-6xl items-center px-6 py-12">
+    <main className="mx-auto flex min-h-[calc(100vh-72px)] max-w-6xl items-center px-4 py-12 sm:px-6">
       <section className="mx-auto w-full max-w-xl rounded-3xl border border-white/20 bg-white/[0.03] p-8 md:p-10">
         <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
         <p className="mt-2 text-white/70">{subtitle}</p>

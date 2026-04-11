@@ -5,8 +5,8 @@ import { motion, useReducedMotion } from "motion/react";
 
 const team = [
   { name: "Hamza Sayyad", role: "Frontend Developer" },
-  { name: "Hasan Shaikh", role: "Backend Developer" },
-  { name: "Ujjval Shrivastav", role: "AI Engineer" },
+  { name: "Hasan Shaikh", role: "AI Engineer" },
+  { name: "Ujjval Shrivastav", role: "Backend Developer" },
   { name: "Rahul Rathod", role: "Cloud & Database" },
 ];
 

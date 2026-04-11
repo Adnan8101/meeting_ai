@@ -1,5 +1,12 @@
 {
   "version": 2,
+  "buildCommand": "python vercel_build.py",
+  "functions": {
+    "api/index.py": {
+      "runtime": "python3.11",
+      "maxDuration": 60
+    }
+  },
   "routes": [
     {
       "src": "/static/(.*)",
