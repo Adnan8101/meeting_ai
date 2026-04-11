@@ -1,17 +1,43 @@
-Python
-pycache/
-*.pyc
+# Vercel
+.vercel/
 
-Virtual Environment
-venv/
-.venv/
-
-IDE / Editor specific
-.idea/
-.vscode/
-
-Generated database file
-site.db
-
-Local configuration (if you were to use a .env file)
+# Environment / secrets
 .env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build / runtime artifacts
+build/
+dist/
+*.log
+logs/*.log
+
+# OS / editor
+.DS_Store
+.vscode/
