@@ -8,7 +8,7 @@ from jira.exceptions import JIRAError  # Import specific Jira errors
 import time
 from datetime import datetime, timedelta
 import re
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit, urlunsplit
 
 from flask import Flask, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
@@ -47,7 +47,8 @@ GMAIL_REFRESH_TOKEN = os.environ.get("GMAIL_REFRESH_TOKEN", "")
 EMAIL_CONFIGURED = bool(GMAIL_USER and GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET and GMAIL_REFRESH_TOKEN)
 FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "mongodb-secret-key-v2")
 # Support both MONGO_URI and MONGO_URL for backward compatibility
-MONGO_URL = os.environ.get("MONGO_URI") or os.environ.get("MONGO_URL", "")
+_RAW_MONGO_URL = os.environ.get("MONGO_URI") or os.environ.get("MONGO_URL", "")
+MONGO_URL = (_RAW_MONGO_URL or "").strip().strip('"').strip("'")
 MONGO_DB_NAME = os.environ.get("MONGO_DB_NAME", "ai_meeting_agent")
 MAX_TRANSCRIPT_FILE_SIZE = 10 * 1024 * 1024
 ALLOWED_TRANSCRIPT_EXTENSIONS = {'.txt', '.doc', '.docx', '.pdf'}
@@ -71,9 +72,22 @@ print(f"    - MONGO_DB_NAME: {MONGO_DB_NAME}")
 print(f"    - EMAIL: {'✓ Set' if EMAIL_CONFIGURED else '✗ Missing'}")
 
 
+def with_default_mongo_db(uri: str, db_name: str) -> str:
+    """Ensure Mongo URI includes a database path for consistent auth/db selection."""
+    if not uri:
+        return uri
+
+    parsed = urlsplit(uri)
+    if parsed.path and parsed.path.strip("/"):
+        return uri
+
+    return urlunsplit((parsed.scheme, parsed.netloc, f"/{db_name}", parsed.query, parsed.fragment))
+
+
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = FLASK_SECRET_KEY
+    app.config['MONGODB_ERROR'] = ''
 
     frontend_dist_dir = os.path.join(app.root_path, 'frontend', 'dist')
     frontend_assets_dir = os.path.join(frontend_dist_dir, 'assets')
@@ -119,10 +133,11 @@ def create_app():
     if MONGO_URL:
         try:
             start_time = time.time()
+            mongo_uri = with_default_mongo_db(MONGO_URL, MONGO_DB_NAME)
             mongoengine.disconnect(alias='default')
             mongoengine.connect(
                 db=MONGO_DB_NAME,
-                host=MONGO_URL,
+                host=mongo_uri,
                 alias='default',
                 serverSelectionTimeoutMS=7000,
                 connectTimeoutMS=7000,
@@ -144,10 +159,12 @@ def create_app():
             print(f"[✓] MongoDB connection established successfully")
             
             mongodb_connected = True
+            app.config['MONGODB_ERROR'] = ''
             
         except Exception as e:
             database_logger.error(f"MongoDB connection failed: {type(e).__name__} - {str(e)}")
             log_error(database_logger, e, {"connection_string": "REDACTED"})
+            app.config['MONGODB_ERROR'] = str(e)
             
             print(f"[✗] MongoDB connection failed!")
             print(f"[✗] Error type: {type(e).__name__}")
@@ -173,9 +190,11 @@ def create_app():
             database_logger.info(f"Connected to local MongoDB in {connection_time:.2f}ms")
             print("[✓] Connected to local MongoDB")
             mongodb_connected = True
+            app.config['MONGODB_ERROR'] = ''
         except Exception as e:
             database_logger.error(f"Local MongoDB connection failed: {str(e)}")
             log_error(database_logger, e)
+            app.config['MONGODB_ERROR'] = str(e)
             print(f"[✗] Local MongoDB connection failed: {e}")
             print(f"[⚠️] App will continue in LIMITED MODE without database")
             database_logger.warning("Continuing without MongoDB - database features will be disabled")
@@ -2579,6 +2598,16 @@ Assistant response:
                 'username': current_user.username,
                 'email': current_user.email,
             } if current_user.is_authenticated else None
+        })
+
+    @app.route('/api/health/db', methods=['GET'])
+    def db_health_status():
+        return jsonify({
+            'success': True,
+            'connected': bool(app.config.get('MONGODB_CONNECTED', False)),
+            'db_name': MONGO_DB_NAME,
+            'mongo_url_set': bool(MONGO_URL),
+            'error': app.config.get('MONGODB_ERROR', '')
         })
 
     @app.route('/api/auth/register', methods=['POST'])
