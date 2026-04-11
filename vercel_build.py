@@ -7,6 +7,7 @@ and ensures runtime directories exist for serverless execution.
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -33,6 +34,9 @@ def build() -> None:
         run(["npm", "install"], cwd=FRONTEND_DIR)
 
     run(["npm", "run", "build:vercel"], cwd=FRONTEND_DIR)
+
+    # Prevent Lambda bundle bloat: build-time node_modules is not needed at runtime.
+    shutil.rmtree(FRONTEND_DIR / "node_modules", ignore_errors=True)
 
 
 if __name__ == "__main__":

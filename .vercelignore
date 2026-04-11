@@ -17,6 +17,8 @@ instance/
 .DS_Store
 .vscode/
 .idea/
+node_modules/
+frontend/node_modules/
 *.db
 *.sqlite
 *.sqlite3

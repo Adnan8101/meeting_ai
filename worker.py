@@ -5,18 +5,12 @@ from trello import TrelloClient
 import mongoengine
 from mongo_models import User, TrelloCard, TrelloCredentials
 from dotenv import load_dotenv
-
-# Import logging configuration
 from logger_config import app_logger, integration_logger, database_logger, log_error
-
 load_dotenv()
 
 app_logger.info("="*60)
 app_logger.info("Starting AI Meeting Agent Worker")
 app_logger.info("="*60)
-
-# --- CONFIGURATION ---
-# Use the same Trello API Key as your main app
 TRELLO_API_KEY = os.environ.get("TRELLO_API_KEY")
 TRELLO_API_SECRET = os.environ.get("TRELLO_API_SECRET")
 # Support both MONGO_URI and MONGO_URL for backward compatibility
