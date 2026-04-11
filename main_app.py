@@ -48,6 +48,7 @@ EMAIL_CONFIGURED = bool(GMAIL_USER and GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET a
 FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "mongodb-secret-key-v2")
 # Support both MONGO_URI and MONGO_URL for backward compatibility
 MONGO_URL = os.environ.get("MONGO_URI") or os.environ.get("MONGO_URL", "")
+MONGO_DB_NAME = os.environ.get("MONGO_DB_NAME", "ai_meeting_agent")
 MAX_TRANSCRIPT_FILE_SIZE = 10 * 1024 * 1024
 ALLOWED_TRANSCRIPT_EXTENSIONS = {'.txt', '.doc', '.docx', '.pdf'}
 MAX_TRANSCRIPT_WORDS = 500
@@ -59,12 +60,14 @@ app_logger.info("="*60)
 app_logger.info(f"TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
 app_logger.info(f"GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
 app_logger.info(f"MONGO_URL: {'✓ Set' if MONGO_URL else '✗ Missing'}")
+app_logger.info(f"MONGO_DB_NAME: {MONGO_DB_NAME}")
 app_logger.info(f"EMAIL: {'✓ Set' if EMAIL_CONFIGURED else '✗ Missing'}")
 app_logger.info("="*60)
 
 print(f"    - TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
 print(f"    - GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
 print(f"    - MONGO_URL: {'✓ Set' if MONGO_URL else '✗ Missing'}")
+print(f"    - MONGO_DB_NAME: {MONGO_DB_NAME}")
 print(f"    - EMAIL: {'✓ Set' if EMAIL_CONFIGURED else '✗ Missing'}")
 
 
@@ -116,7 +119,15 @@ def create_app():
     if MONGO_URL:
         try:
             start_time = time.time()
-            mongoengine.connect(host=MONGO_URL)
+            mongoengine.disconnect(alias='default')
+            mongoengine.connect(
+                db=MONGO_DB_NAME,
+                host=MONGO_URL,
+                alias='default',
+                serverSelectionTimeoutMS=7000,
+                connectTimeoutMS=7000,
+                socketTimeoutMS=7000,
+            )
             
             # Test the connection
             from mongoengine.connection import get_db
@@ -149,7 +160,14 @@ def create_app():
     else:
         try:
             start_time = time.time()
-            mongoengine.connect('ai_meeting_agent')
+            mongoengine.disconnect(alias='default')
+            mongoengine.connect(
+                db=MONGO_DB_NAME,
+                alias='default',
+                serverSelectionTimeoutMS=7000,
+                connectTimeoutMS=7000,
+                socketTimeoutMS=7000,
+            )
             connection_time = (time.time() - start_time) * 1000
             
             database_logger.info(f"Connected to local MongoDB in {connection_time:.2f}ms")
@@ -2568,6 +2586,12 @@ Assistant response:
         if current_user.is_authenticated:
             return jsonify({'success': True, 'redirect': url_for('dashboard')})
 
+        if not app.config.get('MONGODB_CONNECTED', False):
+            return jsonify({
+                'success': False,
+                'message': 'Database is temporarily unavailable. Verify MONGO_URI and MongoDB Atlas Network Access (allow Vercel egress or 0.0.0.0/0).'
+            }), 503
+
         data = request.get_json(silent=True) or {}
         username = (data.get('username') or '').strip()
         email = (data.get('email') or '').strip().lower()
@@ -2618,6 +2642,12 @@ Assistant response:
         if current_user.is_authenticated:
             return jsonify({'success': True, 'redirect': url_for('dashboard')})
 
+        if not app.config.get('MONGODB_CONNECTED', False):
+            return jsonify({
+                'success': False,
+                'message': 'Database is temporarily unavailable. Verify MONGO_URI and MongoDB Atlas Network Access (allow Vercel egress or 0.0.0.0/0).'
+            }), 503
+
         data = request.get_json(silent=True) or {}
         email = (data.get('email') or '').strip().lower()
         password = (data.get('password') or '').strip()
@@ -2653,6 +2683,12 @@ Assistant response:
 
     @app.route('/api/auth/forgot-password', methods=['POST'])
     def api_auth_forgot_password():
+        if not app.config.get('MONGODB_CONNECTED', False):
+            return jsonify({
+                'success': False,
+                'message': 'Database is temporarily unavailable. Please try again after connection is restored.'
+            }), 503
+
         data = request.get_json(silent=True) or {}
         email = (data.get('email') or '').strip().lower()
 
@@ -2909,6 +2945,12 @@ Assistant response:
             
             if len(username) > 20:
                 return jsonify({'available': False, 'message': 'Username must be less than 20 characters'}), 200
+
+            if not app.config.get('MONGODB_CONNECTED', False):
+                return jsonify({
+                    'available': True,
+                    'message': 'Live check is temporarily unavailable. You can still continue registration.'
+                }), 200
             
             # Check if username exists
             existing_user = User.objects(username=username).first()
@@ -2917,9 +2959,13 @@ Assistant response:
             
             return jsonify({'available': True, 'message': 'Username is available'}), 200
         except Exception as e:
+            app_logger.warning(f"Username check failed: {str(e)}")
             import traceback
             traceback.print_exc()
-            return jsonify({'available': False, 'message': 'Error checking username. Please try again.'}), 500
+            return jsonify({
+                'available': True,
+                'message': 'Live check is temporarily unavailable. You can still continue registration.'
+            }), 200
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
