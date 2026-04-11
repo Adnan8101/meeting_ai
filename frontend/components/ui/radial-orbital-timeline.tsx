@@ -57,6 +57,8 @@ export default function RadialOrbitalTimeline({
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const spinSpeedDegPerSecond =
+    (rotationStep * 1000) / Math.max(rotationIntervalMs, 1);
 
   const handleContainerClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target === containerRef.current || e.target === orbitRef.current) {
@@ -101,23 +103,36 @@ export default function RadialOrbitalTimeline({
   };
 
   useEffect(() => {
-    let rotationTimer: ReturnType<typeof setInterval> | undefined;
-
-    if (autoRotate && viewMode === "orbital") {
-      rotationTimer = setInterval(() => {
-        setRotationAngle((prev) => {
-          const newAngle = (prev + rotationStep) % 360;
-          return Number(newAngle.toFixed(3));
-        });
-      }, rotationIntervalMs);
+    if (!(autoRotate && viewMode === "orbital")) {
+      return;
     }
 
+    let frameId: number | undefined;
+    let lastTimestamp: number | undefined;
+
+    const tick = (timestamp: number) => {
+      if (lastTimestamp === undefined) {
+        lastTimestamp = timestamp;
+      }
+
+      const elapsedSeconds = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      setRotationAngle((prev) =>
+        (prev + spinSpeedDegPerSecond * elapsedSeconds) % 360
+      );
+
+      frameId = requestAnimationFrame(tick);
+    };
+
+    frameId = requestAnimationFrame(tick);
+
     return () => {
-      if (rotationTimer) {
-        clearInterval(rotationTimer);
+      if (frameId !== undefined) {
+        cancelAnimationFrame(frameId);
       }
     };
-  }, [autoRotate, rotationIntervalMs, rotationStep, viewMode]);
+  }, [autoRotate, spinSpeedDegPerSecond, viewMode]);
 
   const centerViewOnNode = (nodeId: number) => {
     if (viewMode !== "orbital" || !nodeRefs.current[nodeId]) return;
@@ -204,7 +219,7 @@ export default function RadialOrbitalTimeline({
             const Icon = item.icon;
 
             const nodeStyle = {
-              transform: `translate(${position.x}px, ${position.y}px)`,
+              transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
               zIndex: isExpanded ? 200 : position.zIndex,
               opacity: isExpanded ? 1 : position.opacity,
             };
@@ -213,7 +228,7 @@ export default function RadialOrbitalTimeline({
               <div
                 key={item.id}
                 ref={(el) => (nodeRefs.current[item.id] = el)}
-                className="absolute transition-all duration-700 cursor-pointer"
+                className="absolute cursor-pointer will-change-transform transition-opacity duration-300"
                 style={nodeStyle}
                 onClick={(e) => {
                   e.stopPropagation();
