@@ -86,14 +86,6 @@ export function SplineSceneBasic() {
             >
               Watch Workflow
             </Link>
-            {isAuthenticated && (
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-2 rounded-full border border-sky-300/40 px-5 py-2.5 text-sm text-sky-200 transition hover:bg-sky-400/10"
-              >
-                Go to Dashboard
-              </Link>
-            )}
           </div>
         </div>
 
