@@ -2,6 +2,13 @@
   "version": 2,
   "buildCommand": "python vercel_build.py",
   "outputDirectory": "frontend/dist",
+  "functions": {
+    "api/index.py": {
+      "runtime": "python3.12",
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  },
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -20,7 +27,19 @@
       "destination": "/api/index.py"
     },
     {
+      "source": "/logout",
+      "destination": "/api/index.py"
+    },
+    {
       "source": "/forget-password",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/forgot-password",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/forgot_password",
       "destination": "/api/index.py"
     },
     {
@@ -36,6 +55,10 @@
       "destination": "/api/index.py"
     },
     {
+      "source": "/resend_verification/:path*",
+      "destination": "/api/index.py"
+    },
+    {
       "source": "/trello/connect",
       "destination": "/api/index.py"
     },
@@ -44,7 +67,75 @@
       "destination": "/api/index.py"
     },
     {
+      "source": "/trello/disconnect",
+      "destination": "/api/index.py"
+    },
+    {
       "source": "/jira/connect",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/jira/disconnect",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/assistant/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/get_lists/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/get_jira_projects",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/get_jira_issue_types/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/slack/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/analyse",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/analyze",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/home",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/team",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/create_team",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/invite",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/integrations",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/ai-chat",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/_debug/:path*",
       "destination": "/api/index.py"
     },
     {

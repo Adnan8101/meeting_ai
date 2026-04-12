@@ -6,7 +6,6 @@ __pycache__/
 *.so
 *.egg
 *.egg-info/
-dist/
 build/
 .venv/
 venv/
@@ -18,7 +17,7 @@ instance/
 .vscode/
 .idea/
 node_modules/
-frontend/node_modules/
 *.db
 *.sqlite
 *.sqlite3
+logs/

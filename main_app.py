@@ -1,22 +1,21 @@
 import os
+import sys
 import json
 import logging
 import importlib.util
+import traceback
 from difflib import SequenceMatcher
 import requests
 from io import BytesIO
-from jira import JIRA  # Make sure this is imported
-from jira.exceptions import JIRAError  # Import specific Jira errors
 import time
 from datetime import datetime, timedelta
 import re
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse, parse_qs, urlencode as qs_encode
 
 from flask import Flask, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
-import google.generativeai as genai
-from trello import TrelloClient
 from sqlalchemy import text, create_engine
+from sqlalchemy.pool import NullPool
 
 from extensions import bcrypt, db, login_manager
 from models import ChatMessage, JiraCredentials, MeetingInsight, Q, Team, TrelloCard, TrelloCredentials, User, WorkActionItem
@@ -36,7 +35,37 @@ from app_logging import (
     log_request, log_response, log_error, log_security_event, log_integration_operation
 )
 
+# --- Resilient optional imports ---
+def _vlog(msg: str) -> None:
+    """Verbose log to stderr for Vercel Function Logs."""
+    print(f"[MAIN_APP] {msg}", file=sys.stderr, flush=True)
+
+try:
+    from jira import JIRA
+    from jira.exceptions import JIRAError
+    _JIRA_AVAILABLE = True
+except ImportError:
+    _JIRA_AVAILABLE = False
+    _vlog("WARNING: jira package not installed, Jira features disabled")
+
+try:
+    import google.generativeai as genai
+    _GENAI_AVAILABLE = True
+except ImportError:
+    _GENAI_AVAILABLE = False
+    genai = None
+    _vlog("WARNING: google-generativeai not installed, AI features disabled")
+
+try:
+    from trello import TrelloClient
+    _TRELLO_AVAILABLE = True
+except ImportError:
+    _TRELLO_AVAILABLE = False
+    TrelloClient = None
+    _vlog("WARNING: py-trello not installed, Trello features disabled")
+
 load_dotenv()
+_vlog("Starting AI Meeting Agent initialization")
 app_logger.info("Starting AI Meeting Agent application initialization")
 
 
@@ -47,23 +76,91 @@ def _is_truthy(value: str | None) -> bool:
 def normalize_database_url(raw_url: str) -> str:
     value = (raw_url or "").strip().strip('"').strip("'")
     if value.startswith("postgres://"):
-        return "postgresql://" + value[len("postgres://") :]
+        value = "postgresql://" + value[len("postgres://"):]
     return value
+
+
+def _is_prisma_proxy_url(url: str) -> bool:
+    """Detect Prisma Accelerate / Data Proxy URLs that won't work with pg8000."""
+    try:
+        parsed = urlparse(url)
+        host = (parsed.hostname or "").lower()
+        return "prisma.io" in host or "prisma-data" in host or "accelerate" in host
+    except Exception:
+        return False
+
+
+def _strip_unsupported_pg8000_params(database_url: str) -> str:
+    """Strip URL params that pg8000 doesn't understand (sslmode, channel_binding).
+    SSL is handled via connect_args={'ssl_context': ...} instead."""
+    if "pg8000" not in database_url:
+        return database_url
+
+    import re as _re
+    url = database_url
+    # Remove sslmode= (pg8000 uses ssl_context connect_arg instead)
+    url = _re.sub(r'[?&]sslmode=[^&]*', '', url)
+    # Remove channel_binding= (Neon adds this, pg8000 doesn't support it)
+    url = _re.sub(r'[?&]channel_binding=[^&]*', '', url)
+    # Remove ssl= if present
+    url = _re.sub(r'[?&]ssl=[^&]*', '', url)
+    # Clean up: fix double && or trailing ?
+    url = url.replace('&&', '&').rstrip('&').rstrip('?')
+    if '?' not in url and '&' in url:
+        url = url.replace('&', '?', 1)
+
+    _vlog(f"pg8000 URL cleaned: ...{url.split('@')[-1] if '@' in url else '(no host)'}")
+    return url
+
+
+def _needs_ssl(raw_url: str) -> bool:
+    """Check if the original URL requested SSL."""
+    return 'sslmode=require' in raw_url or 'sslmode=verify' in raw_url or 'ssl=true' in raw_url
+
+
+def _make_pg8000_ssl_context():
+    """Create an SSL context for pg8000 connections."""
+    import ssl
+    ctx = ssl.create_default_context()
+    # On some systems (macOS), the CA bundle isn't found; fall back to no-verify
+    # Vercel Linux runtime has the proper cert store
+    try:
+        ctx.check_hostname = True
+        ctx.verify_mode = ssl.CERT_REQUIRED
+    except Exception:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+    return ctx
 
 
 def _module_available(module_name: str) -> bool:
     return importlib.util.find_spec(module_name) is not None
 
 
-def apply_available_postgres_driver(database_url: str) -> str:
+def apply_available_postgres_driver(database_url: str) -> tuple[str, dict]:
+    """Returns (url_with_driver, connect_args)."""
     if not database_url.startswith("postgresql://"):
-        return database_url
+        return database_url, {}
+
+    needs_ssl = _needs_ssl(database_url)
 
     for module_name, driver_name in (("pg8000", "pg8000"), ("psycopg2", "psycopg2"), ("psycopg", "psycopg")):
         if _module_available(module_name):
-            return f"postgresql+{driver_name}://" + database_url[len("postgresql://") :]
+            url = f"postgresql+{driver_name}://" + database_url[len("postgresql://"):]
+            connect_args = {}
 
-    return database_url
+            if driver_name == "pg8000":
+                url = _strip_unsupported_pg8000_params(url)
+                if needs_ssl:
+                    connect_args['ssl_context'] = _make_pg8000_ssl_context()
+                    _vlog("pg8000: SSL context created for secure connection")
+            # psycopg2/psycopg handle sslmode in URL natively
+
+            _vlog(f"Using database driver: {driver_name}")
+            return url, connect_args
+
+    _vlog("WARNING: No PostgreSQL driver found (pg8000, psycopg2, psycopg)")
+    return database_url, {}
 
 
 def sqlite_fallback_uri(app_root: str) -> str:
@@ -73,22 +170,63 @@ def sqlite_fallback_uri(app_root: str) -> str:
         instance_dir = os.path.join(app_root, "instance")
         os.makedirs(instance_dir, exist_ok=True)
         fallback_path = os.path.join(instance_dir, "meeting_agent.db")
+    _vlog(f"SQLite fallback path: {fallback_path}")
     return f"sqlite:///{fallback_path}"
 
 
-def resolve_runtime_database_uri(app_root: str) -> tuple[str, str]:
+def resolve_runtime_database_uri(app_root: str) -> tuple[str, dict, str]:
+    """Returns (database_uri, connect_args, error_message)."""
     if not DATABASE_URL:
-        return sqlite_fallback_uri(app_root), ""
+        _vlog("No DATABASE_URL set, falling back to SQLite")
+        return sqlite_fallback_uri(app_root), {}, "No DATABASE_URL provided. Using SQLite."
 
-    candidate_url = apply_available_postgres_driver(DATABASE_URL)
+    # Detect Prisma Accelerate URLs that can't work with Python drivers
+    if _is_prisma_proxy_url(DATABASE_URL):
+        _vlog("CRITICAL: DATABASE_URL points to Prisma Accelerate proxy (db.prisma.io). This does NOT work with Python/SQLAlchemy.")
+        _vlog("You need a direct PostgreSQL URL from Neon, Supabase, Vercel Postgres, or Railway.")
+        fallback_url = sqlite_fallback_uri(app_root)
+        return fallback_url, {}, (
+            "DATABASE_URL is a Prisma Accelerate proxy (db.prisma.io) which is incompatible "
+            "with Python/SQLAlchemy. Please set a direct PostgreSQL URL (Neon, Supabase, "
+            "Vercel Postgres, Railway). Falling back to SQLite."
+        )
+
+    candidate_url, connect_args = apply_available_postgres_driver(DATABASE_URL)
+    _vlog(f"Attempting database connection to: {urlparse(candidate_url).hostname}")
     try:
-        # Driver import and URL parsing happen here. If this fails, we can safely degrade.
-        create_engine(candidate_url).dispose()
-        return candidate_url, ""
+        engine = create_engine(candidate_url, poolclass=NullPool, connect_args=connect_args)
+        with engine.connect() as conn:
+            conn.execute(text('SELECT 1'))
+        engine.dispose()
+        _vlog("Database connection test PASSED ✓")
+        return candidate_url, connect_args, ""
     except Exception as exc:
+        tb = traceback.format_exc()
+        _vlog(f"Database connection FAILED: {type(exc).__name__}: {exc}")
+        _vlog(f"Traceback:\n{tb}")
+
+        # If SSL cert verification failed, retry without verification
+        if "CERTIFICATE_VERIFY_FAILED" in str(exc) or "ssl" in str(exc).lower():
+            _vlog("Retrying with SSL cert verification disabled...")
+            try:
+                import ssl
+                ctx = ssl.create_default_context()
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+                connect_args_relaxed = dict(connect_args)
+                connect_args_relaxed['ssl_context'] = ctx
+                engine = create_engine(candidate_url, poolclass=NullPool, connect_args=connect_args_relaxed)
+                with engine.connect() as conn:
+                    conn.execute(text('SELECT 1'))
+                engine.dispose()
+                _vlog("Database connection PASSED with relaxed SSL ✓")
+                return candidate_url, connect_args_relaxed, ""
+            except Exception as exc2:
+                _vlog(f"Relaxed SSL also failed: {exc2}")
+
         fallback_url = sqlite_fallback_uri(app_root)
         details = f"Primary database unavailable ({type(exc).__name__}: {exc}). Falling back to SQLite."
-        return fallback_url, details
+        return fallback_url, {}, details
 
 # --- CONFIGURATION ---
 # Get environment variables with fallbacks
@@ -135,6 +273,7 @@ app_logger.info("="*60)
 
 
 def create_app():
+    _vlog("create_app() called")
     app = Flask(__name__)
     app.config['SECRET_KEY'] = FLASK_SECRET_KEY
     app.config['DATABASE_ERROR'] = ''
@@ -160,20 +299,22 @@ def create_app():
     def render_template(*_args, **_kwargs):
         return serve_frontend_app()
     
+    _vlog("Creating Flask application instance")
     app_logger.info("Creating Flask application instance")
     
     # Session configuration for better compatibility with serverless
-    app.config['SESSION_COOKIE_SECURE'] = False  # Set to True if using HTTPS in production
+    is_vercel = _is_truthy(os.environ.get('VERCEL'))
+    app.config['SESSION_COOKIE_SECURE'] = is_vercel  # True on Vercel (HTTPS)
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
     app_logger.info("Session configuration applied")
 
-    # Keep runtime logs readable by suppressing noisy HTTP access logs.
-    quiet_http_logs = _is_truthy(os.environ.get('QUIET_HTTP_LOGS')) or _is_truthy(os.environ.get('VERCEL'))
+    # Keep runtime logs readable by suppressing noisy HTTP access logs (local only).
+    quiet_http_logs = _is_truthy(os.environ.get('QUIET_HTTP_LOGS'))
     app.config['ENABLE_ACCESS_LOGS'] = _is_truthy(os.environ.get('ENABLE_ACCESS_LOGS'))
 
-    if quiet_http_logs:
+    if quiet_http_logs and not is_vercel:
         for logger_name in ('werkzeug', 'gunicorn.access', 'uvicorn.access'):
             http_logger = logging.getLogger(logger_name)
             http_logger.handlers.clear()
@@ -185,14 +326,30 @@ def create_app():
         app.logger.propagate = False
         app.logger.disabled = True
 
-    runtime_database_uri, boot_database_error = resolve_runtime_database_uri(app.root_path)
+    runtime_database_uri, db_connect_args, boot_database_error = resolve_runtime_database_uri(app.root_path)
+    _vlog(f"Database URI scheme: {runtime_database_uri.split('://')[0] if '://' in runtime_database_uri else 'unknown'}")
     app.config['SQLALCHEMY_DATABASE_URI'] = runtime_database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_pre_ping': True,
-        'pool_recycle': 280,
-    }
+
+    # Use NullPool for serverless (no persistent connections) vs connection pool for long-running server
+    engine_opts = {}
+    if is_vercel or runtime_database_uri.startswith('sqlite:///'):
+        engine_opts['poolclass'] = NullPool
+        _vlog("Using NullPool (serverless/SQLite mode)")
+    else:
+        engine_opts['pool_pre_ping'] = True
+        engine_opts['pool_recycle'] = 280
+        _vlog("Using connection pool (long-running server mode)")
+
+    # Pass connect_args (e.g. ssl_context for pg8000)
+    if db_connect_args:
+        engine_opts['connect_args'] = db_connect_args
+        _vlog(f"Engine connect_args keys: {list(db_connect_args.keys())}")
+
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = engine_opts
+
     if boot_database_error:
+        _vlog(f"Database boot error: {boot_database_error}")
         database_logger.warning(boot_database_error)
         app.config['DATABASE_ERROR'] = boot_database_error
     db.init_app(app)
@@ -204,10 +361,22 @@ def create_app():
     )
 
     if skip_eager_db_bootstrap:
-        # In serverless mode, avoid expensive eager DB checks on import/cold start.
+        _vlog("Serverless mode: skipping eager DB bootstrap")
         database_logger.info("Skipping eager database bootstrap in serverless mode")
         if runtime_database_uri and not runtime_database_uri.startswith('sqlite:///'):
             database_connected = True
+            _vlog("Assuming PostgreSQL is connected (serverless)")
+        else:
+            # SQLite on Vercel: must create tables eagerly because /tmp is ephemeral
+            _vlog("SQLite on Vercel: creating tables eagerly")
+            with app.app_context():
+                try:
+                    db.create_all()
+                    database_connected = True
+                    _vlog("SQLite tables created successfully ✓")
+                except Exception as e:
+                    _vlog(f"SQLite table creation failed: {e}")
+                    app.config['DATABASE_ERROR'] = str(e)
     else:
         with app.app_context():
             try:
@@ -218,18 +387,22 @@ def create_app():
                 connection_time = (time.time() - start_time) * 1000
                 database_connected = True
                 app.config['DATABASE_ERROR'] = ''
+                _vlog(f"Database connected in {connection_time:.2f}ms ✓")
                 database_logger.info(f"PostgreSQL connected in {connection_time:.2f}ms")
             except Exception as e:
                 app.config['DATABASE_ERROR'] = str(e)
+                _vlog(f"Database connection failed: {type(e).__name__}: {e}")
                 database_logger.error(f"PostgreSQL connection failed: {type(e).__name__} - {str(e)}")
                 log_error(database_logger, e)
                 database_logger.warning("Continuing in limited mode without database connectivity")
 
     app.config['DATABASE_CONNECTED'] = database_connected
+    _vlog(f"DATABASE_CONNECTED = {database_connected}")
 
     bcrypt.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'login'
+    _vlog("Flask extensions initialized ✓")
     app_logger.info("Flask extensions initialized (bcrypt, login_manager)")
 
     @login_manager.user_loader
@@ -249,16 +422,21 @@ def create_app():
     }
 
     try:
-        if GEMINI_API_KEY:
-            app_logger.info("Configuring Gemini AI service...")
+        if GEMINI_API_KEY and _GENAI_AVAILABLE:
+            _vlog("Configuring Gemini AI service...")
             genai.configure(api_key=GEMINI_API_KEY)
+            _vlog("Gemini AI service configured ✓")
             app_logger.info("Gemini AI service configured successfully")
+        elif not _GENAI_AVAILABLE:
+            _vlog("Gemini AI package not installed, AI features disabled")
+            app_logger.warning("google-generativeai package not installed")
         else:
+            _vlog("Gemini API Key not provided, AI features disabled")
             app_logger.warning("Gemini API Key not provided, AI features disabled")
     except Exception as e:
+        _vlog(f"Failed to configure Gemini AI: {e}")
         app_logger.error(f"Failed to configure Gemini AI: {str(e)}")
         log_error(app_logger, e)
-        print(f"[WARN] Failed to configure Gemini AI: {e}")
 
     def get_ordered_model_names(preferred_model_key):
         """Return a deduplicated model fallback chain."""
@@ -3825,6 +4003,7 @@ Assistant response:
             return send_from_directory(frontend_dist_dir, path)
         return serve_frontend_app()
 
+    _vlog(f"create_app() complete — {sum(1 for r in app.url_map.iter_rules())} routes registered ✓")
     return app
 
 

@@ -2,6 +2,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+import sys
 import time
 import json
 import subprocess
@@ -12,7 +13,13 @@ from dotenv import load_dotenv
 # Import lightweight logging helpers
 from app_logging import email_logger, log_email_operation, log_error
 
+def _elog(msg: str) -> None:
+    """Verbose log to stderr for Vercel Function Logs."""
+    print(f"[EMAIL] {msg}", file=sys.stderr, flush=True)
+
 email_logger.info("Email service module loaded")
+_elog("Email service module loaded")
+
 
 # Load .env in this module to avoid import-order issues.
 load_dotenv()
@@ -102,12 +109,15 @@ def _render_email_layout(preheader, title, subtitle, body_html, cta_text=None, c
 
 def _send_via_nodemailer(to_email, subject, html_body, text_body=None):
         if not os.path.exists(NODEMAILER_SCRIPT):
+                _elog(f"Nodemailer script not found at: {NODEMAILER_SCRIPT}")
                 return False, "Nodemailer bridge missing at frontend/scripts/send-email.mjs"
 
         node_path = shutil.which("node")
         if not node_path:
+                _elog("Node.js binary not found in PATH")
                 return False, "Node.js is not installed or not available in PATH"
 
+        _elog(f"Sending email to {to_email} via Nodemailer (node: {node_path})")
         payload = {
                 "to": to_email,
                 "subject": subject,
@@ -125,10 +135,14 @@ def _send_via_nodemailer(to_email, subject, html_body, text_body=None):
                         check=False,
                 )
         except Exception as exc:
+                _elog(f"Nodemailer subprocess error: {exc}")
                 return False, f"Nodemailer execution failed: {exc}"
 
         stdout = (result.stdout or "").strip()
         stderr = (result.stderr or "").strip()
+
+        if stderr:
+                _elog(f"Nodemailer stderr: {stderr[:500]}")
 
         parsed = None
         if stdout:
@@ -138,14 +152,17 @@ def _send_via_nodemailer(to_email, subject, html_body, text_body=None):
                         parsed = None
 
         if result.returncode == 0 and isinstance(parsed, dict) and parsed.get("ok"):
+                _elog(f"Email sent successfully to {to_email}")
                 return True, parsed.get("message", "Email sent successfully")
 
         if isinstance(parsed, dict) and parsed.get("error"):
+                _elog(f"Nodemailer error: {parsed.get('error')}")
                 return False, parsed.get("error")
         if stderr:
                 return False, stderr
         if stdout:
                 return False, stdout
+
         return False, "Unknown Nodemailer failure"
 
 def send_email(to_email, subject, html_body, text_body=None):

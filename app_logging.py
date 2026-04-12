@@ -1,25 +1,41 @@
 """Lightweight logging helpers.
 
 This replaces the previous custom logger system with simple stdlib logging.
+On Vercel, everything goes to stderr at DEBUG level so it shows in Function Logs.
 """
 
 import logging
 import os
+import sys
 from typing import Any
 
 def _is_truthy(value: str | None) -> bool:
     return (value or "").strip().lower() in {"1", "true", "yes", "on"}
 
 
-QUIET_HTTP_LOGS = _is_truthy(os.environ.get("QUIET_HTTP_LOGS")) or _is_truthy(os.environ.get("VERCEL"))
-DEFAULT_LOG_LEVEL = "ERROR" if QUIET_HTTP_LOGS else "WARNING"
+IS_VERCEL = _is_truthy(os.environ.get("VERCEL"))
+VERCEL_DEBUG = _is_truthy(os.environ.get("VERCEL_DEBUG"))
+
+# On Vercel, always log to stderr at INFO (or DEBUG if VERCEL_DEBUG is set).
+if IS_VERCEL:
+    DEFAULT_LOG_LEVEL = "DEBUG" if VERCEL_DEBUG else "INFO"
+else:
+    QUIET_HTTP_LOGS = _is_truthy(os.environ.get("QUIET_HTTP_LOGS"))
+    DEFAULT_LOG_LEVEL = "ERROR" if QUIET_HTTP_LOGS else "WARNING"
+
 LOG_LEVEL_NAME = (os.environ.get("APP_LOG_LEVEL") or DEFAULT_LOG_LEVEL).upper()
 LOG_LEVEL = getattr(logging, LOG_LEVEL_NAME, logging.WARNING)
 
+# Force handler to stderr so Vercel Function Logs capture it.
+_handler = logging.StreamHandler(sys.stderr)
+_handler.setFormatter(logging.Formatter(
+    "[%(levelname)s] %(asctime)s - %(name)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+))
+
 logging.basicConfig(
     level=LOG_LEVEL,
-    format="[%(levelname)s] %(asctime)s - %(name)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[_handler],
 )
 
 
@@ -41,7 +57,7 @@ def _silence_http_access_logs() -> None:
         pass
 
 
-if QUIET_HTTP_LOGS:
+if not IS_VERCEL and _is_truthy(os.environ.get("QUIET_HTTP_LOGS")):
     _silence_http_access_logs()
 
 app_logger = logging.getLogger("app")
