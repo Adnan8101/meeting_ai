@@ -40,13 +40,13 @@ export default function RadialOrbitalTimeline({
   timelineData,
   rotationStep = 0.3,
   rotationIntervalMs = 50,
-  heightClassName = "h-screen",
+  heightClassName = "h-[34rem] md:h-[46rem]",
 }: RadialOrbitalTimelineProps) {
   const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>(
     {}
   );
   const viewMode: "orbital" = "orbital";
-  const [baseRotationAngle, setBaseRotationAngle] = useState<number>(0);
+  const [rotationAngle, setRotationAngle] = useState<number>(0);
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [pulseEffect, setPulseEffect] = useState<Record<number, boolean>>({});
@@ -58,12 +58,6 @@ export default function RadialOrbitalTimeline({
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
-  const spinSpeedDegPerSecond =
-    (rotationStep * 1000) / Math.max(rotationIntervalMs, 1);
-  const spinDurationSeconds = Math.max(
-    8,
-    360 / Math.max(spinSpeedDegPerSecond, 0.001)
-  );
   const orbitRadius = isMobile ? 132 : 200;
   const orbitDiameter = orbitRadius * 2;
 
@@ -76,6 +70,18 @@ export default function RadialOrbitalTimeline({
 
     return () => mediaQuery.removeEventListener("change", updateIsMobile);
   }, []);
+
+  useEffect(() => {
+    if (!autoRotate) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setRotationAngle((prev) => (prev + rotationStep) % 360);
+    }, Math.max(rotationIntervalMs, 16));
+
+    return () => window.clearInterval(intervalId);
+  }, [autoRotate, rotationStep, rotationIntervalMs]);
 
   const handleContainerClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target === containerRef.current || e.target === orbitRef.current) {
@@ -126,7 +132,7 @@ export default function RadialOrbitalTimeline({
     const totalNodes = timelineData.length;
     const targetAngle = (nodeIndex / totalNodes) * 360;
 
-    setBaseRotationAngle(270 - targetAngle);
+    setRotationAngle(270 - targetAngle);
   };
 
   const calculateNodePosition = (index: number, total: number) => {
@@ -172,7 +178,6 @@ export default function RadialOrbitalTimeline({
       ref={containerRef}
       onClick={handleContainerClick}
     >
-      <style>{`@keyframes orbital-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
         <div
           className="absolute w-full h-full flex items-center justify-center"
@@ -185,25 +190,14 @@ export default function RadialOrbitalTimeline({
           <div
             className="absolute inset-0 flex items-center justify-center"
             style={{
-              transform: `rotate(${baseRotationAngle}deg)`,
+              transform: `rotate(${rotationAngle}deg)`,
               transition: autoRotate
                 ? "none"
                 : "transform 360ms cubic-bezier(0.22, 1, 0.36, 1)",
               willChange: "transform",
             }}
           >
-            <div
-              className="absolute inset-0 flex items-center justify-center"
-              style={
-                autoRotate
-                  ? {
-                      animation: `orbital-spin ${spinDurationSeconds}s linear infinite`,
-                      transformOrigin: "center center",
-                      willChange: "transform",
-                    }
-                  : undefined
-              }
-            >
+            <div className="absolute inset-0 flex items-center justify-center">
           <div className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-teal-500 animate-pulse flex items-center justify-center z-10">
             <div className="absolute w-20 h-20 rounded-full border border-white/20 animate-ping opacity-70"></div>
             <div
@@ -242,6 +236,10 @@ export default function RadialOrbitalTimeline({
                   toggleItem(item.id);
                 }}
               >
+                  <div
+                    className="relative flex flex-col items-center"
+                    style={{ transform: `rotate(${-rotationAngle}deg)` }}
+                  >
                 <div
                   className={`absolute rounded-full -inset-1 ${
                     isPulsing ? "animate-pulse duration-1000" : ""
@@ -435,6 +433,7 @@ export default function RadialOrbitalTimeline({
                     </CardContent>
                   </Card>
                 )}
+                </div>
               </div>
             );
           })}

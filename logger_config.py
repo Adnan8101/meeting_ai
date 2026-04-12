@@ -294,11 +294,14 @@ def log_security_event(logger, event_type, user=None, ip_address=None, success=T
 def configure_third_party_logging():
     """Configure logging for third-party libraries"""
     # Reduce verbosity of noisy libraries
-    logging.getLogger('werkzeug').setLevel(logging.WARNING)
+    logging.getLogger('werkzeug').setLevel(logging.ERROR)
+    logging.getLogger('gunicorn.access').setLevel(logging.ERROR)
+    logging.getLogger('uvicorn.access').setLevel(logging.ERROR)
     logging.getLogger('urllib3').setLevel(logging.WARNING)
     logging.getLogger('requests').setLevel(logging.WARNING)
     logging.getLogger('sqlalchemy').setLevel(logging.WARNING)
     logging.getLogger('psycopg').setLevel(logging.WARNING)
+    logging.getLogger('pg8000').setLevel(logging.WARNING)
 
 
 # Initialize logging configuration

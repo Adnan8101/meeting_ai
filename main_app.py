@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import importlib.util
 from difflib import SequenceMatcher
 import requests
 from io import BytesIO
@@ -15,7 +16,7 @@ from flask import Flask, request, redirect, url_for, flash, jsonify, send_from_d
 from flask_login import login_user, logout_user, login_required, current_user
 import google.generativeai as genai
 from trello import TrelloClient
-from sqlalchemy import text
+from sqlalchemy import text, create_engine
 
 from extensions import bcrypt, db, login_manager
 from models import ChatMessage, JiraCredentials, MeetingInsight, Q, Team, TrelloCard, TrelloCredentials, User, WorkActionItem
@@ -32,13 +33,55 @@ load_dotenv()
 app_logger.info("Starting AI Meeting Agent application initialization")
 
 
+def _is_truthy(value: str | None) -> bool:
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
 def normalize_database_url(raw_url: str) -> str:
     value = (raw_url or "").strip().strip('"').strip("'")
     if value.startswith("postgres://"):
-        return "postgresql+psycopg://" + value[len("postgres://") :]
-    if value.startswith("postgresql://") and "+" not in value.split("://", 1)[0]:
-        return "postgresql+psycopg://" + value[len("postgresql://") :]
+        return "postgresql://" + value[len("postgres://") :]
     return value
+
+
+def _module_available(module_name: str) -> bool:
+    return importlib.util.find_spec(module_name) is not None
+
+
+def apply_available_postgres_driver(database_url: str) -> str:
+    if not database_url.startswith("postgresql://"):
+        return database_url
+
+    for module_name, driver_name in (("pg8000", "pg8000"), ("psycopg2", "psycopg2"), ("psycopg", "psycopg")):
+        if _module_available(module_name):
+            return f"postgresql+{driver_name}://" + database_url[len("postgresql://") :]
+
+    return database_url
+
+
+def sqlite_fallback_uri(app_root: str) -> str:
+    if _is_truthy(os.environ.get("VERCEL")):
+        fallback_path = "/tmp/meeting_agent.db"
+    else:
+        instance_dir = os.path.join(app_root, "instance")
+        os.makedirs(instance_dir, exist_ok=True)
+        fallback_path = os.path.join(instance_dir, "meeting_agent.db")
+    return f"sqlite:///{fallback_path}"
+
+
+def resolve_runtime_database_uri(app_root: str) -> tuple[str, str]:
+    if not DATABASE_URL:
+        return sqlite_fallback_uri(app_root), ""
+
+    candidate_url = apply_available_postgres_driver(DATABASE_URL)
+    try:
+        # Driver import and URL parsing happen here. If this fails, we can safely degrade.
+        create_engine(candidate_url).dispose()
+        return candidate_url, ""
+    except Exception as exc:
+        fallback_url = sqlite_fallback_uri(app_root)
+        details = f"Primary database unavailable ({type(exc).__name__}: {exc}). Falling back to SQLite."
+        return fallback_url, details
 
 # --- CONFIGURATION ---
 # Get environment variables with fallbacks
@@ -110,15 +153,27 @@ def create_app():
     app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
     app_logger.info("Session configuration applied")
 
-    # Keep runtime logs readable by suppressing noisy request logs.
-    logging.getLogger('werkzeug').setLevel(logging.WARNING)
+    # Keep runtime logs readable by suppressing noisy HTTP access logs.
+    quiet_http_logs = _is_truthy(os.environ.get('QUIET_HTTP_LOGS')) or _is_truthy(os.environ.get('VERCEL'))
+    app.config['ENABLE_ACCESS_LOGS'] = _is_truthy(os.environ.get('ENABLE_ACCESS_LOGS'))
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL or 'sqlite:///meeting_agent.db'
+    if quiet_http_logs:
+        for logger_name in ('werkzeug', 'gunicorn.access', 'uvicorn.access'):
+            http_logger = logging.getLogger(logger_name)
+            http_logger.handlers.clear()
+            http_logger.propagate = False
+            http_logger.disabled = True
+
+    runtime_database_uri, boot_database_error = resolve_runtime_database_uri(app.root_path)
+    app.config['SQLALCHEMY_DATABASE_URI'] = runtime_database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         'pool_pre_ping': True,
         'pool_recycle': 280,
     }
+    if boot_database_error:
+        database_logger.warning(boot_database_error)
+        app.config['DATABASE_ERROR'] = boot_database_error
     db.init_app(app)
 
     # --- PostgreSQL Configuration ---
@@ -1821,19 +1876,20 @@ Assistant response:
             return False
 
     # --- REQUEST/RESPONSE LOGGING MIDDLEWARE ---
-    @app.before_request
-    def before_request_logging():
-        """Log all incoming requests"""
-        request.start_time = time.time()
-        log_request(access_logger, request, current_user if current_user.is_authenticated else None)
-    
-    @app.after_request
-    def after_request_logging(response):
-        """Log all outgoing responses"""
-        if hasattr(request, 'start_time'):
-            duration_ms = (time.time() - request.start_time) * 1000
-            log_response(access_logger, request, response, duration_ms)
-        return response
+    if app.config.get('ENABLE_ACCESS_LOGS', False):
+        @app.before_request
+        def before_request_logging():
+            """Log all incoming requests"""
+            request.start_time = time.time()
+            log_request(access_logger, request, current_user if current_user.is_authenticated else None)
+        
+        @app.after_request
+        def after_request_logging(response):
+            """Log all outgoing responses"""
+            if hasattr(request, 'start_time'):
+                duration_ms = (time.time() - request.start_time) * 1000
+                log_response(access_logger, request, response, duration_ms)
+            return response
     
     @app.errorhandler(Exception)
     def handle_exception(e):
@@ -2923,6 +2979,13 @@ Assistant response:
         if request.method == 'POST':
             # Check if this is an AJAX request for registration
             is_ajax = request.headers.get('Content-Type') == 'application/json'
+
+            if not app.config.get('DATABASE_CONNECTED', False):
+                message = 'Database is temporarily unavailable. Please try again shortly.'
+                if is_ajax:
+                    return jsonify({'success': False, 'message': message}), 503
+                flash(message, 'error')
+                return redirect(url_for('register'))
             
             if is_ajax:
                 data = request.get_json()
