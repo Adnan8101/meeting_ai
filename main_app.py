@@ -194,21 +194,31 @@ def create_app():
 
     # --- PostgreSQL Configuration ---
     database_connected = False
-    with app.app_context():
-        try:
-            start_time = time.time()
-            db.create_all()
-            db.session.execute(text('SELECT 1'))
-            db.session.commit()
-            connection_time = (time.time() - start_time) * 1000
+    skip_eager_db_bootstrap = _is_truthy(os.environ.get('VERCEL')) or _is_truthy(
+        os.environ.get('SKIP_DB_BOOTSTRAP')
+    )
+
+    if skip_eager_db_bootstrap:
+        # In serverless mode, avoid expensive eager DB checks on import/cold start.
+        database_logger.warning("Skipping eager database bootstrap in serverless mode")
+        if runtime_database_uri and not runtime_database_uri.startswith('sqlite:///'):
             database_connected = True
-            app.config['DATABASE_ERROR'] = ''
-            database_logger.info(f"PostgreSQL connected in {connection_time:.2f}ms")
-        except Exception as e:
-            app.config['DATABASE_ERROR'] = str(e)
-            database_logger.error(f"PostgreSQL connection failed: {type(e).__name__} - {str(e)}")
-            log_error(database_logger, e)
-            database_logger.warning("Continuing in limited mode without database connectivity")
+    else:
+        with app.app_context():
+            try:
+                start_time = time.time()
+                db.create_all()
+                db.session.execute(text('SELECT 1'))
+                db.session.commit()
+                connection_time = (time.time() - start_time) * 1000
+                database_connected = True
+                app.config['DATABASE_ERROR'] = ''
+                database_logger.info(f"PostgreSQL connected in {connection_time:.2f}ms")
+            except Exception as e:
+                app.config['DATABASE_ERROR'] = str(e)
+                database_logger.error(f"PostgreSQL connection failed: {type(e).__name__} - {str(e)}")
+                log_error(database_logger, e)
+                database_logger.warning("Continuing in limited mode without database connectivity")
 
     app.config['DATABASE_CONNECTED'] = database_connected
 
