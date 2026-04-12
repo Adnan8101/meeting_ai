@@ -96,8 +96,7 @@ export function HowItWorksTimelineDemo() {
   return (
     <RadialOrbitalTimeline
       timelineData={howItWorksTimelineData}
-      rotationStep={0.12}
-      rotationIntervalMs={90}
+      rotationSpeed={8}
       heightClassName="h-[40rem] md:h-[46rem]"
     />
   );
