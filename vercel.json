@@ -7,8 +7,12 @@
       "handle": "filesystem"
     },
     {
-      "src": "/(.*)",
+      "src": "/(api/.*|check_username|register|login|forget-password|verify_email/.*|verify_reset_code|verify_reset_code/.*|trello/connect|trello/save_token|jira/connect)",
       "dest": "/api/index.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
