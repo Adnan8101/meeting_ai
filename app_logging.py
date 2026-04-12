@@ -7,7 +7,13 @@ import logging
 import os
 from typing import Any
 
-LOG_LEVEL_NAME = (os.environ.get("APP_LOG_LEVEL") or "WARNING").upper()
+def _is_truthy(value: str | None) -> bool:
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+QUIET_HTTP_LOGS = _is_truthy(os.environ.get("QUIET_HTTP_LOGS")) or _is_truthy(os.environ.get("VERCEL"))
+DEFAULT_LOG_LEVEL = "ERROR" if QUIET_HTTP_LOGS else "WARNING"
+LOG_LEVEL_NAME = (os.environ.get("APP_LOG_LEVEL") or DEFAULT_LOG_LEVEL).upper()
 LOG_LEVEL = getattr(logging, LOG_LEVEL_NAME, logging.WARNING)
 
 logging.basicConfig(
@@ -15,6 +21,28 @@ logging.basicConfig(
     format="[%(levelname)s] %(asctime)s - %(name)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
+
+
+def _silence_http_access_logs() -> None:
+    for logger_name in ("werkzeug", "gunicorn.access", "uvicorn.access"):
+        http_logger = logging.getLogger(logger_name)
+        http_logger.handlers.clear()
+        http_logger.propagate = False
+        http_logger.disabled = True
+        http_logger.setLevel(logging.CRITICAL + 1)
+
+    # Extra safeguard for Werkzeug request-handler access lines.
+    try:
+        from werkzeug.serving import WSGIRequestHandler
+
+        WSGIRequestHandler.log = lambda self, type, message, *args: None
+        WSGIRequestHandler.log_request = lambda self, code="-", size="-": None
+    except Exception:
+        pass
+
+
+if QUIET_HTTP_LOGS:
+    _silence_http_access_logs()
 
 app_logger = logging.getLogger("app")
 database_logger = logging.getLogger("database")

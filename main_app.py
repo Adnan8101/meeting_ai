@@ -179,6 +179,11 @@ def create_app():
             http_logger.handlers.clear()
             http_logger.propagate = False
             http_logger.disabled = True
+            http_logger.setLevel(logging.CRITICAL + 1)
+
+        app.logger.handlers.clear()
+        app.logger.propagate = False
+        app.logger.disabled = True
 
     runtime_database_uri, boot_database_error = resolve_runtime_database_uri(app.root_path)
     app.config['SQLALCHEMY_DATABASE_URI'] = runtime_database_uri
@@ -200,7 +205,7 @@ def create_app():
 
     if skip_eager_db_bootstrap:
         # In serverless mode, avoid expensive eager DB checks on import/cold start.
-        database_logger.warning("Skipping eager database bootstrap in serverless mode")
+        database_logger.info("Skipping eager database bootstrap in serverless mode")
         if runtime_database_uri and not runtime_database_uri.startswith('sqlite:///'):
             database_connected = True
     else:
