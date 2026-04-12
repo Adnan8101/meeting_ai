@@ -12,8 +12,6 @@ import {
   ArrowRight,
   Link as LinkIcon,
   Lock,
-  RotateCcw,
-  RotateCw,
   Unlock,
   X,
   Zap,
@@ -45,169 +43,306 @@ export interface TimelineItem {
 
 interface RadialOrbitalTimelineProps {
   timelineData: TimelineItem[];
-  rotationStep?: number;
-  rotationIntervalMs?: number;
+  /** degrees per second (clockwise) */
+  rotationSpeed?: number;
   heightClassName?: string;
 }
 
+// ─── Tiny status chip ────────────────────────────────────────────────────────
+function StatusChip({ status }: { status: TimelineItem["status"] }) {
+  const map = {
+    completed: { label: "Complete", cls: "bg-white text-black" },
+    "in-progress": { label: "In Progress", cls: "bg-white/15 text-white" },
+    pending: { label: "Pending", cls: "bg-white/8 text-white/50" },
+  } as const;
+  const { label, cls } = map[status];
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide ${cls}`}
+    >
+      {label}
+    </span>
+  );
+}
+
+// ─── Minimalist modal ─────────────────────────────────────────────────────────
+function FeatureModal({
+  item,
+  onClose,
+  onNavigate,
+  isAuthenticated,
+  authResolved,
+  onSelectRelated,
+  timelineData,
+}: {
+  item: TimelineItem;
+  onClose: () => void;
+  onNavigate: (item: TimelineItem) => void;
+  isAuthenticated: boolean;
+  authResolved: boolean;
+  onSelectRelated: (id: number) => void;
+  timelineData: TimelineItem[];
+}) {
+  // Animate in
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(t);
+  }, []);
+
+  const Icon = item.icon;
+
+  return (
+    <div
+      className="absolute inset-0 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+      style={{
+        background: "rgba(0,0,0,0.72)",
+        backdropFilter: "blur(6px)",
+        WebkitBackdropFilter: "blur(6px)",
+        transition: "opacity 220ms ease",
+        opacity: visible ? 1 : 0,
+      }}
+    >
+      <Card
+        className="relative w-full max-w-sm border-white/15 bg-[#0a0a0b] text-white shadow-2xl"
+        style={{
+          transition: "transform 260ms cubic-bezier(0.22,1,0.36,1), opacity 260ms ease",
+          transform: visible ? "translateY(0) scale(1)" : "translateY(12px) scale(0.96)",
+          opacity: visible ? 1 : 0,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close */}
+        <button
+          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition hover:bg-white/10 hover:text-white"
+          onClick={onClose}
+        >
+          <X size={13} />
+        </button>
+
+        <CardHeader className="pb-3 pt-5">
+          {/* Icon + title row */}
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/8">
+              <Icon size={16} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <StatusChip status={item.status} />
+                <span className="text-[11px] text-white/35">{item.date}</span>
+              </div>
+              <CardTitle className="mt-1 text-base leading-snug tracking-tight">
+                {item.title}
+              </CardTitle>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-4 pb-5">
+          {/* Description */}
+          <p className="text-sm leading-relaxed text-white/70">{item.content}</p>
+
+          {/* Progress bar */}
+          <div className="rounded-lg border border-white/8 bg-black/40 px-3 py-2.5">
+            <div className="mb-1.5 flex items-center justify-between text-[11px]">
+              <span className="flex items-center gap-1 text-white/50">
+                <Zap size={10} />
+                {item.progressLabel || "Execution Progress"}
+              </span>
+              <span className="font-mono text-white/60">{item.energy}%</span>
+            </div>
+            <div className="h-1 overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all duration-700"
+                style={{ width: `${item.energy}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Includes */}
+          {item.includes && item.includes.length > 0 && (
+            <ul className="space-y-1.5">
+              {item.includes.map((pt) => (
+                <li key={pt} className="flex items-start gap-2 text-sm text-white/65">
+                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-cyan-400" />
+                  {pt}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Connected nodes */}
+          {item.relatedIds.length > 0 && (
+            <div className="border-t border-white/8 pt-3">
+              <div className="mb-2 flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-white/35">
+                <LinkIcon size={10} /> Connected
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {item.relatedIds.map((rid) => {
+                  const rel = timelineData.find((i) => i.id === rid);
+                  if (!rel) return null;
+                  return (
+                    <button
+                      key={rid}
+                      className="flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-xs text-white/70 transition hover:bg-white/10 hover:text-white"
+                      onClick={() => onSelectRelated(rid)}
+                    >
+                      {rel.title} <ArrowRight size={9} />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Access + CTA */}
+          <div className="border-t border-white/8 pt-3">
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-white/55">
+              {item.requiresAuth ? (
+                <><Lock size={10} /> Login required</>
+              ) : (
+                <><Unlock size={10} /> Public feature</>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                className="h-8 flex-1 bg-white text-xs text-black hover:bg-zinc-100"
+                onClick={() => onNavigate(item)}
+                disabled={item.requiresAuth && !authResolved}
+              >
+                {item.requiresAuth && !isAuthenticated
+                  ? "Go To Login"
+                  : item.routeLabel || "Open Feature"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-8 border-white/15 bg-transparent text-xs text-white hover:bg-white/10"
+                onClick={onClose}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
 export default function RadialOrbitalTimeline({
   timelineData,
-  rotationStep = 0.3,
-  rotationIntervalMs = 50,
+  rotationSpeed = 18, // degrees per second, clockwise (right→left on top arc)
   heightClassName = "h-[34rem] md:h-[46rem]",
 }: RadialOrbitalTimelineProps) {
   const navigate = useNavigate();
+
   const [rotationAngle, setRotationAngle] = useState<number>(0);
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
   const [pulseEffect, setPulseEffect] = useState<Record<number, boolean>>({});
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authResolved, setAuthResolved] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
-  const orbitRef = useRef<HTMLDivElement>(null);
+  const animFrameRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number | null>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
-  const animationFrameRef = useRef<number | null>(null);
-  const lastFrameTimeRef = useRef<number | null>(null);
-  const orbitRadius = isMobile ? 132 : 200;
-  const orbitDiameter = orbitRadius * 2;
-  const rotationSpeedDegPerSecond = useMemo(
-    () => Math.max(2, (rotationStep / Math.max(rotationIntervalMs, 16)) * 1000),
-    [rotationIntervalMs, rotationStep]
-  );
 
-  const selectedItem = useMemo(
-    () => timelineData.find((item) => item.id === selectedNodeId) || null,
-    [selectedNodeId, timelineData]
-  );
+  const orbitRadius = isMobile ? 120 : 195;
 
+  // ── Auth status ────────────────────────────────────────────────────────────
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
-    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
-
-    updateIsMobile();
-    mediaQuery.addEventListener("change", updateIsMobile);
-
-    return () => mediaQuery.removeEventListener("change", updateIsMobile);
+    let mounted = true;
+    fetch("/api/auth/status", { credentials: "include", headers: { Accept: "application/json" } })
+      .then((r) => r.json())
+      .then((p) => { if (mounted) setIsAuthenticated(Boolean(p?.authenticated)); })
+      .catch(() => {})
+      .finally(() => { if (mounted) setAuthResolved(true); });
+    return () => { mounted = false; };
   }, []);
 
+  // ── Mobile detect ──────────────────────────────────────────────────────────
   useEffect(() => {
-    let isMounted = true;
-
-    const readAuthStatus = async () => {
-      try {
-        const response = await fetch("/api/auth/status", {
-          credentials: "include",
-          headers: { Accept: "application/json" },
-        });
-        const payload = await response.json();
-        if (isMounted) {
-          setIsAuthenticated(Boolean(payload?.authenticated));
-        }
-      } catch {
-        if (isMounted) {
-          setIsAuthenticated(false);
-        }
-      } finally {
-        if (isMounted) {
-          setAuthResolved(true);
-        }
-      }
-    };
-
-    readAuthStatus();
-    return () => {
-      isMounted = false;
-    };
+    const mq = window.matchMedia("(max-width: 768px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
   }, []);
 
+  // ── RAF-driven clockwise rotation (right → left on top arc) ───────────────
+  // Clockwise in CSS = increasing positive angle means nodes move:
+  //   top → left  (which visually looks like right-to-left sweep across the top)
+  // We negate the rotation step each frame to go counter-clockwise in math,
+  // which maps to clockwise visually because CSS +Y is downward.
   useEffect(() => {
     if (!autoRotate || selectedNodeId !== null) {
+      if (animFrameRef.current !== null) {
+        cancelAnimationFrame(animFrameRef.current);
+        animFrameRef.current = null;
+        lastTimeRef.current = null;
+      }
       return;
     }
 
-    const tick = (timestamp: number) => {
-      if (lastFrameTimeRef.current === null) {
-        lastFrameTimeRef.current = timestamp;
-      }
-      const deltaSeconds = (timestamp - (lastFrameTimeRef.current || timestamp)) / 1000;
-      lastFrameTimeRef.current = timestamp;
-      setRotationAngle((prev) => (prev + rotationSpeedDegPerSecond * deltaSeconds) % 360);
-      animationFrameRef.current = window.requestAnimationFrame(tick);
+    const tick = (ts: number) => {
+      if (lastTimeRef.current === null) lastTimeRef.current = ts;
+      const dt = (ts - lastTimeRef.current) / 1000;
+      lastTimeRef.current = ts;
+      // Subtract to go clockwise (right → left across top)
+      setRotationAngle((prev) => (prev - rotationSpeed * dt + 360) % 360);
+      animFrameRef.current = requestAnimationFrame(tick);
     };
 
-    animationFrameRef.current = window.requestAnimationFrame(tick);
-
+    animFrameRef.current = requestAnimationFrame(tick);
     return () => {
-      if (animationFrameRef.current !== null) {
-        window.cancelAnimationFrame(animationFrameRef.current);
-      }
-      animationFrameRef.current = null;
-      lastFrameTimeRef.current = null;
+      if (animFrameRef.current !== null) cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+      lastTimeRef.current = null;
     };
-  }, [autoRotate, selectedNodeId, rotationSpeedDegPerSecond]);
+  }, [autoRotate, selectedNodeId, rotationSpeed]);
 
-  const handleContainerClick = (e: MouseEvent<HTMLDivElement>) => {
-    if (e.target === containerRef.current || e.target === orbitRef.current) {
-      setSelectedNodeId(null);
-      setActiveNodeId(null);
-      setPulseEffect({});
-      setAutoRotate(true);
-    }
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  const calculateNodePosition = (index: number, total: number) => {
+    // Spread nodes evenly; rotationAngle offsets them all
+    const angle = ((index / total) * 360 + rotationAngle) % 360;
+    const rad = (angle * Math.PI) / 180;
+    const x = orbitRadius * Math.cos(rad);
+    const y = orbitRadius * Math.sin(rad);
+    // Objects at the "bottom" (sin≈1) appear closer → higher z + more opaque
+    const zIndex = Math.round(100 + 50 * Math.sin(rad));
+    const opacity = Math.max(0.38, Math.min(1, 0.5 + 0.5 * ((1 + Math.sin(rad)) / 2)));
+    return { x, y, zIndex, opacity };
+  };
+
+  const getRelated = (id: number) =>
+    timelineData.find((i) => i.id === id)?.relatedIds ?? [];
+
+  const isRelatedToActive = (id: number) =>
+    activeNodeId !== null && getRelated(activeNodeId).includes(id);
+
+  const centerOnNode = (id: number) => {
+    const idx = timelineData.findIndex((i) => i.id === id);
+    const total = timelineData.length;
+    // We want node to land at angle=270 (top of circle, cos=0, sin=-1)
+    const target = (idx / total) * 360;
+    setRotationAngle((270 - target + 360) % 360);
   };
 
   const selectItem = (id: number) => {
     setSelectedNodeId(id);
     setActiveNodeId(id);
     setAutoRotate(false);
-
-    const relatedItems = getRelatedItems(id);
-    const newPulseEffect: Record<number, boolean> = {};
-    relatedItems.forEach((relId) => {
-      newPulseEffect[relId] = true;
-    });
-    setPulseEffect(newPulseEffect);
-    centerViewOnNode(id);
-  };
-
-  const centerViewOnNode = (nodeId: number) => {
-    if (!nodeRefs.current[nodeId]) return;
-
-    const nodeIndex = timelineData.findIndex((item) => item.id === nodeId);
-    const totalNodes = timelineData.length;
-    const targetAngle = (nodeIndex / totalNodes) * 360;
-
-    setRotationAngle(270 - targetAngle);
-  };
-
-  const calculateNodePosition = (index: number, total: number) => {
-    const angle = ((index / total) * 360 + rotationAngle) % 360;
-    const radian = (angle * Math.PI) / 180;
-
-    const x = orbitRadius * Math.cos(radian);
-    const y = orbitRadius * Math.sin(radian);
-
-    const zIndex = Math.round(100 + 50 * Math.cos(radian));
-    const opacity = Math.max(0.45, Math.min(1, 0.55 + 0.45 * ((1 + Math.sin(radian)) / 2)));
-
-    return { x, y, zIndex, opacity };
-  };
-
-  const getRelatedItems = (itemId: number): number[] => {
-    const currentItem = timelineData.find((item) => item.id === itemId);
-    return currentItem ? currentItem.relatedIds : [];
-  };
-
-  const isRelatedToActive = (itemId: number): boolean => {
-    if (!activeNodeId) return false;
-    const relatedItems = getRelatedItems(activeNodeId);
-    return relatedItems.includes(itemId);
-  };
-
-  const rotateManual = (delta: number) => {
-    setAutoRotate(false);
-    setRotationAngle((prev) => (prev + delta + 360) % 360);
+    const pulse: Record<number, boolean> = {};
+    getRelated(id).forEach((rid) => { pulse[rid] = true; });
+    setPulseEffect(pulse);
+    centerOnNode(id);
   };
 
   const closeModal = () => {
@@ -218,9 +353,7 @@ export default function RadialOrbitalTimeline({
   };
 
   const goToItem = (item: TimelineItem) => {
-    if (!item.route) {
-      return;
-    }
+    if (!item.route) return;
     if (item.requiresAuth && !isAuthenticated) {
       navigate(`/login?next=${encodeURIComponent(item.route)}`);
       return;
@@ -228,329 +361,133 @@ export default function RadialOrbitalTimeline({
     navigate(item.route);
   };
 
-  const getStatusStyles = (status: TimelineItem["status"]): string => {
-    switch (status) {
-      case "completed":
-        return "text-white bg-black border-white";
-      case "in-progress":
-        return "text-black bg-white border-black";
-      case "pending":
-        return "text-white bg-black/40 border-white/50";
-      default:
-        return "text-white bg-black/40 border-white/50";
-    }
+  const handleContainerClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (e.target === containerRef.current) closeModal();
   };
+
+  const selectedItem = useMemo(
+    () => timelineData.find((i) => i.id === selectedNodeId) ?? null,
+    [selectedNodeId, timelineData]
+  );
+
+  const orbitDiameter = orbitRadius * 2;
 
   return (
     <div
-      className={`w-full ${heightClassName} flex flex-col items-center justify-center bg-black overflow-hidden`}
       ref={containerRef}
+      className={`relative w-full ${heightClassName} flex flex-col items-center justify-center overflow-hidden bg-black`}
       onClick={handleContainerClick}
     >
-      <div className="mb-4 flex w-full max-w-4xl flex-wrap items-center justify-between gap-2 px-4 text-[11px] text-white/70 md:text-xs">
-        <div className="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1.5">
-          Orbit direction: clockwise. Click a node to pause and inspect details.
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 border-white/20 bg-transparent text-white hover:bg-white/10"
-            onClick={() => rotateManual(-14)}
-          >
-            <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Left
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 border-white/20 bg-transparent text-white hover:bg-white/10"
-            onClick={() => rotateManual(14)}
-          >
-            <RotateCw className="mr-1.5 h-3.5 w-3.5" /> Right
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 border-white/20 bg-transparent text-white hover:bg-white/10"
-            onClick={() => setAutoRotate((prev) => !prev)}
-          >
-            {autoRotate ? "Pause Orbit" : "Resume Orbit"}
-          </Button>
-        </div>
-      </div>
-      <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
+      {/* ── Orbital stage ─────────────────────────────────────────────────── */}
+      <div className="relative flex items-center justify-center"
+        style={{ width: orbitDiameter + 120, height: orbitDiameter + 120 }}
+      >
+        {/* Orbit ring */}
         <div
-          className="absolute w-full h-full flex items-center justify-center"
-          ref={orbitRef}
-          style={{
-            perspective: "1000px",
-          }}
-        >
-          <div className="absolute inset-0 flex items-center justify-center">
-          <div className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-teal-500 animate-pulse flex items-center justify-center z-10">
-            <div className="absolute w-20 h-20 rounded-full border border-white/20 animate-ping opacity-70"></div>
+          className="absolute rounded-full border border-white/10"
+          style={{ width: orbitDiameter, height: orbitDiameter }}
+        />
+
+        {/* Second subtle ring */}
+        <div
+          className="absolute rounded-full border border-white/[0.05]"
+          style={{ width: orbitDiameter + 40, height: orbitDiameter + 40 }}
+        />
+
+        {/* Centre orb */}
+        <div className="absolute z-10 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 via-blue-500 to-teal-400">
+          {/* Ping rings */}
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-20" />
+          <span
+            className="absolute inline-flex h-[140%] w-[140%] animate-ping rounded-full bg-blue-400 opacity-10"
+            style={{ animationDelay: "0.6s" }}
+          />
+          {/* Inner white dot */}
+          <span className="relative h-5 w-5 rounded-full bg-white/90" />
+        </div>
+
+        {/* ── Nodes ─────────────────────────────────────────────────────── */}
+        {timelineData.map((item, idx) => {
+          const pos = calculateNodePosition(idx, timelineData.length);
+          const isSelected = selectedNodeId === item.id;
+          const isRelated = isRelatedToActive(item.id);
+          const isPulsing = pulseEffect[item.id];
+          const Icon = item.icon;
+
+          return (
             <div
-              className="absolute w-24 h-24 rounded-full border border-white/10 animate-ping opacity-50"
-              style={{ animationDelay: "0.5s" }}
-            ></div>
-            <div className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-md"></div>
-          </div>
-
-          <div
-            className="absolute rounded-full border border-white/10"
-            style={{ width: `${orbitDiameter}px`, height: `${orbitDiameter}px` }}
-          ></div>
-
-          {timelineData.map((item, index) => {
-            const position = calculateNodePosition(index, timelineData.length);
-            const isExpanded = selectedNodeId === item.id;
-            const isRelated = isRelatedToActive(item.id);
-            const isPulsing = pulseEffect[item.id];
-            const Icon = item.icon;
-
-            const nodeStyle = {
-              transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-              zIndex: isExpanded ? 200 : position.zIndex,
-              opacity: isExpanded ? 1 : position.opacity,
-            };
-
-            return (
+              key={item.id}
+              ref={(el) => (nodeRefs.current[item.id] = el)}
+              className="absolute will-change-transform"
+              style={{
+                transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
+                zIndex: isSelected ? 200 : pos.zIndex,
+                opacity: isSelected ? 1 : pos.opacity,
+                transition: "opacity 300ms ease",
+              }}
+              onClick={(e) => { e.stopPropagation(); selectItem(item.id); }}
+            >
+              {/* Counter-rotate inner so label & icon stay upright */}
               <div
-                key={item.id}
-                ref={(el) => (nodeRefs.current[item.id] = el)}
-                className="absolute cursor-pointer will-change-transform"
-                style={nodeStyle}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  selectItem(item.id);
-                }}
+                className="relative flex cursor-pointer flex-col items-center"
+                style={{ transform: `rotate(${-rotationAngle}deg)`, transition: "transform 60ms linear" }}
               >
-                  <div
-                    className="relative flex flex-col items-center"
-                    style={{ transform: `rotate(${-rotationAngle}deg)` }}
-                  >
-                <div
-                  className={`absolute rounded-full -inset-1 ${
-                    isPulsing ? "animate-pulse duration-1000" : ""
-                  }`}
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)",
-                    width: `${item.energy * 0.5 + 40}px`,
-                    height: `${item.energy * 0.5 + 40}px`,
-                    left: `-${(item.energy * 0.5 + 40 - 40) / 2}px`,
-                    top: `-${(item.energy * 0.5 + 40 - 40) / 2}px`,
-                  }}
-                ></div>
+                {/* Glow ring when pulsing/selected */}
+                {(isPulsing || isSelected) && (
+                  <span
+                    className={`absolute inset-0 -m-2 rounded-full ${isPulsing ? "animate-pulse" : ""}`}
+                    style={{
+                      background: "radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)",
+                    }}
+                  />
+                )}
 
+                {/* Circle node */}
                 <div
-                  className={`
-                  w-10 h-10 rounded-full flex items-center justify-center
-                  ${
-                    selectedNodeId === item.id
-                      ? "bg-white text-black"
+                  className={[
+                    "relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300",
+                    isSelected
+                      ? "scale-125 border-white bg-white text-black shadow-lg shadow-white/25"
                       : isRelated
-                        ? "bg-white/50 text-black"
-                        : "bg-black text-white"
-                  }
-                  border-2
-                  ${
-                    selectedNodeId === item.id
-                      ? "border-white shadow-lg shadow-white/30"
-                      : isRelated
-                        ? "border-white animate-pulse"
-                        : "border-white/40"
-                  }
-                  transition-all duration-300 transform
-                  ${selectedNodeId === item.id ? "scale-125" : ""}
-                `}
+                      ? "border-white bg-white/20 text-white animate-pulse"
+                      : "border-white/35 bg-black text-white/80 hover:border-white/70 hover:bg-white/10",
+                  ].join(" ")}
                 >
-                  <Icon size={16} />
+                  <Icon size={15} />
                 </div>
 
-                <div
-                  className={`
-                  absolute top-12 whitespace-nowrap
-                  text-xs font-semibold tracking-wider
-                  transition-all duration-300
-                  ${selectedNodeId === item.id ? "text-white scale-110" : "text-white/70"}
-                `}
+                {/* Label below node */}
+                <span
+                  className={[
+                    "absolute top-11 whitespace-nowrap text-[11px] font-semibold tracking-wide transition-all duration-300",
+                    isSelected ? "text-white" : "text-white/55",
+                  ].join(" ")}
                 >
                   {item.title}
-                </div>
-                </div>
+                </span>
               </div>
-            );
-          })}
-          </div>
-        </div>
-
-        {selectedItem && (
-          <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/70 p-3 backdrop-blur-sm md:p-6" onClick={closeModal}>
-            <Card
-              className="w-full max-w-xl border-white/20 bg-[linear-gradient(170deg,rgba(20,20,20,0.98),rgba(8,8,8,0.98))] text-white shadow-2xl shadow-black/60"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <CardHeader className="border-b border-white/10 pb-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="mb-2 flex items-center gap-2">
-                      <Badge className={`px-2 text-xs ${getStatusStyles(selectedItem.status)}`}>
-                        {selectedItem.status === "completed"
-                          ? "COMPLETE"
-                          : selectedItem.status === "in-progress"
-                            ? "IN PROGRESS"
-                            : "PENDING"}
-                      </Badge>
-                      <span className="text-xs text-white/50">{selectedItem.date}</span>
-                    </div>
-                    <CardTitle className="text-xl tracking-tight">{selectedItem.title}</CardTitle>
-                    <p className="mt-1 text-sm text-white/65">{selectedItem.category}</p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-8 border-white/20 bg-transparent text-white hover:bg-white/10"
-                    onClick={closeModal}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-
-              <CardContent className="max-h-[78vh] overflow-y-auto px-5 pb-5 pt-4 sm:max-h-[72vh]">
-                <p className="text-sm leading-6 text-white/80">{selectedItem.content}</p>
-
-                <div className="mt-4 rounded-xl border border-white/10 bg-black/35 p-3">
-                  <div className="mb-1 flex items-center justify-between text-xs">
-                    <span className="flex items-center">
-                      <Zap size={12} className="mr-1.5" />
-                      {selectedItem.progressLabel || "Execution Progress"}
-                    </span>
-                    <span className="font-mono">{selectedItem.energy}%</span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                    <div
-                      className="h-full bg-gradient-to-r from-cyan-400 to-indigo-400 transition-all duration-500"
-                      style={{ width: `${selectedItem.energy}%` }}
-                    />
-                  </div>
-                </div>
-
-                {selectedItem.includes && selectedItem.includes.length > 0 && (
-                  <div className="mt-4 border-t border-white/10 pt-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">Included</h4>
-                    <ul className="mt-2 space-y-2 text-sm text-white/80">
-                      {selectedItem.includes.map((point) => (
-                        <li key={point} className="flex items-start gap-2">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {selectedItem.howItWorks && (
-                  <div className="mt-4 border-t border-white/10 pt-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">How It Works</h4>
-                    <p className="mt-2 text-sm leading-6 text-white/80">{selectedItem.howItWorks}</p>
-                  </div>
-                )}
-
-                {selectedItem.step && selectedItem.totalSteps && (
-                  <div className="mt-4 border-t border-white/10 pt-4">
-                    <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.16em] text-white/60">
-                      <span>Workflow Steps</span>
-                      <span>
-                        {selectedItem.step} of {selectedItem.totalSteps}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex gap-1.5">
-                      {Array.from({ length: selectedItem.totalSteps }).map((_, index) => (
-                        <span
-                          key={`${selectedItem.id}-step-${index + 1}`}
-                          className={`h-1.5 flex-1 rounded-full ${
-                            index < selectedItem.step! ? "bg-white" : "bg-white/15"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {selectedItem.relatedIds.length > 0 && (
-                  <div className="mt-4 border-t border-white/10 pt-4">
-                    <div className="mb-2 flex items-center">
-                      <LinkIcon size={12} className="mr-2 text-white/60" />
-                      <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">Connected Nodes</h4>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedItem.relatedIds.map((relatedId) => {
-                        const relatedItem = timelineData.find((item) => item.id === relatedId);
-                        if (!relatedItem) {
-                          return null;
-                        }
-                        return (
-                          <Button
-                            key={relatedId}
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="h-8 border-white/20 bg-transparent px-3 text-xs text-white hover:bg-white/10"
-                            onClick={() => selectItem(relatedId)}
-                          >
-                            {relatedItem.title}
-                            <ArrowRight className="ml-1.5 h-3 w-3" />
-                          </Button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-5 border-t border-white/10 pt-4">
-                  <div className="mb-2 text-xs uppercase tracking-[0.16em] text-white/60">Access</div>
-                  {selectedItem.requiresAuth ? (
-                    <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-xs text-white/80">
-                      <Lock className="h-3.5 w-3.5" /> Login required for this feature
-                    </div>
-                  ) : (
-                    <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-xs text-white/80">
-                      <Unlock className="h-3.5 w-3.5" /> Public feature
-                    </div>
-                  )}
-
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      className="bg-white text-black hover:bg-zinc-200"
-                      onClick={() => goToItem(selectedItem)}
-                      disabled={selectedItem.requiresAuth && !authResolved}
-                    >
-                      {selectedItem.requiresAuth && !isAuthenticated
-                        ? "Go To Login"
-                        : selectedItem.routeLabel || "Open Feature"}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="border-white/20 bg-transparent text-white hover:bg-white/10"
-                      onClick={closeModal}
-                    >
-                      Continue Exploring
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+            </div>
+          );
+        })}
       </div>
+
+      {/* Hint */}
+      <p className="absolute bottom-4 text-[11px] text-white/25 tracking-widest uppercase">
+        Click a node to explore
+      </p>
+
+      {/* ── Modal ─────────────────────────────────────────────────────────── */}
+      {selectedItem && (
+        <FeatureModal
+          item={selectedItem}
+          onClose={closeModal}
+          onNavigate={goToItem}
+          isAuthenticated={isAuthenticated}
+          authResolved={authResolved}
+          onSelectRelated={(rid) => { closeModal(); setTimeout(() => selectItem(rid), 50); }}
+          timelineData={timelineData}
+        />
+      )}
     </div>
   );
 }
