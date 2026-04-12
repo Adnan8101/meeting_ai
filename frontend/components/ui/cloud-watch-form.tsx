@@ -82,6 +82,8 @@ export default function CloudWatchForm({ mode, action }: CloudWatchFormProps) {
     }
 
     const timeout = setTimeout(async () => {
+      const controller = new AbortController();
+      const requestTimeout = window.setTimeout(() => controller.abort(), 8000);
       try {
         setIsChecking(true);
         const response = await fetch("/check_username", {
@@ -91,6 +93,7 @@ export default function CloudWatchForm({ mode, action }: CloudWatchFormProps) {
             Accept: "application/json",
           },
           body: JSON.stringify({ username: normalized }),
+          signal: controller.signal,
         });
 
         const contentType = response.headers.get("content-type") || "";
@@ -105,8 +108,9 @@ export default function CloudWatchForm({ mode, action }: CloudWatchFormProps) {
         setUsernameMessage(payload?.message || "");
       } catch {
         setUsernameAvailable(null);
-        setUsernameMessage("Could not check username right now.");
+        setUsernameMessage("Could not check username right now. Please continue registration.");
       } finally {
+        window.clearTimeout(requestTimeout);
         setIsChecking(false);
       }
     }, 420);
@@ -161,6 +165,8 @@ export default function CloudWatchForm({ mode, action }: CloudWatchFormProps) {
 
     try {
       setIsSubmitting(true);
+      const controller = new AbortController();
+      const requestTimeout = window.setTimeout(() => controller.abort(), 12000);
       const response = await fetch(endpointByMode[mode], {
         method: "POST",
         headers: {
@@ -169,9 +175,14 @@ export default function CloudWatchForm({ mode, action }: CloudWatchFormProps) {
         },
         body: JSON.stringify(payload),
         credentials: "include",
+        signal: controller.signal,
       });
+      window.clearTimeout(requestTimeout);
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+      const data = contentType.includes("application/json")
+        ? await response.json()
+        : { success: false, message: "Server returned an unexpected response." };
 
       if (!response.ok || !data?.success) {
         setFormError(data?.message || "Authentication failed. Please try again.");
@@ -188,7 +199,7 @@ export default function CloudWatchForm({ mode, action }: CloudWatchFormProps) {
 
       setFormError(data?.message || "Done.");
     } catch {
-      setFormError("Unable to reach the server right now. Please try again.");
+      setFormError("Server timeout or network issue. Please try again in a few seconds.");
     } finally {
       setIsSubmitting(false);
     }

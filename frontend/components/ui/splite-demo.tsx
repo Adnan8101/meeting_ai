@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { SplineScene } from '@/components/ui/splite';
@@ -7,6 +8,26 @@ import { Card } from '@/components/ui/card';
 import { Spotlight } from '@/components/ui/spotlight';
 
 export function SplineSceneBasic() {
+  const [allowSpline, setAllowSpline] = useState(false);
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 768px)');
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const updateRenderMode = () => {
+      setAllowSpline(!mobileQuery.matches && !reducedMotionQuery.matches);
+    };
+
+    updateRenderMode();
+    mobileQuery.addEventListener('change', updateRenderMode);
+    reducedMotionQuery.addEventListener('change', updateRenderMode);
+
+    return () => {
+      mobileQuery.removeEventListener('change', updateRenderMode);
+      reducedMotionQuery.removeEventListener('change', updateRenderMode);
+    };
+  }, []);
+
   return (
     <Card className="relative h-[560px] w-full overflow-hidden border border-white/20 bg-black/[0.96] text-white">
       <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
@@ -42,10 +63,21 @@ export function SplineSceneBasic() {
         </div>
 
         <div className="relative flex-1">
-          <SplineScene
-            scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-            className="h-full w-full"
-          />
+          {allowSpline ? (
+            <SplineScene
+              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+              className="h-full w-full"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(80%_60%_at_50%_40%,rgba(173,216,255,0.25),rgba(10,12,18,0.92))] px-6 text-center">
+              <div>
+                <p className="text-xs uppercase tracking-[0.24em] text-white/60">Mobile Optimized View</p>
+                <p className="mt-3 text-sm text-white/80">
+                  3D hero is disabled on smaller screens for smooth performance.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Card>
