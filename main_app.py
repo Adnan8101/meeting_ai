@@ -10,7 +10,7 @@ from io import BytesIO
 import time
 from datetime import datetime, timedelta
 import re
-from urllib.parse import urlencode, urlparse, parse_qs, urlencode as qs_encode
+from urllib.parse import urlencode, urlparse, parse_qs, urlencode as qs_encode, unquote
 
 from flask import Flask, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
@@ -3316,22 +3316,51 @@ Assistant response:
 
     @app.route('/verify_email/<email>', methods=['GET', 'POST'])
     def verify_email(email):
-        email = (email or '').strip().lower()
+        # Guard against once- or twice-URL-encoded email path params from mixed clients.
+        normalized_email = (email or '').strip()
+        for _ in range(2):
+            decoded_email = unquote(normalized_email)
+            if decoded_email == normalized_email:
+                break
+            normalized_email = decoded_email
+        email = normalized_email.lower()
+
+        is_json_request = request.is_json or request.headers.get('Content-Type') == 'application/json'
         if request.method == 'POST':
-            otp = request.form.get('otp')
+            if is_json_request:
+                payload = request.get_json(silent=True) or {}
+                otp = (payload.get('otp') or '').strip()
+            else:
+                otp = (request.form.get('otp') or '').strip()
             
             if not otp:
+                if is_json_request:
+                    return jsonify({'success': False, 'message': 'Verification code is required.'}), 400
                 flash('Verification code is required.', 'error')
                 return render_template('verify_email.html', email=email)
             
             user = User.objects(email=email).first()
             if not user:
+                if is_json_request:
+                    return jsonify({
+                        'success': False,
+                        'message': 'User not found. Please register again.',
+                        'redirect': url_for('register'),
+                    }), 404
                 flash('User not found.', 'error')
                 return redirect(url_for('register'))
             
             if user.is_verified:
-                flash('Account already verified! Please log in.', 'success')
-                return redirect(url_for('login'))
+                if not current_user.is_authenticated or str(current_user.id) != str(user.id):
+                    login_user(user)
+                if is_json_request:
+                    return jsonify({
+                        'success': True,
+                        'message': 'Account already verified.',
+                        'redirect': url_for('analyze'),
+                    })
+                flash('Account already verified! Redirecting to analysis.', 'success')
+                return redirect(url_for('analyze'))
             
             if user.verify_email_token(otp):
                 # Complete verification
@@ -3339,13 +3368,28 @@ Assistant response:
                 
                 # Send welcome email after verification
                 try:
-                    send_welcome_email(user.email, user.username)
+                    success, email_result = send_welcome_email(user.email, user.username)
+                    if not success:
+                        app_logger.warning(
+                            f"Verification success email failed for {user.email}: {email_result}"
+                        )
                 except Exception as e:
-                    print(f"[WARN] Failed to send welcome email: {e}")
-                
-                flash('Email verified successfully! Welcome to AI Meeting Agent!', 'success')
-                return redirect(url_for('login'))
+                    app_logger.warning(f"Failed to send verification success email for {user.email}: {e}")
+
+                login_user(user)
+
+                success_message = 'Email verified successfully! Welcome to AI Meeting Agent!'
+                if is_json_request:
+                    return jsonify({
+                        'success': True,
+                        'message': success_message,
+                        'redirect': url_for('analyze'),
+                    })
+                flash(success_message, 'success')
+                return redirect(url_for('analyze'))
             else:
+                if is_json_request:
+                    return jsonify({'success': False, 'message': 'Invalid or expired verification code.'}), 400
                 flash('Invalid or expired verification code.', 'error')
         
         return render_template('verify_email.html', email=email)

@@ -331,7 +331,7 @@ function VerifyEmailPage() {
     <AuthCard
       title="Verify Email"
       subtitle={email ? `Enter OTP for ${email}` : 'Enter OTP sent to your email'}
-      action={`/verify_email/${encodeURIComponent(email)}`}
+      action={`/verify_email/${email}`}
     >
       <input name="otp" placeholder="Verification code" className={inputClass} required />
       <button type="submit" className={buttonClass}>
@@ -352,7 +352,7 @@ function VerifyResetCodePage() {
     <AuthCard
       title="Verify Reset Code"
       subtitle="Verify OTP and choose a new password"
-      action={`/verify_reset_code/${encodeURIComponent(email)}`}
+      action={`/verify_reset_code/${email}`}
     >
       <input name="code" placeholder="Verification code" className={inputClass} required />
       <input
