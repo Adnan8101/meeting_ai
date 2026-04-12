@@ -2,11 +2,6 @@
   "version": 2,
   "buildCommand": "python vercel_build.py",
   "outputDirectory": "frontend/dist",
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 60
-    }
-  },
   "routes": [
     {
       "handle": "filesystem"
