@@ -2,17 +2,54 @@
   "version": 2,
   "buildCommand": "python vercel_build.py",
   "outputDirectory": "frontend/dist",
-  "routes": [
+  "rewrites": [
     {
-      "handle": "filesystem"
+      "source": "/api/:path*",
+      "destination": "/api/index.py"
     },
     {
-      "src": "/(api/.*|check_username|register|login|forget-password|verify_email/.*|verify_reset_code|verify_reset_code/.*|trello/connect|trello/save_token|jira/connect)",
-      "dest": "/api/index.py"
+      "source": "/check_username",
+      "destination": "/api/index.py"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/register",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/login",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/forget-password",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/verify_email/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/verify_reset_code",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/verify_reset_code/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/trello/connect",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/trello/save_token",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/jira/connect",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
     }
   ]
 }
