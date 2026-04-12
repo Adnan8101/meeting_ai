@@ -80,6 +80,13 @@ def _safe_int(value, default):
         return default
 
 
+def _split_csv_env(raw_value: str | None) -> list[str]:
+    value = (raw_value or '').strip()
+    if not value:
+        return []
+    return [item.strip() for item in value.split(',') if item and item.strip()]
+
+
 def normalize_database_url(raw_url: str) -> str:
     value = (raw_url or "").strip().strip('"').strip("'")
     if value.startswith("postgres://"):
@@ -240,9 +247,23 @@ def resolve_runtime_database_uri(app_root: str) -> tuple[str, dict, str]:
 TRELLO_API_KEY = os.environ.get("TRELLO_API_KEY", "")
 TRELLO_API_SECRET = os.environ.get("TRELLO_API_SECRET", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL_20 = os.environ.get("GEMINI_MODEL_20", "gemini-2.0-flash")
+GEMINI_FALLBACK_API_KEYS = _split_csv_env(os.environ.get("GEMINI_FALLBACK_API_KEYS"))
+for fallback_name in ("GEMINI_API_KEY_FALLBACK_1", "GEMINI_API_KEY_FALLBACK_2", "GEMINI_API_KEY_FALLBACK_3"):
+    fallback_value = (os.environ.get(fallback_name) or '').strip()
+    if fallback_value:
+        GEMINI_FALLBACK_API_KEYS.append(fallback_value)
+
+_deduped_fallback_keys = []
+_seen_fallback_keys = set()
+for key in GEMINI_FALLBACK_API_KEYS:
+    if key and key != GEMINI_API_KEY and key not in _seen_fallback_keys:
+        _deduped_fallback_keys.append(key)
+        _seen_fallback_keys.add(key)
+GEMINI_FALLBACK_API_KEYS = _deduped_fallback_keys
+
+GEMINI_MODEL_20 = os.environ.get("GEMINI_MODEL_20", "gemini-2.5-flash-lite")
 GEMINI_MODEL_25 = os.environ.get("GEMINI_MODEL_25", "gemini-2.5-flash")
-GEMINI_MODEL_3 = os.environ.get("GEMINI_MODEL_3", "gemini-3-flash")
+GEMINI_MODEL_3 = os.environ.get("GEMINI_MODEL_3", "gemini-2.5-flash")
 GEMINI_ANALYSIS_MODEL = os.environ.get("GEMINI_ANALYSIS_MODEL", "gemini-2.5-flash")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "").strip()
 SENDER_PASSWORD = (
@@ -274,6 +295,7 @@ app_logger.info("CONFIGURATION STATUS")
 app_logger.info("="*60)
 app_logger.info(f"TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
 app_logger.info(f"GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
+app_logger.info(f"GEMINI_FALLBACK_API_KEYS: {len(GEMINI_FALLBACK_API_KEYS)} configured")
 app_logger.info(f"DATABASE_URL: {'✓ Set' if DATABASE_URL else '✗ Missing'}")
 app_logger.info(f"EMAIL: {'✓ Set' if EMAIL_CONFIGURED else '✗ Missing'}")
 app_logger.info("="*60)
@@ -422,6 +444,21 @@ def create_app():
 
     # --- AI MODEL AND HELPER FUNCTIONS ---
     model_cache = {}
+
+    def get_gemini_api_keys():
+        keys = []
+        if GEMINI_API_KEY:
+            keys.append(GEMINI_API_KEY)
+        keys.extend(GEMINI_FALLBACK_API_KEYS)
+
+        unique = []
+        seen = set()
+        for key in keys:
+            if key and key not in seen:
+                unique.append(key)
+                seen.add(key)
+        return unique
+
     chat_model_map = {
         "gemini-2.0-flash": GEMINI_MODEL_20,
         "gemini-2.5-flash": GEMINI_MODEL_25,
@@ -429,11 +466,12 @@ def create_app():
     }
 
     try:
-        if GEMINI_API_KEY and _GENAI_AVAILABLE:
+        available_gemini_keys = get_gemini_api_keys()
+        if available_gemini_keys and _GENAI_AVAILABLE:
             _vlog("Configuring Gemini AI service...")
-            genai.configure(api_key=GEMINI_API_KEY)
+            genai.configure(api_key=available_gemini_keys[0])
             _vlog("Gemini AI service configured ✓")
-            app_logger.info("Gemini AI service configured successfully")
+            app_logger.info(f"Gemini AI service configured successfully (fallback keys: {max(0, len(available_gemini_keys) - 1)})")
         elif not _GENAI_AVAILABLE:
             _vlog("Gemini AI package not installed, AI features disabled")
             app_logger.warning("google-generativeai package not installed")
@@ -470,23 +508,38 @@ def create_app():
 
     def generate_with_gemini(prompt, preferred_model_key="gemini-3-flash"):
         """Generate text with model fallback across Gemini 3/2.5/2.0 flash families."""
-        if not GEMINI_API_KEY:
+        api_keys = get_gemini_api_keys()
+        if not api_keys:
             return None, None, "Gemini API key is missing. Set GEMINI_API_KEY in environment."
 
         errors = []
-        for model_name in get_ordered_model_names(preferred_model_key):
+        for key_index, api_key in enumerate(api_keys, start=1):
+            key_label = f"key#{key_index}...{api_key[-6:]}" if len(api_key) >= 6 else f"key#{key_index}"
             try:
-                if model_name not in model_cache:
-                    model_cache[model_name] = genai.GenerativeModel(model_name)
-                response = model_cache[model_name].generate_content(prompt)
-                output = getattr(response, "text", "")
-                if output and output.strip():
-                    return output.strip(), model_name, None
-                errors.append(f"{model_name}: empty response")
+                genai.configure(api_key=api_key)
             except Exception as exc:
-                errors.append(f"{model_name}: {str(exc)}")
+                errors.append(f"{key_label}: configure failed ({str(exc)})")
+                continue
 
-        return None, None, " | ".join(errors[:3]) if errors else "Unknown AI error"
+            for model_name in get_ordered_model_names(preferred_model_key):
+                try:
+                    cache_key = f"{key_label}:{model_name}"
+                    if cache_key not in model_cache:
+                        model_cache[cache_key] = genai.GenerativeModel(model_name)
+
+                    response = model_cache[cache_key].generate_content(prompt)
+                    output = getattr(response, "text", "")
+                    if output and output.strip():
+                        return output.strip(), model_name, None
+                    errors.append(f"{model_name} ({key_label}): empty response")
+                except Exception as exc:
+                    text = str(exc)
+                    errors.append(f"{model_name} ({key_label}): {text}")
+                    lowered = text.lower()
+                    if 'api_key_invalid' in lowered or 'api key not valid' in lowered:
+                        break
+
+        return None, None, " | ".join(errors[:5]) if errors else "Unknown AI error"
 
     def format_ai_service_error(error_message):
         message = str(error_message or '').strip()

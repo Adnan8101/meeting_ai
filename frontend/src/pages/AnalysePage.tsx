@@ -425,7 +425,7 @@ export default function AnalysePage() {
   );
 
   const persistAnalysisToDashboard = useCallback(
-    async (analysis: AnalysisResult) => {
+    async (analysis: AnalysisResult, rawAnalysis?: ApiLikeResult) => {
       const response = await fetch('/api/dashboard/store-analysis', {
         method: 'POST',
         credentials: 'include',
@@ -435,6 +435,7 @@ export default function AnalysePage() {
         },
         body: JSON.stringify({
           transcript,
+          analysis: rawAnalysis,
           summary: analysis.executiveSummary,
           key_points: analysis.keyPoints,
           action_items: analysis.actionItems,
@@ -536,7 +537,7 @@ export default function AnalysePage() {
           await wait(700);
         } else {
           appendPipelineLog('Sending To Dashboard: API did not persist data. Storing analysis via dashboard endpoint.');
-          await persistAnalysisToDashboard(nextResult);
+          await persistAnalysisToDashboard(nextResult, apiPayload?.analysis);
           appendPipelineLog('Dashboard sync complete. Meeting summary and tasks saved.');
         }
         setStepState('sending_dashboard', 'done');

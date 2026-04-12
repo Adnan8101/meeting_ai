@@ -76,9 +76,9 @@ const sections: DocSection[] = [
       "For full product behavior, both services must run together.",
     ],
     commands: [
-      "cd /Users/adnan/Downloads/hamza-meeting",
+      "cd \"/Users/hasan and hamza/Downloads/hamza-meeting\"",
       "python run.py",
-      "cd /Users/adnan/Downloads/hamza-meeting/frontend",
+      "cd \"/Users/hasan and hamza/Downloads/hamza-meeting/frontend\"",
       "npm install",
       "npm run dev",
       "npm run build",
