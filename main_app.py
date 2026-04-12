@@ -443,8 +443,6 @@ def create_app():
             return None
 
     # --- AI MODEL AND HELPER FUNCTIONS ---
-    model_cache = {}
-
     def get_gemini_api_keys():
         keys = []
         if GEMINI_API_KEY:
@@ -464,6 +462,49 @@ def create_app():
         "gemini-2.5-flash": GEMINI_MODEL_25,
         "gemini-3-flash": GEMINI_MODEL_3
     }
+
+    def _gemini_generate_content_rest(prompt, model_name, api_key):
+        endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
+        payload = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [{"text": prompt}],
+                }
+            ]
+        }
+
+        try:
+            response = requests.post(endpoint, params={"key": api_key}, json=payload, timeout=60)
+        except Exception as exc:
+            return None, f"Request failed: {str(exc)}"
+
+        data = None
+        try:
+            data = response.json()
+        except Exception:
+            data = None
+
+        if not response.ok:
+            if isinstance(data, dict):
+                error_obj = data.get('error') or {}
+                error_message = str(error_obj.get('message') or '').strip()
+                error_status = str(error_obj.get('status') or '').strip()
+                if error_message:
+                    return None, f"{error_status or response.status_code}: {error_message}"
+            return None, f"HTTP {response.status_code}: Gemini API call failed"
+
+        if not isinstance(data, dict):
+            return None, "Gemini API returned an invalid response payload"
+
+        for candidate in data.get('candidates', []) or []:
+            content = candidate.get('content') or {}
+            parts = content.get('parts') or []
+            text_parts = [str(part.get('text') or '').strip() for part in parts if str(part.get('text') or '').strip()]
+            if text_parts:
+                return "\n".join(text_parts).strip(), None
+
+        return None, "Gemini API returned no text output"
 
     try:
         available_gemini_keys = get_gemini_api_keys()
@@ -515,29 +556,17 @@ def create_app():
         errors = []
         for key_index, api_key in enumerate(api_keys, start=1):
             key_label = f"key#{key_index}...{api_key[-6:]}" if len(api_key) >= 6 else f"key#{key_index}"
-            try:
-                genai.configure(api_key=api_key)
-            except Exception as exc:
-                errors.append(f"{key_label}: configure failed ({str(exc)})")
-                continue
-
             for model_name in get_ordered_model_names(preferred_model_key):
-                try:
-                    cache_key = f"{key_label}:{model_name}"
-                    if cache_key not in model_cache:
-                        model_cache[cache_key] = genai.GenerativeModel(model_name)
+                output, error_text = _gemini_generate_content_rest(prompt, model_name, api_key)
+                if output and output.strip():
+                    app_logger.info(f"Gemini response success via {model_name} ({key_label})")
+                    return output.strip(), model_name, None
 
-                    response = model_cache[cache_key].generate_content(prompt)
-                    output = getattr(response, "text", "")
-                    if output and output.strip():
-                        return output.strip(), model_name, None
-                    errors.append(f"{model_name} ({key_label}): empty response")
-                except Exception as exc:
-                    text = str(exc)
-                    errors.append(f"{model_name} ({key_label}): {text}")
-                    lowered = text.lower()
-                    if 'api_key_invalid' in lowered or 'api key not valid' in lowered:
-                        break
+                text = str(error_text or '').strip() or 'Unknown Gemini API error'
+                errors.append(f"{model_name} ({key_label}): {text}")
+                lowered = text.lower()
+                if 'api_key_invalid' in lowered or 'api key not valid' in lowered:
+                    break
 
         return None, None, " | ".join(errors[:5]) if errors else "Unknown AI error"
 
