@@ -324,6 +324,59 @@ function ForgotPasswordPage() {
   return <CloudWatchForm mode="forgot" action="/forget-password" />;
 }
 
+function GuestOnlyRoute({ children }: { children: ReactNode }) {
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/status', {
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
+        });
+        const payload = await response.json();
+        if (!isMounted) {
+          return;
+        }
+        setAuthenticated(Boolean(payload?.authenticated));
+      } catch {
+        if (isMounted) {
+          setAuthenticated(false);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    checkAuth();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="mx-auto flex min-h-[calc(100vh-72px)] max-w-6xl items-center justify-center px-6 py-12">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm text-white/80">
+          <LoaderCircle className="h-4 w-4 animate-spin" />
+          Checking access...
+        </div>
+      </main>
+    );
+  }
+
+  if (authenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 function VerifyEmailPage() {
   const params = useParams();
   const email = params.email || '';
@@ -520,8 +573,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<MarketingPage />} />
           <Route path="/home" element={<MarketingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<GuestOnlyRoute><LoginPage /></GuestOnlyRoute>} />
+          <Route path="/register" element={<GuestOnlyRoute><RegisterPage /></GuestOnlyRoute>} />
           <Route path="/forget-password" element={<ForgotPasswordPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/forgot_password" element={<ForgotPasswordPage />} />

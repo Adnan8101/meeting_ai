@@ -9,6 +9,7 @@ import { Spotlight } from '@/components/ui/spotlight';
 
 export function SplineSceneBasic() {
   const [allowSpline, setAllowSpline] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const mobileQuery = window.matchMedia('(max-width: 768px)');
@@ -25,6 +26,32 @@ export function SplineSceneBasic() {
     return () => {
       mobileQuery.removeEventListener('change', updateRenderMode);
       reducedMotionQuery.removeEventListener('change', updateRenderMode);
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/status', {
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
+        });
+        const payload = await response.json();
+        if (isMounted) {
+          setIsAuthenticated(Boolean(payload?.authenticated));
+        }
+      } catch {
+        if (isMounted) {
+          setIsAuthenticated(false);
+        }
+      }
+    };
+
+    checkAuth();
+    return () => {
+      isMounted = false;
     };
   }, []);
 
@@ -47,18 +74,26 @@ export function SplineSceneBasic() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              to="/register"
+              to={isAuthenticated ? '/dashboard' : '/register'}
               className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-neutral-200"
             >
-              Start Free
+              {isAuthenticated ? 'Dashboard' : 'Start Free'}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              to="/dashboard"
+              to={isAuthenticated ? '/analyse' : '/login'}
               className="inline-flex items-center gap-2 rounded-full border border-white/30 px-5 py-2.5 text-sm text-white transition hover:bg-white/10"
             >
               Watch Workflow
             </Link>
+            {isAuthenticated && (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-2 rounded-full border border-sky-300/40 px-5 py-2.5 text-sm text-sky-200 transition hover:bg-sky-400/10"
+              >
+                Go to Dashboard
+              </Link>
+            )}
           </div>
         </div>
 
