@@ -3,25 +3,150 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 import time
+import json
+import subprocess
+import shutil
+import html
 from dotenv import load_dotenv
 
-# Import logging configuration
-from logger_config import email_logger, log_email_operation, log_error
+# Import lightweight logging helpers
+from app_logging import email_logger, log_email_operation, log_error
 
 email_logger.info("Email service module loaded")
 
 # Load .env in this module to avoid import-order issues.
 load_dotenv()
 
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "")
-SENDER_PASSWORD = (
-    os.environ.get("SENDER_PASSWORD", "")
-    or os.environ.get("SENDER_APP_PASSWORD", "")
-    or os.environ.get("GMAIL_APP_PASSWORD", "")
-)
-EMAIL_SENDER_CONFIGURED = bool(SENDER_EMAIL and SENDER_PASSWORD)
+GMAIL_USER = os.environ.get("GMAIL_USER", "").strip()
+GMAIL_CLIENT_ID = os.environ.get("GMAIL_CLIENT_ID", "").strip()
+GMAIL_CLIENT_SECRET = os.environ.get("GMAIL_CLIENT_SECRET", "").strip()
+GMAIL_REFRESH_TOKEN = os.environ.get("GMAIL_REFRESH_TOKEN", "").strip()
 
-email_logger.info(f"Email configuration: Sender configured: {EMAIL_SENDER_CONFIGURED}")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "").strip() or GMAIL_USER
+SENDER_PASSWORD = (
+        os.environ.get("SENDER_PASSWORD", "").strip()
+        or os.environ.get("SENDER_APP_PASSWORD", "").strip()
+        or os.environ.get("GMAIL_APP_PASSWORD", "").strip()
+)
+EMAIL_SMTP_CONFIGURED = bool(SENDER_EMAIL and SENDER_PASSWORD)
+EMAIL_OAUTH_CONFIGURED = bool(GMAIL_USER and GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET and GMAIL_REFRESH_TOKEN)
+EMAIL_SENDER_CONFIGURED = bool(EMAIL_SMTP_CONFIGURED or EMAIL_OAUTH_CONFIGURED)
+APP_URL = os.environ.get("APP_URL", "http://localhost:5001").strip() or "http://localhost:5001"
+NODEMAILER_SCRIPT = os.path.join(os.path.dirname(__file__), "frontend", "scripts", "send-email.mjs")
+
+email_logger.info(
+        "Email configuration: enabled=%s oauth=%s smtp=%s",
+        EMAIL_SENDER_CONFIGURED,
+        EMAIL_OAUTH_CONFIGURED,
+        EMAIL_SMTP_CONFIGURED,
+)
+
+
+def _safe(value):
+        return html.escape(str(value or ""), quote=True)
+
+
+def _render_email_layout(preheader, title, subtitle, body_html, cta_text=None, cta_url=None):
+        cta_block = ""
+        if cta_text and cta_url:
+                cta_block = f"""
+                <tr>
+                    <td style=\"padding: 0 40px 36px 40px;\">
+                        <a href=\"{_safe(cta_url)}\" style=\"display:inline-block;background:#f5f5f5;color:#0a0a0a;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;\">{_safe(cta_text)}</a>
+                    </td>
+                </tr>
+                """
+
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset=\"utf-8\" />
+            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+            <title>{_safe(title)}</title>
+        </head>
+        <body style=\"margin:0;padding:0;background:#030303;font-family:'Segoe UI',Arial,sans-serif;\">
+            <span style=\"display:none!important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;\">{_safe(preheader)}</span>
+            <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"background:#030303;padding:26px 10px;\">
+                <tr>
+                    <td align=\"center\">
+                        <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width:640px;background:#0e0e0e;border:1px solid #232323;border-radius:18px;overflow:hidden;\">
+                            <tr>
+                                <td style=\"padding:18px 28px;background:linear-gradient(90deg,#141414,#0d0d0d);border-bottom:1px solid #252525;\">
+                                    <div style=\"font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:#d4d4d4;font-weight:700;\">AI Meeting Agent</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style=\"padding:30px 40px 16px 40px;\">
+                                    <h1 style=\"margin:0;color:#fafafa;font-size:30px;line-height:1.2;font-weight:700;\">{_safe(title)}</h1>
+                                    <p style=\"margin:12px 0 0 0;color:#b8b8b8;font-size:15px;line-height:1.6;\">{_safe(subtitle)}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style=\"padding: 0 40px 14px 40px;\">{body_html}</td>
+                            </tr>
+                            {cta_block}
+                            <tr>
+                                <td style=\"padding:22px 40px;border-top:1px solid #252525;background:#0a0a0a;\">
+                                    <p style=\"margin:0;color:#8f8f8f;font-size:12px;line-height:1.6;\">This is an automated message from AI Meeting Agent. For support, use your account dashboard.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        """
+
+
+def _send_via_nodemailer(to_email, subject, html_body, text_body=None):
+        if not os.path.exists(NODEMAILER_SCRIPT):
+                return False, "Nodemailer bridge missing at frontend/scripts/send-email.mjs"
+
+        node_path = shutil.which("node")
+        if not node_path:
+                return False, "Node.js is not installed or not available in PATH"
+
+        payload = {
+                "to": to_email,
+                "subject": subject,
+                "html": html_body,
+                "text": text_body,
+        }
+
+        try:
+                result = subprocess.run(
+                        [node_path, NODEMAILER_SCRIPT],
+                        input=json.dumps(payload),
+                        capture_output=True,
+                        text=True,
+                        timeout=45,
+                        check=False,
+                )
+        except Exception as exc:
+                return False, f"Nodemailer execution failed: {exc}"
+
+        stdout = (result.stdout or "").strip()
+        stderr = (result.stderr or "").strip()
+
+        parsed = None
+        if stdout:
+                try:
+                        parsed = json.loads(stdout)
+                except json.JSONDecodeError:
+                        parsed = None
+
+        if result.returncode == 0 and isinstance(parsed, dict) and parsed.get("ok"):
+                return True, parsed.get("message", "Email sent successfully")
+
+        if isinstance(parsed, dict) and parsed.get("error"):
+                return False, parsed.get("error")
+        if stderr:
+                return False, stderr
+        if stdout:
+                return False, stdout
+        return False, "Unknown Nodemailer failure"
 
 def send_email(to_email, subject, html_body, text_body=None):
     """
@@ -32,12 +157,29 @@ def send_email(to_email, subject, html_body, text_body=None):
 
     if not EMAIL_SENDER_CONFIGURED:
         message = (
-            "Email sender credentials are missing. Set SENDER_EMAIL and SENDER_PASSWORD "
-            "(or SENDER_APP_PASSWORD / GMAIL_APP_PASSWORD)."
+            "Email credentials missing. Configure Gmail OAuth (GMAIL_USER, GMAIL_CLIENT_ID, "
+            "GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN) or SMTP app password vars."
         )
         email_logger.warning(message)
         log_email_operation(email_logger, "send", to_email, subject, success=False, error=message)
         return False, message
+
+    if EMAIL_OAUTH_CONFIGURED:
+        success, message = _send_via_nodemailer(to_email, subject, html_body, text_body)
+        if success:
+            send_time = (time.time() - start_time) * 1000
+            email_logger.info(f"Email sent via Nodemailer to {to_email} in {send_time:.2f}ms")
+            log_email_operation(email_logger, "send", to_email, subject, success=True)
+            return True, message
+
+        email_logger.warning(
+            "Nodemailer send failed for %s: %s. Falling back to SMTP if available.",
+            to_email,
+            message,
+        )
+        if not EMAIL_SMTP_CONFIGURED:
+            log_email_operation(email_logger, "send", to_email, subject, success=False, error=message)
+            return False, message
     
     try:
         # Create message
@@ -94,184 +236,101 @@ def send_email(to_email, subject, html_body, text_body=None):
 def send_welcome_email(user_email, username):
     """Send welcome email after successful account creation"""
     email_logger.info(f"Sending welcome email to new user: {username} ({user_email})")
-    subject = "Welcome to AI Meeting Agent! 🎉"
-    
-    html_body = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #000000; }}
-            .container {{ max-width: 600px; margin: 0 auto; background-color: #1a1a1a; border-radius: 20px; overflow: hidden; }}
-            .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center; }}
-            .content {{ padding: 40px 30px; color: #ffffff; }}
-            .button {{ display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; margin: 20px 0; }}
-            .feature {{ background: #2a2a2a; padding: 20px; margin: 15px 0; border-radius: 10px; border-left: 4px solid #667eea; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1 style="margin: 0; color: white; font-size: 32px;">Welcome to AI Meeting Agent!</h1>
-                <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.9); font-size: 18px;">Your intelligent meeting companion</p>
-            </div>
-            <div class="content">
-                <h2 style="color: #667eea;">Hi {username}! 👋</h2>
-                <p>Thank you for creating your account. You're now ready to transform your meetings with AI-powered insights!</p>
-                
-                <div class="feature">
-                    <h3 style="color: #667eea; margin-top: 0;">🤖 AI Analysis</h3>
-                    <p>Get intelligent summaries, decisions, and action items from your meeting transcripts.</p>
-                </div>
-                
-                <div class="feature">
-                    <h3 style="color: #667eea; margin-top: 0;">📋 Trello Integration</h3>
-                    <p>Automatically create Trello cards for action items with assignees and due dates.</p>
-                </div>
-                
-                <div class="feature">
-                    <h3 style="color: #667eea; margin-top: 0;">👥 Team Collaboration</h3>
-                    <p>Create teams and share meeting insights with your colleagues.</p>
-                </div>
-                
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="#" class="button">Start Your First Analysis</a>
-                </div>
-                
-                <p style="color: #888; font-size: 14px; margin-top: 30px;">
-                    Need help? Reply to this email or check our documentation for getting started tips.
-                </p>
-            </div>
-        </div>
-    </body>
-    </html>
+    safe_username = _safe(username)
+    subject = "Welcome to AI Meeting Agent"
+
+    body_html = f"""
+    <p style=\"margin:0 0 20px 0;color:#d4d4d4;font-size:15px;line-height:1.7;\">Hello <strong style=\"color:#ffffff;\">{safe_username}</strong>, your workspace is now ready.</p>
+    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:separate;border-spacing:0 10px;\">
+      <tr><td style=\"background:#141414;border:1px solid #262626;border-radius:10px;padding:14px 16px;color:#dedede;font-size:14px;\"><strong style=\"color:#ffffff;\">AI Analysis</strong><br/>Extract summaries, decisions, and action items from any meeting transcript.</td></tr>
+      <tr><td style=\"background:#141414;border:1px solid #262626;border-radius:10px;padding:14px 16px;color:#dedede;font-size:14px;\"><strong style=\"color:#ffffff;\">Workflow Sync</strong><br/>Push tasks to connected tools and keep execution aligned with your team.</td></tr>
+      <tr><td style=\"background:#141414;border:1px solid #262626;border-radius:10px;padding:14px 16px;color:#dedede;font-size:14px;\"><strong style=\"color:#ffffff;\">Execution Clarity</strong><br/>Track ownership, deadlines, and outcomes in a single operational view.</td></tr>
+    </table>
     """
-    
-    text_body = f"""
-    Welcome to AI Meeting Agent!
-    
-    Hi {username}!
-    
-    Thank you for creating your account. You're now ready to transform your meetings with AI-powered insights!
-    
-    Features available to you:
-    - AI Analysis: Get intelligent summaries, decisions, and action items
-    - Trello Integration: Automatically create cards for action items
-    - Team Collaboration: Share insights with your colleagues
-    
-    Get started by uploading your first meeting transcript!
-    
-    Need help? Reply to this email for support.
-    """
-    
+
+    html_body = _render_email_layout(
+        preheader="Your AI Meeting Agent workspace is ready.",
+        title="Welcome aboard",
+        subtitle="Professional meeting intelligence for fast-moving teams.",
+        body_html=body_html,
+        cta_text="Open Dashboard",
+        cta_url=APP_URL,
+    )
+
+    text_body = (
+        f"Welcome aboard, {username}.\n\n"
+        "Your AI Meeting Agent workspace is ready.\n"
+        "- AI Analysis for summaries and decisions\n"
+        "- Workflow Sync with integrations\n"
+        "- Execution Clarity for owners and due dates\n\n"
+        f"Open dashboard: {APP_URL}"
+    )
+
     return send_email(user_email, subject, html_body, text_body)
 
 def send_integration_success_email(user_email, username, integration_name):
     """Send email after successful integration"""
     email_logger.info(f"Sending integration success email for {integration_name} to: {username} ({user_email})")
-    subject = f"{integration_name} Integration Successful! ✅"
-    
-    html_body = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #000000; }}
-            .container {{ max-width: 600px; margin: 0 auto; background-color: #1a1a1a; border-radius: 20px; overflow: hidden; }}
-            .header {{ background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 20px; text-align: center; }}
-            .content {{ padding: 40px 30px; color: #ffffff; }}
-            .success-icon {{ font-size: 48px; margin-bottom: 20px; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <div class="success-icon">✅</div>
-                <h1 style="margin: 0; color: white; font-size: 28px;">{integration_name} Connected!</h1>
-            </div>
-            <div class="content">
-                <h2 style="color: #10b981;">Great news, {username}!</h2>
-                <p>Your {integration_name} integration has been successfully set up. You can now:</p>
-                
-                <ul style="color: #e5e5e5; line-height: 1.6;">
-                    <li>Automatically create {integration_name.lower()} items from meeting action items</li>
-                    <li>Keep your workflow synchronized with AI Meeting Agent</li>
-                    <li>Save time on manual task creation</li>
-                </ul>
-                
-                <p>Start your next meeting analysis and watch the magic happen!</p>
-                
-                <p style="color: #888; font-size: 14px; margin-top: 30px;">
-                    You can manage your integrations anytime from your account settings.
-                </p>
-            </div>
-        </div>
-    </body>
-    </html>
+    safe_name = _safe(integration_name)
+    safe_user = _safe(username)
+    subject = f"{integration_name} integration connected"
+
+    body_html = f"""
+    <p style=\"margin:0 0 18px 0;color:#d4d4d4;font-size:15px;line-height:1.7;\">Hello <strong style=\"color:#ffffff;\">{safe_user}</strong>, <strong style=\"color:#ffffff;\">{safe_name}</strong> is now connected to your workspace.</p>
+    <div style=\"background:#131313;border:1px solid #2a2a2a;border-radius:12px;padding:16px;\">
+      <p style=\"margin:0;color:#d6d6d6;font-size:14px;line-height:1.7;\">Your automations can now create records directly from meeting action items, keeping planning and execution synchronized.</p>
+    </div>
     """
-    
-    return send_email(user_email, subject, html_body)
+
+    html_body = _render_email_layout(
+        preheader=f"{integration_name} has been connected successfully.",
+        title=f"{integration_name} connected",
+        subtitle="Your integration is active and ready for workflow automation.",
+        body_html=body_html,
+        cta_text="Manage Integrations",
+        cta_url=f"{APP_URL.rstrip('/')}/integrations",
+    )
+
+    text_body = (
+        f"Hello {username},\n\n"
+        f"{integration_name} is now connected to your AI Meeting Agent workspace.\n"
+        "You can use meeting action items to trigger workflow automation.\n\n"
+        f"Manage integrations: {APP_URL.rstrip('/')}/integrations"
+    )
+
+    return send_email(user_email, subject, html_body, text_body)
 
 def send_password_reset_email(user_email, username, otp_code):
     """Send password reset email with OTP"""
     email_logger.info(f"Sending password reset email to: {username} ({user_email})")
     email_logger.debug(f"OTP code generated: {otp_code}")
-    subject = "Password Reset Code - AI Meeting Agent 🔐"
-    
-    html_body = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #000000; }}
-            .container {{ max-width: 600px; margin: 0 auto; background-color: #1a1a1a; border-radius: 20px; overflow: hidden; }}
-            .header {{ background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 40px 20px; text-align: center; }}
-            .content {{ padding: 40px 30px; color: #ffffff; text-align: center; }}
-            .otp-code {{ font-size: 36px; font-weight: bold; background: #2a2a2a; padding: 20px; border-radius: 10px; letter-spacing: 8px; color: #f59e0b; margin: 20px 0; }}
-            .warning {{ background: #fef3c7; color: #92400e; padding: 15px; border-radius: 10px; margin: 20px 0; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1 style="margin: 0; color: white; font-size: 28px;">Password Reset Request</h1>
-                <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.9);">🔐 Secure verification code</p>
-            </div>
-            <div class="content">
-                <h2 style="color: #f59e0b;">Hi {username},</h2>
-                <p>You requested to reset your password. Use the verification code below:</p>
-                
-                <div class="otp-code">{otp_code}</div>
-                
-                <p><strong>This code expires in 15 minutes.</strong></p>
-                
-                <div class="warning">
-                    <strong>Security Note:</strong> If you didn't request this password reset, please ignore this email. Your account remains secure.
-                </div>
-                
-                <p style="color: #888; font-size: 14px; margin-top: 30px;">
-                    Enter this code in the password reset form to continue with changing your password.
-                </p>
-            </div>
-        </div>
-    </body>
-    </html>
+    safe_user = _safe(username)
+    safe_code = _safe(otp_code)
+    subject = "Password reset code"
+
+    body_html = f"""
+    <p style=\"margin:0 0 14px 0;color:#d4d4d4;font-size:15px;line-height:1.7;\">Hello <strong style=\"color:#ffffff;\">{safe_user}</strong>, use the code below to reset your password.</p>
+    <div style=\"margin:16px 0 18px 0;background:#141414;border:1px solid #2c2c2c;border-radius:12px;padding:16px;text-align:center;\">
+      <div style=\"font-size:34px;letter-spacing:8px;font-weight:700;color:#f5f5f5;font-family:'Courier New',monospace;\">{safe_code}</div>
+      <p style=\"margin:10px 0 0 0;color:#a7a7a7;font-size:13px;\">Valid for 15 minutes</p>
+    </div>
+    <p style=\"margin:0;color:#9d9d9d;font-size:13px;line-height:1.7;\">If you did not request this, you can safely ignore this email and your account remains protected.</p>
     """
-    
-    text_body = f"""
-    Password Reset Code - AI Meeting Agent
-    
-    Hi {username},
-    
-    You requested to reset your password. Use this verification code:
-    
-    {otp_code}
-    
-    This code expires in 15 minutes.
-    
-    If you didn't request this password reset, please ignore this email.
-    """
-    
+
+    html_body = _render_email_layout(
+        preheader="Your password reset verification code.",
+        title="Reset your password",
+        subtitle="Security verification for your account.",
+        body_html=body_html,
+    )
+
+    text_body = (
+        f"Hello {username},\n\n"
+        "Use this code to reset your password:\n"
+        f"{otp_code}\n\n"
+        "This code is valid for 15 minutes. If you did not request this, ignore this message."
+    )
+
     return send_email(user_email, subject, html_body, text_body)
 
 def send_email_verification(user_email, username, otp_code):
@@ -279,86 +338,113 @@ def send_email_verification(user_email, username, otp_code):
     email_logger.info(f"Sending email verification to new user: {username} ({user_email})")
     email_logger.debug(f"Verification OTP generated: {otp_code}")
     subject = "Verify Your Email - AI Meeting Agent"
-    
-    html_body = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #000000; }}
-            .container {{ max-width: 600px; margin: 0 auto; background-color: #1a1a1a; border-radius: 20px; overflow: hidden; }}
-            .header {{ background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 40px 20px; text-align: center; }}
-            .content {{ padding: 40px 30px; color: #ffffff; }}
-            .otp-code {{ background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; font-size: 32px; font-weight: bold; text-align: center; padding: 20px; margin: 30px 0; border-radius: 15px; letter-spacing: 8px; font-family: 'Courier New', monospace; }}
-            .feature {{ display: flex; align-items: center; margin: 20px 0; }}
-            .feature-icon {{ width: 24px; height: 24px; margin-right: 12px; }}
-            .footer {{ background-color: #111111; padding: 30px; text-align: center; color: #666666; font-size: 14px; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1 style="margin: 0; color: white; font-size: 28px;">🔐 Verify Your Email</h1>
-                <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.9);">Complete your AI Meeting Agent registration</p>
-            </div>
-            
-            <div class="content">
-                <p style="font-size: 18px; margin-bottom: 10px;">Hi <strong>{username}</strong>!</p>
-                
-                <p style="color: #cccccc; line-height: 1.6; margin-bottom: 30px;">
-                    Thanks for signing up with AI Meeting Agent! To complete your registration and secure your account, 
-                    please verify your email address using the code below.
-                </p>
-                
-                <div class="otp-code">
-                    {otp_code}
-                </div>
-                
-                <p style="color: #cccccc; line-height: 1.6; text-align: center; margin-bottom: 30px;">
-                    <strong>This code expires in 30 minutes.</strong><br>
-                    Enter this code on the verification page to activate your account.
-                </p>
-                
-                <div style="border: 2px solid #374151; border-radius: 12px; padding: 20px; margin: 30px 0; background-color: #111111;">
-                    <h3 style="color: #f59e0b; margin-top: 0; font-size: 16px;">⚠️ Security Notice</h3>
-                    <ul style="color: #cccccc; line-height: 1.6; padding-left: 20px;">
-                        <li>Never share this verification code with anyone</li>
-                        <li>We will never ask for this code via phone or email</li>
-                        <li>If you didn't create this account, please ignore this email</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="footer">
-                <p>AI Meeting Agent Team<br>
-                Transforming meetings with AI-powered insights</p>
-                <p style="margin-top: 20px; font-size: 12px;">
-                    This is an automated message. Please do not reply to this email.
-                </p>
-            </div>
-        </div>
-    </body>
-    </html>
+
+    safe_user = _safe(username)
+    safe_code = _safe(otp_code)
+
+    body_html = f"""
+    <p style=\"margin:0 0 14px 0;color:#d4d4d4;font-size:15px;line-height:1.7;\">Hello <strong style=\"color:#ffffff;\">{safe_user}</strong>, confirm this email address to activate your account.</p>
+    <div style=\"margin:16px 0 18px 0;background:#141414;border:1px solid #2c2c2c;border-radius:12px;padding:16px;text-align:center;\">
+      <div style=\"font-size:34px;letter-spacing:8px;font-weight:700;color:#f5f5f5;font-family:'Courier New',monospace;\">{safe_code}</div>
+      <p style=\"margin:10px 0 0 0;color:#a7a7a7;font-size:13px;\">Valid for 30 minutes</p>
+    </div>
+    <p style=\"margin:0;color:#9d9d9d;font-size:13px;line-height:1.7;\">Never share this code. AI Meeting Agent support will never ask for it.</p>
     """
-    
-    text_body = f"""
-    Verify Your Email - AI Meeting Agent
-    
-    Hi {username}!
-    
-    Thanks for signing up with AI Meeting Agent! To complete your registration, 
-    please use this verification code:
-    
-    {otp_code}
-    
-    This code expires in 30 minutes.
-    
-    Security Notice:
-    - Never share this code with anyone
-    - We will never ask for this code via phone or email
-    - If you didn't create this account, please ignore this email
-    
-    AI Meeting Agent Team
-    """
-    
+
+    html_body = _render_email_layout(
+        preheader="Verify your email to complete signup.",
+        title="Verify your email",
+        subtitle="One-time verification to secure your account.",
+        body_html=body_html,
+    )
+
+    text_body = (
+        f"Hello {username},\n\n"
+        "Use this verification code to activate your account:\n"
+        f"{otp_code}\n\n"
+        "This code is valid for 30 minutes. Never share this code with anyone."
+    )
+
     return send_email(user_email, subject, html_body, text_body)
+
+
+def build_meeting_summary_email(analysis):
+    """Build premium themed HTML/text email bodies for meeting summary delivery."""
+    summary = _safe(analysis.get("summary", "No summary provided."))
+    decisions = analysis.get("decisions", []) or []
+    action_items = analysis.get("action_items", []) or []
+
+    if decisions:
+        decisions_html = "".join(
+            f"<li style=\"margin:0 0 8px 0;\">{_safe(item)}</li>" for item in decisions
+        )
+    else:
+        decisions_html = "<li style=\"margin:0;\">No explicit decisions captured.</li>"
+
+    if action_items:
+        item_rows = []
+        for item in action_items:
+            task = _safe(item.get("task", "Untitled"))
+            assignee = _safe(item.get("assignee", "Unassigned"))
+            due_date = _safe(item.get("due_date", "Not set"))
+            item_rows.append(
+                f"<tr>"
+                f"<td style=\"padding:10px;border-top:1px solid #2a2a2a;color:#e7e7e7;font-size:13px;\">{task}</td>"
+                f"<td style=\"padding:10px;border-top:1px solid #2a2a2a;color:#c8c8c8;font-size:13px;\">{assignee}</td>"
+                f"<td style=\"padding:10px;border-top:1px solid #2a2a2a;color:#c8c8c8;font-size:13px;\">{due_date}</td>"
+                f"</tr>"
+            )
+        action_items_html = "".join(item_rows)
+    else:
+        action_items_html = (
+            "<tr><td colspan=\"3\" style=\"padding:10px;border-top:1px solid #2a2a2a;color:#b1b1b1;font-size:13px;\">"
+            "No action items captured."
+            "</td></tr>"
+        )
+
+    body_html = f"""
+    <h3 style=\"margin:0 0 8px 0;color:#f8f8f8;font-size:16px;\">Summary</h3>
+    <p style=\"margin:0 0 18px 0;color:#d4d4d4;font-size:14px;line-height:1.7;\">{summary}</p>
+
+    <h3 style=\"margin:0 0 8px 0;color:#f8f8f8;font-size:16px;\">Decisions</h3>
+    <ul style=\"margin:0 0 18px 18px;padding:0;color:#d4d4d4;font-size:14px;line-height:1.7;\">{decisions_html}</ul>
+
+    <h3 style=\"margin:0 0 8px 0;color:#f8f8f8;font-size:16px;\">Action items</h3>
+    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse;background:#131313;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden;\">
+      <tr>
+        <th align=\"left\" style=\"padding:10px;color:#f5f5f5;font-size:12px;text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid #2a2a2a;\">Task</th>
+        <th align=\"left\" style=\"padding:10px;color:#f5f5f5;font-size:12px;text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid #2a2a2a;\">Assignee</th>
+        <th align=\"left\" style=\"padding:10px;color:#f5f5f5;font-size:12px;text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid #2a2a2a;\">Due</th>
+      </tr>
+      {action_items_html}
+    </table>
+    """
+
+    html_body = _render_email_layout(
+        preheader="Meeting summary, decisions, and action items.",
+        title="Meeting summary report",
+        subtitle="Structured output generated by AI Meeting Agent.",
+        body_html=body_html,
+    )
+
+    text_lines = ["Meeting summary report", "", f"Summary: {analysis.get('summary', 'No summary provided.')}", "", "Decisions:"]
+    if decisions:
+        text_lines.extend([f"- {item}" for item in decisions])
+    else:
+        text_lines.append("- No explicit decisions captured.")
+
+    text_lines.append("")
+    text_lines.append("Action items:")
+    if action_items:
+        for item in action_items:
+            text_lines.append(
+                "- Task: {task} | Assignee: {assignee} | Due: {due}".format(
+                    task=item.get("task", "Untitled"),
+                    assignee=item.get("assignee", "Unassigned"),
+                    due=item.get("due_date", "Not set"),
+                )
+            )
+    else:
+        text_lines.append("- No action items captured.")
+
+    return html_body, "\n".join(text_lines)

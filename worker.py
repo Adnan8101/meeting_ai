@@ -4,7 +4,7 @@ import time
 from trello import TrelloClient
 from dotenv import load_dotenv
 
-from logger_config import app_logger, integration_logger, log_error
+from app_logging import app_logger, integration_logger, log_error
 from main_app import create_app
 from models import TrelloCard, TrelloCredentials, User
 

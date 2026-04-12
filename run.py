@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from main_app import create_app
-from logger_config import app_logger
+from app_logging import app_logger
 
 if __name__ == '__main__':
     app_logger.info("="*80)
@@ -29,12 +29,19 @@ if __name__ == '__main__':
         or os.environ.get('SENDER_APP_PASSWORD', '').strip()
         or os.environ.get('GMAIL_APP_PASSWORD', '').strip()
     )
-    email_configured = bool(sender_email and sender_password)
+    gmail_user = os.environ.get('GMAIL_USER', '').strip()
+    gmail_client_id = os.environ.get('GMAIL_CLIENT_ID', '').strip()
+    gmail_client_secret = os.environ.get('GMAIL_CLIENT_SECRET', '').strip()
+    gmail_refresh_token = os.environ.get('GMAIL_REFRESH_TOKEN', '').strip()
+
+    email_smtp_configured = bool(sender_email and sender_password)
+    email_oauth_configured = bool(gmail_user and gmail_client_id and gmail_client_secret and gmail_refresh_token)
+    email_configured = bool(email_smtp_configured or email_oauth_configured)
     gemini_configured = bool(os.environ.get('GEMINI_API_KEY', '').strip())
 
     missing_vars = []
     if not email_configured:
-        missing_vars.append('SENDER_EMAIL + SENDER_PASSWORD (or SENDER_APP_PASSWORD)')
+        missing_vars.append('Email config (Gmail OAuth vars or SMTP app-password vars)')
     if not gemini_configured:
         missing_vars.append('GEMINI_API_KEY')
     if not database_configured:
@@ -77,6 +84,6 @@ if __name__ == '__main__':
         print("\n\nServer stopped by user")
     except Exception as e:
         app_logger.error(f"Server crashed: {str(e)}")
-        from logger_config import log_error
+        from app_logging import log_error
         log_error(app_logger, e)
         raise

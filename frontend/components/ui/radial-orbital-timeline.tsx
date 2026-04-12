@@ -3,11 +3,22 @@
 import {
   useState,
   useEffect,
+  useMemo,
   useRef,
   type ElementType,
   type MouseEvent,
 } from "react";
-import { ArrowRight, Link, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  Link as LinkIcon,
+  Lock,
+  RotateCcw,
+  RotateCw,
+  Unlock,
+  X,
+  Zap,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +38,9 @@ export interface TimelineItem {
   progressLabel?: string;
   step?: number;
   totalSteps?: number;
+  route?: string;
+  requiresAuth?: boolean;
+  routeLabel?: string;
 }
 
 interface RadialOrbitalTimelineProps {
@@ -42,24 +56,31 @@ export default function RadialOrbitalTimeline({
   rotationIntervalMs = 50,
   heightClassName = "h-[34rem] md:h-[46rem]",
 }: RadialOrbitalTimelineProps) {
-  const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>(
-    {}
-  );
-  const viewMode: "orbital" = "orbital";
+  const navigate = useNavigate();
   const [rotationAngle, setRotationAngle] = useState<number>(0);
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [pulseEffect, setPulseEffect] = useState<Record<number, boolean>>({});
-  const [centerOffset] = useState<{ x: number; y: number }>({
-    x: 0,
-    y: 0,
-  });
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authResolved, setAuthResolved] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const animationFrameRef = useRef<number | null>(null);
+  const lastFrameTimeRef = useRef<number | null>(null);
   const orbitRadius = isMobile ? 132 : 200;
   const orbitDiameter = orbitRadius * 2;
+  const rotationSpeedDegPerSecond = useMemo(
+    () => Math.max(2, (rotationStep / Math.max(rotationIntervalMs, 16)) * 1000),
+    [rotationIntervalMs, rotationStep]
+  );
+
+  const selectedItem = useMemo(
+    () => timelineData.find((item) => item.id === selectedNodeId) || null,
+    [selectedNodeId, timelineData]
+  );
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -72,61 +93,86 @@ export default function RadialOrbitalTimeline({
   }, []);
 
   useEffect(() => {
-    if (!autoRotate) {
+    let isMounted = true;
+
+    const readAuthStatus = async () => {
+      try {
+        const response = await fetch("/api/auth/status", {
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        });
+        const payload = await response.json();
+        if (isMounted) {
+          setIsAuthenticated(Boolean(payload?.authenticated));
+        }
+      } catch {
+        if (isMounted) {
+          setIsAuthenticated(false);
+        }
+      } finally {
+        if (isMounted) {
+          setAuthResolved(true);
+        }
+      }
+    };
+
+    readAuthStatus();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!autoRotate || selectedNodeId !== null) {
       return;
     }
 
-    const intervalId = window.setInterval(() => {
-      setRotationAngle((prev) => (prev + rotationStep) % 360);
-    }, Math.max(rotationIntervalMs, 16));
+    const tick = (timestamp: number) => {
+      if (lastFrameTimeRef.current === null) {
+        lastFrameTimeRef.current = timestamp;
+      }
+      const deltaSeconds = (timestamp - (lastFrameTimeRef.current || timestamp)) / 1000;
+      lastFrameTimeRef.current = timestamp;
+      setRotationAngle((prev) => (prev + rotationSpeedDegPerSecond * deltaSeconds) % 360);
+      animationFrameRef.current = window.requestAnimationFrame(tick);
+    };
 
-    return () => window.clearInterval(intervalId);
-  }, [autoRotate, rotationStep, rotationIntervalMs]);
+    animationFrameRef.current = window.requestAnimationFrame(tick);
+
+    return () => {
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+      animationFrameRef.current = null;
+      lastFrameTimeRef.current = null;
+    };
+  }, [autoRotate, selectedNodeId, rotationSpeedDegPerSecond]);
 
   const handleContainerClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target === containerRef.current || e.target === orbitRef.current) {
-      setExpandedItems({});
+      setSelectedNodeId(null);
       setActiveNodeId(null);
       setPulseEffect({});
       setAutoRotate(true);
     }
   };
 
-  const toggleItem = (id: number) => {
-    setExpandedItems((prev) => {
-      const newState = { ...prev };
-      Object.keys(newState).forEach((key) => {
-        if (parseInt(key, 10) !== id) {
-          newState[parseInt(key, 10)] = false;
-        }
-      });
+  const selectItem = (id: number) => {
+    setSelectedNodeId(id);
+    setActiveNodeId(id);
+    setAutoRotate(false);
 
-      newState[id] = !prev[id];
-
-      if (!prev[id]) {
-        setActiveNodeId(id);
-        setAutoRotate(false);
-
-        const relatedItems = getRelatedItems(id);
-        const newPulseEffect: Record<number, boolean> = {};
-        relatedItems.forEach((relId) => {
-          newPulseEffect[relId] = true;
-        });
-        setPulseEffect(newPulseEffect);
-
-        centerViewOnNode(id);
-      } else {
-        setActiveNodeId(null);
-        setAutoRotate(true);
-        setPulseEffect({});
-      }
-
-      return newState;
+    const relatedItems = getRelatedItems(id);
+    const newPulseEffect: Record<number, boolean> = {};
+    relatedItems.forEach((relId) => {
+      newPulseEffect[relId] = true;
     });
+    setPulseEffect(newPulseEffect);
+    centerViewOnNode(id);
   };
 
   const centerViewOnNode = (nodeId: number) => {
-    if (viewMode !== "orbital" || !nodeRefs.current[nodeId]) return;
+    if (!nodeRefs.current[nodeId]) return;
 
     const nodeIndex = timelineData.findIndex((item) => item.id === nodeId);
     const totalNodes = timelineData.length;
@@ -136,14 +182,14 @@ export default function RadialOrbitalTimeline({
   };
 
   const calculateNodePosition = (index: number, total: number) => {
-    const angle = (index / total) * 360;
+    const angle = ((index / total) * 360 + rotationAngle) % 360;
     const radian = (angle * Math.PI) / 180;
 
-    const x = orbitRadius * Math.cos(radian) + centerOffset.x;
-    const y = orbitRadius * Math.sin(radian) + centerOffset.y;
+    const x = orbitRadius * Math.cos(radian);
+    const y = orbitRadius * Math.sin(radian);
 
     const zIndex = Math.round(100 + 50 * Math.cos(radian));
-    const opacity = 1;
+    const opacity = Math.max(0.45, Math.min(1, 0.55 + 0.45 * ((1 + Math.sin(radian)) / 2)));
 
     return { x, y, zIndex, opacity };
   };
@@ -157,6 +203,29 @@ export default function RadialOrbitalTimeline({
     if (!activeNodeId) return false;
     const relatedItems = getRelatedItems(activeNodeId);
     return relatedItems.includes(itemId);
+  };
+
+  const rotateManual = (delta: number) => {
+    setAutoRotate(false);
+    setRotationAngle((prev) => (prev + delta + 360) % 360);
+  };
+
+  const closeModal = () => {
+    setSelectedNodeId(null);
+    setActiveNodeId(null);
+    setPulseEffect({});
+    setAutoRotate(true);
+  };
+
+  const goToItem = (item: TimelineItem) => {
+    if (!item.route) {
+      return;
+    }
+    if (item.requiresAuth && !isAuthenticated) {
+      navigate(`/login?next=${encodeURIComponent(item.route)}`);
+      return;
+    }
+    navigate(item.route);
   };
 
   const getStatusStyles = (status: TimelineItem["status"]): string => {
@@ -178,26 +247,49 @@ export default function RadialOrbitalTimeline({
       ref={containerRef}
       onClick={handleContainerClick}
     >
+      <div className="mb-4 flex w-full max-w-4xl flex-wrap items-center justify-between gap-2 px-4 text-[11px] text-white/70 md:text-xs">
+        <div className="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1.5">
+          Orbit direction: clockwise. Click a node to pause and inspect details.
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 border-white/20 bg-transparent text-white hover:bg-white/10"
+            onClick={() => rotateManual(-14)}
+          >
+            <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Left
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 border-white/20 bg-transparent text-white hover:bg-white/10"
+            onClick={() => rotateManual(14)}
+          >
+            <RotateCw className="mr-1.5 h-3.5 w-3.5" /> Right
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 border-white/20 bg-transparent text-white hover:bg-white/10"
+            onClick={() => setAutoRotate((prev) => !prev)}
+          >
+            {autoRotate ? "Pause Orbit" : "Resume Orbit"}
+          </Button>
+        </div>
+      </div>
       <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
         <div
           className="absolute w-full h-full flex items-center justify-center"
           ref={orbitRef}
           style={{
             perspective: "1000px",
-            transform: `translate(${centerOffset.x}px, ${centerOffset.y}px)`,
           }}
         >
-          <div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{
-              transform: `rotate(${rotationAngle}deg)`,
-              transition: autoRotate
-                ? "none"
-                : "transform 360ms cubic-bezier(0.22, 1, 0.36, 1)",
-              willChange: "transform",
-            }}
-          >
-            <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center">
           <div className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-teal-500 animate-pulse flex items-center justify-center z-10">
             <div className="absolute w-20 h-20 rounded-full border border-white/20 animate-ping opacity-70"></div>
             <div
@@ -214,7 +306,7 @@ export default function RadialOrbitalTimeline({
 
           {timelineData.map((item, index) => {
             const position = calculateNodePosition(index, timelineData.length);
-            const isExpanded = expandedItems[item.id];
+            const isExpanded = selectedNodeId === item.id;
             const isRelated = isRelatedToActive(item.id);
             const isPulsing = pulseEffect[item.id];
             const Icon = item.icon;
@@ -233,7 +325,7 @@ export default function RadialOrbitalTimeline({
                 style={nodeStyle}
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleItem(item.id);
+                  selectItem(item.id);
                 }}
               >
                   <div
@@ -258,7 +350,7 @@ export default function RadialOrbitalTimeline({
                   className={`
                   w-10 h-10 rounded-full flex items-center justify-center
                   ${
-                    isExpanded
+                    selectedNodeId === item.id
                       ? "bg-white text-black"
                       : isRelated
                         ? "bg-white/50 text-black"
@@ -266,14 +358,14 @@ export default function RadialOrbitalTimeline({
                   }
                   border-2
                   ${
-                    isExpanded
+                    selectedNodeId === item.id
                       ? "border-white shadow-lg shadow-white/30"
                       : isRelated
                         ? "border-white animate-pulse"
                         : "border-white/40"
                   }
                   transition-all duration-300 transform
-                  ${isExpanded ? "scale-150" : ""}
+                  ${selectedNodeId === item.id ? "scale-125" : ""}
                 `}
                 >
                   <Icon size={16} />
@@ -284,162 +376,180 @@ export default function RadialOrbitalTimeline({
                   absolute top-12 whitespace-nowrap
                   text-xs font-semibold tracking-wider
                   transition-all duration-300
-                  ${isExpanded ? "text-white scale-125" : "text-white/70"}
+                  ${selectedNodeId === item.id ? "text-white scale-110" : "text-white/70"}
                 `}
                 >
                   {item.title}
                 </div>
-
-                {isExpanded && (
-                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-64 bg-black/90 backdrop-blur-lg border-white/30 shadow-xl shadow-white/10 overflow-visible">
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center">
-                        <Badge
-                          className={`px-2 text-xs ${getStatusStyles(
-                            item.status
-                          )}`}
-                        >
-                          {item.status === "completed"
-                            ? "COMPLETE"
-                            : item.status === "in-progress"
-                              ? "IN PROGRESS"
-                              : "PENDING"}
-                        </Badge>
-                        <div className="text-right">
-                          <span className="text-xs font-mono text-white/50">
-                            {item.date}
-                          </span>
-                          {item.step && item.totalSteps && (
-                            <p className="text-[10px] text-white/40">
-                              Step {item.step}/{item.totalSteps}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <CardTitle className="text-sm mt-2">{item.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-xs text-white/80">
-                      <p>{item.content}</p>
-
-                      {item.includes && item.includes.length > 0 && (
-                        <div className="mt-4 pt-3 border-t border-white/10">
-                          <h4 className="text-[10px] uppercase tracking-wider font-medium text-white/65">
-                            What Is There
-                          </h4>
-                          <ul className="mt-2 space-y-1.5 text-[11px] text-white/80">
-                            {item.includes.map((point) => (
-                              <li key={point} className="flex items-start gap-2">
-                                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-white/70" />
-                                <span>{point}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {item.howItWorks && (
-                        <div className="mt-4 pt-3 border-t border-white/10">
-                          <h4 className="text-[10px] uppercase tracking-wider font-medium text-white/65">
-                            How It Works
-                          </h4>
-                          <p className="mt-2 text-[11px] leading-5 text-white/80">
-                            {item.howItWorks}
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="mt-4 pt-3 border-t border-white/10">
-                        <div className="flex justify-between items-center text-xs mb-1">
-                          <span className="flex items-center">
-                            <Zap size={10} className="mr-1" />
-                            {item.progressLabel || "Execution Progress"}
-                          </span>
-                          <span className="font-mono">{item.energy}%</span>
-                        </div>
-                        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                            style={{ width: `${item.energy}%` }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      {item.step && item.totalSteps && (
-                        <div className="mt-4 pt-3 border-t border-white/10">
-                          {(() => {
-                            const currentStep = item.step ?? 0;
-                            const totalSteps = item.totalSteps ?? 0;
-
-                            return (
-                              <>
-                          <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-white/65">
-                            <span>Workflow Steps</span>
-                            <span>
-                              {currentStep} of {totalSteps} complete
-                            </span>
-                          </div>
-                          <div className="mt-2 flex gap-1">
-                            {Array.from({ length: totalSteps }).map((_, index) => (
-                              <span
-                                key={`${item.id}-step-${index + 1}`}
-                                className={`h-1.5 flex-1 rounded-full ${
-                                  index < currentStep ? "bg-white" : "bg-white/15"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                              </>
-                            );
-                          })()}
-                        </div>
-                      )}
-
-                      {item.relatedIds.length > 0 && (
-                        <div className="mt-4 pt-3 border-t border-white/10">
-                          <div className="flex items-center mb-2">
-                            <Link size={10} className="text-white/70 mr-1" />
-                            <h4 className="text-xs uppercase tracking-wider font-medium text-white/70">
-                              Connected Nodes
-                            </h4>
-                          </div>
-                          <div className="flex flex-wrap gap-1">
-                            {item.relatedIds.map((relatedId) => {
-                              const relatedItem = timelineData.find(
-                                (i) => i.id === relatedId
-                              );
-                              return (
-                                <Button
-                                  key={relatedId}
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex items-center h-6 px-2 py-0 text-xs rounded-none border-white/20 bg-transparent hover:bg-white/10 text-white/80 hover:text-white transition-all"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleItem(relatedId);
-                                  }}
-                                >
-                                  {relatedItem?.title}
-                                  <ArrowRight
-                                    size={8}
-                                    className="ml-1 text-white/60"
-                                  />
-                                </Button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
                 </div>
               </div>
             );
           })}
-            </div>
           </div>
         </div>
+
+        {selectedItem && (
+          <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/70 p-3 backdrop-blur-sm md:p-6" onClick={closeModal}>
+            <Card
+              className="w-full max-w-xl border-white/20 bg-[linear-gradient(170deg,rgba(20,20,20,0.98),rgba(8,8,8,0.98))] text-white shadow-2xl shadow-black/60"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <CardHeader className="border-b border-white/10 pb-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="mb-2 flex items-center gap-2">
+                      <Badge className={`px-2 text-xs ${getStatusStyles(selectedItem.status)}`}>
+                        {selectedItem.status === "completed"
+                          ? "COMPLETE"
+                          : selectedItem.status === "in-progress"
+                            ? "IN PROGRESS"
+                            : "PENDING"}
+                      </Badge>
+                      <span className="text-xs text-white/50">{selectedItem.date}</span>
+                    </div>
+                    <CardTitle className="text-xl tracking-tight">{selectedItem.title}</CardTitle>
+                    <p className="mt-1 text-sm text-white/65">{selectedItem.category}</p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 border-white/20 bg-transparent text-white hover:bg-white/10"
+                    onClick={closeModal}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+
+              <CardContent className="max-h-[78vh] overflow-y-auto px-5 pb-5 pt-4 sm:max-h-[72vh]">
+                <p className="text-sm leading-6 text-white/80">{selectedItem.content}</p>
+
+                <div className="mt-4 rounded-xl border border-white/10 bg-black/35 p-3">
+                  <div className="mb-1 flex items-center justify-between text-xs">
+                    <span className="flex items-center">
+                      <Zap size={12} className="mr-1.5" />
+                      {selectedItem.progressLabel || "Execution Progress"}
+                    </span>
+                    <span className="font-mono">{selectedItem.energy}%</span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                    <div
+                      className="h-full bg-gradient-to-r from-cyan-400 to-indigo-400 transition-all duration-500"
+                      style={{ width: `${selectedItem.energy}%` }}
+                    />
+                  </div>
+                </div>
+
+                {selectedItem.includes && selectedItem.includes.length > 0 && (
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">Included</h4>
+                    <ul className="mt-2 space-y-2 text-sm text-white/80">
+                      {selectedItem.includes.map((point) => (
+                        <li key={point} className="flex items-start gap-2">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {selectedItem.howItWorks && (
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">How It Works</h4>
+                    <p className="mt-2 text-sm leading-6 text-white/80">{selectedItem.howItWorks}</p>
+                  </div>
+                )}
+
+                {selectedItem.step && selectedItem.totalSteps && (
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.16em] text-white/60">
+                      <span>Workflow Steps</span>
+                      <span>
+                        {selectedItem.step} of {selectedItem.totalSteps}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex gap-1.5">
+                      {Array.from({ length: selectedItem.totalSteps }).map((_, index) => (
+                        <span
+                          key={`${selectedItem.id}-step-${index + 1}`}
+                          className={`h-1.5 flex-1 rounded-full ${
+                            index < selectedItem.step! ? "bg-white" : "bg-white/15"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedItem.relatedIds.length > 0 && (
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <div className="mb-2 flex items-center">
+                      <LinkIcon size={12} className="mr-2 text-white/60" />
+                      <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">Connected Nodes</h4>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedItem.relatedIds.map((relatedId) => {
+                        const relatedItem = timelineData.find((item) => item.id === relatedId);
+                        if (!relatedItem) {
+                          return null;
+                        }
+                        return (
+                          <Button
+                            key={relatedId}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-8 border-white/20 bg-transparent px-3 text-xs text-white hover:bg-white/10"
+                            onClick={() => selectItem(relatedId)}
+                          >
+                            {relatedItem.title}
+                            <ArrowRight className="ml-1.5 h-3 w-3" />
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-5 border-t border-white/10 pt-4">
+                  <div className="mb-2 text-xs uppercase tracking-[0.16em] text-white/60">Access</div>
+                  {selectedItem.requiresAuth ? (
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-xs text-white/80">
+                      <Lock className="h-3.5 w-3.5" /> Login required for this feature
+                    </div>
+                  ) : (
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-xs text-white/80">
+                      <Unlock className="h-3.5 w-3.5" /> Public feature
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      className="bg-white text-black hover:bg-zinc-200"
+                      onClick={() => goToItem(selectedItem)}
+                      disabled={selectedItem.requiresAuth && !authResolved}
+                    >
+                      {selectedItem.requiresAuth && !isAuthenticated
+                        ? "Go To Login"
+                        : selectedItem.routeLabel || "Open Feature"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-white/20 bg-transparent text-white hover:bg-white/10"
+                      onClick={closeModal}
+                    >
+                      Continue Exploring
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -20,11 +20,18 @@ from sqlalchemy import text, create_engine
 
 from extensions import bcrypt, db, login_manager
 from models import ChatMessage, JiraCredentials, MeetingInsight, Q, Team, TrelloCard, TrelloCredentials, User, WorkActionItem
-from email_service import send_welcome_email, send_integration_success_email, send_password_reset_email, send_email_verification, send_email
+from email_service import (
+    send_welcome_email,
+    send_integration_success_email,
+    send_password_reset_email,
+    send_email_verification,
+    send_email,
+    build_meeting_summary_email,
+)
 from dotenv import load_dotenv
 
-# Import logging configuration
-from logger_config import (
+# Import lightweight logging helpers
+from app_logging import (
     app_logger, database_logger, integration_logger, security_logger, access_logger,
     log_request, log_response, log_error, log_security_event, log_integration_operation
 )
@@ -98,7 +105,14 @@ SENDER_PASSWORD = (
     or os.environ.get("SENDER_APP_PASSWORD", "").strip()
     or os.environ.get("GMAIL_APP_PASSWORD", "").strip()
 )
-EMAIL_CONFIGURED = bool(SENDER_EMAIL and SENDER_PASSWORD)
+GMAIL_USER = os.environ.get("GMAIL_USER", "").strip()
+GMAIL_CLIENT_ID = os.environ.get("GMAIL_CLIENT_ID", "").strip()
+GMAIL_CLIENT_SECRET = os.environ.get("GMAIL_CLIENT_SECRET", "").strip()
+GMAIL_REFRESH_TOKEN = os.environ.get("GMAIL_REFRESH_TOKEN", "").strip()
+EMAIL_CONFIGURED = bool(
+    (SENDER_EMAIL and SENDER_PASSWORD)
+    or (GMAIL_USER and GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET and GMAIL_REFRESH_TOKEN)
+)
 FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "ai-meeting-secret-key")
 DATABASE_URL = normalize_database_url(
     os.environ.get("DATABASE_URL")
@@ -1755,15 +1769,11 @@ Assistant response:
             return "No recipients provided."
 
         subject = "Meeting Summary & Action Items"
-        body = f"<h2>Summary</h2><p>{analysis.get('summary', 'N/A')}</p>"
-        body += "<h2>Decisions</h2><ul>" + "".join([f"<li>{d}</li>" for d in analysis.get('decisions', [])]) + "</ul>"
-        body += "<h2>Action Items</h2><ul>" + "".join([
-                                                          f"<li><b>Task:</b> {i.get('task', 'N/A')} | <b>Assignee:</b> {i.get('assignee', 'N/A')} | <b>Due:</b> {i.get('due_date', 'N/A')}</li>"
-                                                          for i in analysis.get('action_items', [])]) + "</ul>"
+        html_body, text_body = build_meeting_summary_email(analysis)
 
         failures = []
         for recipient in recipients:
-            success, message = send_email(recipient, subject, body)
+            success, message = send_email(recipient, subject, html_body, text_body)
             if not success:
                 failures.append(f"{recipient}: {message}")
 

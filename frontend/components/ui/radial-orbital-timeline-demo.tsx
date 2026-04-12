@@ -31,6 +31,9 @@ const timelineData = [
     howItWorks:
       "Upload transcript -> AI identifies decisions and tasks -> output becomes an executable plan.",
     progressLabel: "Analysis Accuracy",
+    route: "/analyse",
+    requiresAuth: true,
+    routeLabel: "Open Analyse",
   },
   {
     id: 2,
@@ -51,6 +54,9 @@ const timelineData = [
     howItWorks:
       "Connect Trello once -> map workspace board -> tasks are pushed after each meeting.",
     progressLabel: "Automation Coverage",
+    route: "/integrations",
+    requiresAuth: true,
+    routeLabel: "Open Integrations",
   },
   {
     id: 3,
@@ -71,6 +77,9 @@ const timelineData = [
     howItWorks:
       "The system maps AI-extracted tasks to Jira fields, validates required fields, then creates tickets.",
     progressLabel: "Ticket Success Rate",
+    route: "/integrations",
+    requiresAuth: true,
+    routeLabel: "Open Integrations",
   },
   {
     id: 4,
@@ -91,6 +100,9 @@ const timelineData = [
     howItWorks:
       "Once tasks are generated, members are auto-suggested by skill history and workload.",
     progressLabel: "Collaboration Health",
+    route: "/dashboard",
+    requiresAuth: true,
+    routeLabel: "Open Dashboard",
   },
   {
     id: 5,
@@ -110,6 +122,9 @@ const timelineData = [
     howItWorks:
       "Event triggers from Trello/Jira updates are aggregated and delivered as smart notifications.",
     progressLabel: "Delivery Reliability",
+    route: "/dashboard",
+    requiresAuth: true,
+    routeLabel: "Open Dashboard",
   },
   {
     id: 6,
@@ -130,6 +145,9 @@ const timelineData = [
     howItWorks:
       "Security layers protect data at rest and in transit, while authenticated workflows enforce access control.",
     progressLabel: "Security Readiness",
+    route: "/docs",
+    requiresAuth: false,
+    routeLabel: "Open Docs",
   },
 ];
 
