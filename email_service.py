@@ -3,16 +3,25 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 import time
+from dotenv import load_dotenv
 
 # Import logging configuration
 from logger_config import email_logger, log_email_operation, log_error
 
 email_logger.info("Email service module loaded")
 
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "")
-SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD", "")
+# Load .env in this module to avoid import-order issues.
+load_dotenv()
 
-email_logger.info(f"Email configuration: Sender configured: {bool(SENDER_EMAIL and SENDER_PASSWORD)}")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "")
+SENDER_PASSWORD = (
+    os.environ.get("SENDER_PASSWORD", "")
+    or os.environ.get("SENDER_APP_PASSWORD", "")
+    or os.environ.get("GMAIL_APP_PASSWORD", "")
+)
+EMAIL_SENDER_CONFIGURED = bool(SENDER_EMAIL and SENDER_PASSWORD)
+
+email_logger.info(f"Email configuration: Sender configured: {EMAIL_SENDER_CONFIGURED}")
 
 def send_email(to_email, subject, html_body, text_body=None):
     """
@@ -20,6 +29,15 @@ def send_email(to_email, subject, html_body, text_body=None):
     """
     email_logger.info(f"Preparing to send email to: {to_email}, Subject: {subject}")
     start_time = time.time()
+
+    if not EMAIL_SENDER_CONFIGURED:
+        message = (
+            "Email sender credentials are missing. Set SENDER_EMAIL and SENDER_PASSWORD "
+            "(or SENDER_APP_PASSWORD / GMAIL_APP_PASSWORD)."
+        )
+        email_logger.warning(message)
+        log_email_operation(email_logger, "send", to_email, subject, success=False, error=message)
+        return False, message
     
     try:
         # Create message
@@ -54,6 +72,17 @@ def send_email(to_email, subject, html_body, text_body=None):
         log_email_operation(email_logger, "send", to_email, subject, success=True)
         
         return True, "Email sent successfully"
+    except smtplib.SMTPAuthenticationError as e:
+        send_time = (time.time() - start_time) * 1000
+        message = (
+            "SMTP authentication failed. Verify SENDER_EMAIL and Gmail App Password. "
+            "If 2-Step Verification is enabled, use an App Password instead of your account password."
+        )
+        email_logger.error(f"Failed to send email to {to_email} after {send_time:.2f}ms: {str(e)}")
+        log_error(email_logger, e, {"recipient": to_email, "subject": subject})
+        log_email_operation(email_logger, "send", to_email, subject, success=False, error=message)
+
+        return False, message
     except Exception as e:
         send_time = (time.time() - start_time) * 1000
         email_logger.error(f"Failed to send email to {to_email} after {send_time:.2f}ms: {str(e)}")
