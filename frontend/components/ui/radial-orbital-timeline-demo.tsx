@@ -116,7 +116,7 @@ const timelineData = [
     title: "Secure & Private",
     date: "Release",
     content:
-      "Enterprise-grade security with MongoDB encryption and authentication.",
+      "Enterprise-grade security with PostgreSQL, encryption, and authentication.",
     category: "Release",
     icon: Lock,
     relatedIds: [5],

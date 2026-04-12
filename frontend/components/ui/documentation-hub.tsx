@@ -96,7 +96,7 @@ const sections: DocSection[] = [
     title: "Service Readiness",
     summary: "Minimum checks before feature validation.",
     content: [
-      "Confirm backend starts without MongoDB connection errors.",
+      "Confirm backend starts without PostgreSQL connection errors.",
       "Confirm /api/auth/status returns JSON with authenticated=false when logged out.",
       "Confirm Vite dev server proxy forwards auth and /check_username requests.",
       "Confirm login/register pages submit correctly and redirect behavior is expected.",
@@ -112,7 +112,7 @@ const sections: DocSection[] = [
       "Frontend: React + Vite + TypeScript + Tailwind + shadcn-style components.",
       "Backend: Flask app with authentication, analysis pipeline, and integration endpoints.",
       "AI: Gemini flash-family fallback chain for robust generation.",
-      "Database: MongoDB stores users, meeting insights, action items, and integration credentials.",
+      "Database: PostgreSQL stores users, meeting insights, action items, and integration credentials.",
       "Routing model: React handles UI pages, Flask handles APIs and auth/session logic.",
       "Flask serves built frontend assets for production while Vite serves SPA in development.",
       "Auth state is checked client-side using /api/auth/status and enforced with route guards.",
@@ -242,7 +242,7 @@ const sections: DocSection[] = [
     content: [
       "Authentication uses Flask-Login with session cookies.",
       "User-specific data access is enforced through login-required routes and user_id scoping.",
-      "Credentials for integrations are stored in MongoDB and only used server-side.",
+      "Credentials for integrations are stored in PostgreSQL and only used server-side.",
       "Never expose secrets in frontend source or logs.",
       "Sensitive chat payloads are redacted before storage to reduce leakage risk.",
     ],
@@ -253,7 +253,7 @@ const sections: DocSection[] = [
     title: "Environment Variables",
     summary: "Required keys for core and optional features.",
     content: [
-      "Core: MONGO_URI (or MONGO_URL), GEMINI_API_KEY, FLASK_SECRET_KEY.",
+      "Core: DATABASE_URL (or POSTGRES_URL), GEMINI_API_KEY, FLASK_SECRET_KEY.",
       "Gemini models: GEMINI_MODEL_20, GEMINI_MODEL_25, GEMINI_MODEL_3, GEMINI_ANALYSIS_MODEL.",
       "Email: GMAIL_USER, GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN.",
       "Trello: TRELLO_API_KEY, TRELLO_API_SECRET.",
@@ -359,7 +359,7 @@ const sections: DocSection[] = [
     summary: "Signals that need immediate attention.",
     content: [
       "Repeated AI model failures across fallback chain.",
-      "MongoDB connection instability or authentication failures.",
+      "PostgreSQL connection instability or authentication failures.",
       "Integration auth errors (401/403) for Trello or Jira.",
       "Unexpected growth in failed username checks indicating proxy regression.",
       "Route guard loops where authenticated users are redirected to login.",

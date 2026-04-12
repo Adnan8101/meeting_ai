@@ -119,32 +119,32 @@ def setup_logger(name, log_file=None, level=logging.INFO, max_bytes=10*1024*1024
 
 def get_app_logger():
     """Get the main application logger"""
-    return setup_logger('app', APP_LOG_FILE, level=logging.DEBUG)
+    return setup_logger('app', APP_LOG_FILE, level=logging.WARNING)
 
 
 def get_database_logger():
     """Get the database operations logger"""
-    return setup_logger('database', DATABASE_LOG_FILE, level=logging.DEBUG)
+    return setup_logger('database', DATABASE_LOG_FILE, level=logging.WARNING)
 
 
 def get_email_logger():
     """Get the email service logger"""
-    return setup_logger('email', EMAIL_LOG_FILE, level=logging.DEBUG)
+    return setup_logger('email', EMAIL_LOG_FILE, level=logging.WARNING)
 
 
 def get_integration_logger():
     """Get the integration (Trello, Slack, Jira) logger"""
-    return setup_logger('integration', INTEGRATION_LOG_FILE, level=logging.DEBUG)
+    return setup_logger('integration', INTEGRATION_LOG_FILE, level=logging.WARNING)
 
 
 def get_security_logger():
     """Get the security/authentication logger"""
-    return setup_logger('security', SECURITY_LOG_FILE, level=logging.INFO)
+    return setup_logger('security', SECURITY_LOG_FILE, level=logging.WARNING)
 
 
 def get_access_logger():
     """Get the HTTP access logger"""
-    return setup_logger('access', ACCESS_LOG_FILE, level=logging.INFO)
+    return setup_logger('access', ACCESS_LOG_FILE, level=logging.WARNING)
 
 
 def log_request(logger, request, user=None):
@@ -297,7 +297,8 @@ def configure_third_party_logging():
     logging.getLogger('werkzeug').setLevel(logging.WARNING)
     logging.getLogger('urllib3').setLevel(logging.WARNING)
     logging.getLogger('requests').setLevel(logging.WARNING)
-    logging.getLogger('mongoengine').setLevel(logging.INFO)
+    logging.getLogger('sqlalchemy').setLevel(logging.WARNING)
+    logging.getLogger('psycopg').setLevel(logging.WARNING)
 
 
 # Initialize logging configuration

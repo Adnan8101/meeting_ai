@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from difflib import SequenceMatcher
 import requests
 from io import BytesIO
@@ -8,17 +9,16 @@ from jira.exceptions import JIRAError  # Import specific Jira errors
 import time
 from datetime import datetime, timedelta
 import re
-from urllib.parse import urlencode, urlsplit, urlunsplit
+from urllib.parse import urlencode
 
 from flask import Flask, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 import google.generativeai as genai
 from trello import TrelloClient
-import mongoengine
-from mongoengine.queryset.visitor import Q
+from sqlalchemy import text
 
-from extensions import bcrypt, login_manager
-from mongo_models import User, Team, TrelloCredentials, TrelloCard, JiraCredentials, ChatMessage, MeetingInsight, WorkActionItem
+from extensions import bcrypt, db, login_manager
+from models import ChatMessage, JiraCredentials, MeetingInsight, Q, Team, TrelloCard, TrelloCredentials, User, WorkActionItem
 from email_service import send_welcome_email, send_integration_success_email, send_password_reset_email, send_email_verification, send_email
 from dotenv import load_dotenv
 
@@ -30,6 +30,15 @@ from logger_config import (
 
 load_dotenv()
 app_logger.info("Starting AI Meeting Agent application initialization")
+
+
+def normalize_database_url(raw_url: str) -> str:
+    value = (raw_url or "").strip().strip('"').strip("'")
+    if value.startswith("postgres://"):
+        return "postgresql+psycopg://" + value[len("postgres://") :]
+    if value.startswith("postgresql://") and "+" not in value.split("://", 1)[0]:
+        return "postgresql+psycopg://" + value[len("postgresql://") :]
+    return value
 
 # --- CONFIGURATION ---
 # Get environment variables with fallbacks
@@ -45,11 +54,12 @@ GMAIL_CLIENT_ID = os.environ.get("GMAIL_CLIENT_ID", "")
 GMAIL_CLIENT_SECRET = os.environ.get("GMAIL_CLIENT_SECRET", "")
 GMAIL_REFRESH_TOKEN = os.environ.get("GMAIL_REFRESH_TOKEN", "")
 EMAIL_CONFIGURED = bool(GMAIL_USER and GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET and GMAIL_REFRESH_TOKEN)
-FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "mongodb-secret-key-v2")
-# Support both MONGO_URI and MONGO_URL for backward compatibility
-_RAW_MONGO_URL = os.environ.get("MONGO_URI") or os.environ.get("MONGO_URL", "")
-MONGO_URL = (_RAW_MONGO_URL or "").strip().strip('"').strip("'")
-MONGO_DB_NAME = os.environ.get("MONGO_DB_NAME", "ai_meeting_agent")
+FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "ai-meeting-secret-key")
+DATABASE_URL = normalize_database_url(
+    os.environ.get("DATABASE_URL")
+    or os.environ.get("POSTGRES_URL")
+    or os.environ.get("PRISMA_DATABASE_URL", "")
+)
 MAX_TRANSCRIPT_FILE_SIZE = 10 * 1024 * 1024
 ALLOWED_TRANSCRIPT_EXTENSIONS = {'.txt', '.doc', '.docx', '.pdf'}
 MAX_TRANSCRIPT_WORDS = 500
@@ -60,34 +70,15 @@ app_logger.info("CONFIGURATION STATUS")
 app_logger.info("="*60)
 app_logger.info(f"TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
 app_logger.info(f"GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
-app_logger.info(f"MONGO_URL: {'✓ Set' if MONGO_URL else '✗ Missing'}")
-app_logger.info(f"MONGO_DB_NAME: {MONGO_DB_NAME}")
+app_logger.info(f"DATABASE_URL: {'✓ Set' if DATABASE_URL else '✗ Missing'}")
 app_logger.info(f"EMAIL: {'✓ Set' if EMAIL_CONFIGURED else '✗ Missing'}")
 app_logger.info("="*60)
-
-print(f"    - TRELLO_API_KEY: {'✓ Set' if TRELLO_API_KEY else '✗ Missing'}")
-print(f"    - GEMINI_API_KEY: {'✓ Set' if GEMINI_API_KEY else '✗ Missing'}")
-print(f"    - MONGO_URL: {'✓ Set' if MONGO_URL else '✗ Missing'}")
-print(f"    - MONGO_DB_NAME: {MONGO_DB_NAME}")
-print(f"    - EMAIL: {'✓ Set' if EMAIL_CONFIGURED else '✗ Missing'}")
-
-
-def with_default_mongo_db(uri: str, db_name: str) -> str:
-    """Ensure Mongo URI includes a database path for consistent auth/db selection."""
-    if not uri:
-        return uri
-
-    parsed = urlsplit(uri)
-    if parsed.path and parsed.path.strip("/"):
-        return uri
-
-    return urlunsplit((parsed.scheme, parsed.netloc, f"/{db_name}", parsed.query, parsed.fragment))
 
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = FLASK_SECRET_KEY
-    app.config['MONGODB_ERROR'] = ''
+    app.config['DATABASE_ERROR'] = ''
 
     frontend_dist_dir = os.path.join(app.root_path, 'frontend', 'dist')
     frontend_assets_dir = os.path.join(frontend_dist_dir, 'assets')
@@ -119,91 +110,36 @@ def create_app():
     app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
     app_logger.info("Session configuration applied")
 
-    # --- MongoDB Configuration ---
-    database_logger.info("="*60)
-    database_logger.info("MONGODB CONNECTION ATTEMPT")
-    database_logger.info("="*60)
-    
-    print("\n" + "="*60)
-    print("🗄️  MONGODB CONNECTION ATTEMPT")
-    print("="*60)
-    
-    mongodb_connected = False
-    
-    if MONGO_URL:
+    # Keep runtime logs readable by suppressing noisy request logs.
+    logging.getLogger('werkzeug').setLevel(logging.WARNING)
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL or 'sqlite:///meeting_agent.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+        'pool_recycle': 280,
+    }
+    db.init_app(app)
+
+    # --- PostgreSQL Configuration ---
+    database_connected = False
+    with app.app_context():
         try:
             start_time = time.time()
-            mongo_uri = with_default_mongo_db(MONGO_URL, MONGO_DB_NAME)
-            mongoengine.disconnect(alias='default')
-            mongoengine.connect(
-                db=MONGO_DB_NAME,
-                host=mongo_uri,
-                alias='default',
-                serverSelectionTimeoutMS=7000,
-                connectTimeoutMS=7000,
-                socketTimeoutMS=7000,
-            )
-            
-            # Test the connection
-            from mongoengine.connection import get_db
-            db = get_db()
+            db.create_all()
+            db.session.execute(text('SELECT 1'))
+            db.session.commit()
             connection_time = (time.time() - start_time) * 1000
-            
-            database_logger.info(f"Successfully connected to MongoDB in {connection_time:.2f}ms")
-            database_logger.info(f"Database name: {db.name}")
-            # Skip collection listing to avoid SSL timeout issues
-            database_logger.info("MongoDB connection established successfully")
-            
-            print(f"[✓] Successfully connected to MongoDB")
-            print(f"[✓] Database name: {db.name}")
-            print(f"[✓] MongoDB connection established successfully")
-            
-            mongodb_connected = True
-            app.config['MONGODB_ERROR'] = ''
-            
+            database_connected = True
+            app.config['DATABASE_ERROR'] = ''
+            database_logger.info(f"PostgreSQL connected in {connection_time:.2f}ms")
         except Exception as e:
-            database_logger.error(f"MongoDB connection failed: {type(e).__name__} - {str(e)}")
-            log_error(database_logger, e, {"connection_string": "REDACTED"})
-            app.config['MONGODB_ERROR'] = str(e)
-            
-            print(f"[✗] MongoDB connection failed!")
-            print(f"[✗] Error type: {type(e).__name__}")
-            print(f"[✗] Error message: {str(e)}")
-            print(f"[⚠️] App will continue in LIMITED MODE without database")
-            print(f"[⚠️] To fix: Update MONGO_URL in your .env file with a valid MongoDB connection string")
-            
-            # Don't raise - allow app to continue without MongoDB
-            database_logger.warning("Continuing without MongoDB - database features will be disabled")
-    else:
-        try:
-            start_time = time.time()
-            mongoengine.disconnect(alias='default')
-            mongoengine.connect(
-                db=MONGO_DB_NAME,
-                alias='default',
-                serverSelectionTimeoutMS=7000,
-                connectTimeoutMS=7000,
-                socketTimeoutMS=7000,
-            )
-            connection_time = (time.time() - start_time) * 1000
-            
-            database_logger.info(f"Connected to local MongoDB in {connection_time:.2f}ms")
-            print("[✓] Connected to local MongoDB")
-            mongodb_connected = True
-            app.config['MONGODB_ERROR'] = ''
-        except Exception as e:
-            database_logger.error(f"Local MongoDB connection failed: {str(e)}")
+            app.config['DATABASE_ERROR'] = str(e)
+            database_logger.error(f"PostgreSQL connection failed: {type(e).__name__} - {str(e)}")
             log_error(database_logger, e)
-            app.config['MONGODB_ERROR'] = str(e)
-            print(f"[✗] Local MongoDB connection failed: {e}")
-            print(f"[⚠️] App will continue in LIMITED MODE without database")
-            database_logger.warning("Continuing without MongoDB - database features will be disabled")
-            
-    # Store MongoDB connection status in app config
-    app.config['MONGODB_CONNECTED'] = mongodb_connected
-    
-    database_logger.info("="*60)
-    print("="*60 + "\n")
+            database_logger.warning("Continuing in limited mode without database connectivity")
+
+    app.config['DATABASE_CONNECTED'] = database_connected
 
     bcrypt.init_app(app)
     login_manager.init_app(app)
@@ -213,32 +149,9 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         try:
-            # Handle MongoDB ObjectId properly
-            from bson import ObjectId
-            if isinstance(user_id, str) and len(user_id) == 24:
-                try:
-                    # Try to convert to ObjectId if it's a valid 24-character hex string
-                    obj_id = ObjectId(user_id)
-                    user = User.objects(id=obj_id).first()
-                    if user:
-                        security_logger.debug(f"User loaded successfully: {user.username} (ID: {user.id})")
-                        print(f"[✓] User loaded: {user.username} (ID: {user.id})")
-                    else:
-                        security_logger.warning(f"User not found for ID: {user_id}")
-                    return user
-                except Exception as e:
-                    # If conversion fails, it's an invalid ObjectId
-                    security_logger.error(f"Failed to load user with ID {user_id}: {str(e)}")
-                    print(f"[✗] Failed to load user: {e}")
-                    return None
-            else:
-                # For invalid ID formats (like old integer IDs), silently return None
-                # This handles the migration from SQLAlchemy to MongoDB
-                security_logger.debug(f"Invalid user ID format: {user_id}")
-                return None
+            return User.objects(id=str(user_id)).first()
         except Exception as e:
             security_logger.error(f"Error loading user {user_id}: {str(e)}")
-            print(f"[ERROR] Failed to load user {user_id}: {e}")
             return None
 
     # --- AI MODEL AND HELPER FUNCTIONS ---
@@ -2604,10 +2517,9 @@ Assistant response:
     def db_health_status():
         return jsonify({
             'success': True,
-            'connected': bool(app.config.get('MONGODB_CONNECTED', False)),
-            'db_name': MONGO_DB_NAME,
-            'mongo_url_set': bool(MONGO_URL),
-            'error': app.config.get('MONGODB_ERROR', '')
+            'connected': bool(app.config.get('DATABASE_CONNECTED', False)),
+            'database_url_set': bool(DATABASE_URL),
+            'error': app.config.get('DATABASE_ERROR', '')
         })
 
     @app.route('/api/auth/register', methods=['POST'])
@@ -2615,10 +2527,10 @@ Assistant response:
         if current_user.is_authenticated:
             return jsonify({'success': True, 'redirect': url_for('dashboard')})
 
-        if not app.config.get('MONGODB_CONNECTED', False):
+        if not app.config.get('DATABASE_CONNECTED', False):
             return jsonify({
                 'success': False,
-                'message': 'Database is temporarily unavailable. Verify MONGO_URI and MongoDB Atlas Network Access (allow Vercel egress or 0.0.0.0/0).'
+                'message': 'Database is temporarily unavailable. Verify DATABASE_URL/POSTGRES_URL in Vercel settings.'
             }), 503
 
         data = request.get_json(silent=True) or {}
@@ -2671,10 +2583,10 @@ Assistant response:
         if current_user.is_authenticated:
             return jsonify({'success': True, 'redirect': url_for('dashboard')})
 
-        if not app.config.get('MONGODB_CONNECTED', False):
+        if not app.config.get('DATABASE_CONNECTED', False):
             return jsonify({
                 'success': False,
-                'message': 'Database is temporarily unavailable. Verify MONGO_URI and MongoDB Atlas Network Access (allow Vercel egress or 0.0.0.0/0).'
+                'message': 'Database is temporarily unavailable. Verify DATABASE_URL/POSTGRES_URL in Vercel settings.'
             }), 503
 
         data = request.get_json(silent=True) or {}
@@ -2712,7 +2624,7 @@ Assistant response:
 
     @app.route('/api/auth/forgot-password', methods=['POST'])
     def api_auth_forgot_password():
-        if not app.config.get('MONGODB_CONNECTED', False):
+        if not app.config.get('DATABASE_CONNECTED', False):
             return jsonify({
                 'success': False,
                 'message': 'Database is temporarily unavailable. Please try again after connection is restored.'
@@ -2975,7 +2887,7 @@ Assistant response:
             if len(username) > 20:
                 return jsonify({'available': False, 'message': 'Username must be less than 20 characters'}), 200
 
-            if not app.config.get('MONGODB_CONNECTED', False):
+            if not app.config.get('DATABASE_CONNECTED', False):
                 return jsonify({
                     'available': True,
                     'message': 'Live check is temporarily unavailable. You can still continue registration.'
@@ -3828,6 +3740,5 @@ Assistant response:
 
 if __name__ == '__main__':
     app = create_app()
-    # MongoDB doesn't need table creation like SQL databases
-    print("🚀 AI Meeting Agent with MongoDB ready!")
+    print("AI Meeting Agent ready")
     app.run(debug=True)
