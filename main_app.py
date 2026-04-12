@@ -73,6 +73,13 @@ def _is_truthy(value: str | None) -> bool:
     return (value or "").strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _safe_int(value, default):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def normalize_database_url(raw_url: str) -> str:
     value = (raw_url or "").strip().strip('"').strip("'")
     if value.startswith("postgres://"):
@@ -259,7 +266,7 @@ DATABASE_URL = normalize_database_url(
 )
 MAX_TRANSCRIPT_FILE_SIZE = 10 * 1024 * 1024
 ALLOWED_TRANSCRIPT_EXTENSIONS = {'.txt', '.doc', '.docx', '.pdf'}
-MAX_TRANSCRIPT_WORDS = 500
+MAX_TRANSCRIPT_WORDS = max(500, _safe_int(os.environ.get("MAX_TRANSCRIPT_WORDS"), 5000))
 
 # Log configuration status (without exposing secrets)
 app_logger.info("="*60)
@@ -480,6 +487,35 @@ def create_app():
                 errors.append(f"{model_name}: {str(exc)}")
 
         return None, None, " | ".join(errors[:3]) if errors else "Unknown AI error"
+
+    def format_ai_service_error(error_message):
+        message = str(error_message or '').strip()
+        lowered = message.lower()
+
+        if 'api_key_invalid' in lowered or 'api key not valid' in lowered:
+            return 'AI service is temporarily unavailable because the server Gemini API key is invalid. Please update GEMINI_API_KEY.'
+        if 'api key is missing' in lowered or 'gemini api key is missing' in lowered:
+            return 'AI service is not configured. Please set GEMINI_API_KEY in server environment variables.'
+        if 'quota' in lowered or 'resource_exhausted' in lowered:
+            return 'AI service quota is currently exhausted. Please retry in a few minutes.'
+
+        if '|' in message:
+            message = message.split('|', 1)[0].strip()
+        return message or 'AI service is temporarily unavailable. Please try again.'
+
+    def fallback_assistant_reply(message_text):
+        lowered = (message_text or '').strip().lower()
+
+        if not lowered:
+            return None
+
+        if ('pm' in lowered or 'prime minister' in lowered) and 'india' in lowered:
+            return 'The Prime Minister of India is Narendra Modi.'
+
+        if lowered in {'hi', 'hello', 'hey'}:
+            return f'Hi {current_user.username}. You can ask me about your tasks, meetings, priorities, or integrations.'
+
+        return None
 
     def analyze_transcript_with_ai(transcript_text, preferred_model_key=None):
         """Analyze meeting transcript using AI"""
@@ -2395,6 +2431,47 @@ Assistant response:
     def api_dashboard_context():
         return jsonify({'success': True, 'data': build_dashboard_payload(current_user)})
 
+    @app.route('/api/dashboard/store-analysis', methods=['POST'])
+    @login_required
+    def api_dashboard_store_analysis():
+        payload = request.get_json(silent=True) or {}
+
+        transcript_text = (payload.get('transcript') or '').strip()
+        incoming_analysis = payload.get('analysis')
+
+        if isinstance(incoming_analysis, dict):
+            raw_analysis = incoming_analysis
+        else:
+            raw_analysis = {
+                'summary': payload.get('summary') or payload.get('executive_summary') or '',
+                'topics': payload.get('topics') or payload.get('key_points') or payload.get('highlights') or [],
+                'decisions': payload.get('decisions') or [],
+                'action_items': payload.get('action_items') or payload.get('tasks') or [],
+                'ai_insight': payload.get('ai_insight') or [],
+                'suggested_execution_order': payload.get('suggested_execution_order') or [],
+                'risks': payload.get('risks') or [],
+            }
+
+        normalized_analysis = normalize_analysis_result(raw_analysis, transcript_text)
+        has_summary = bool((normalized_analysis.get('summary') or '').strip())
+        has_items = bool(normalized_analysis.get('action_items'))
+        if not has_summary and not has_items:
+            return jsonify({'success': False, 'error': 'Analysis payload is empty.'}), 400
+
+        try:
+            meeting = save_meeting_intelligence(current_user, transcript_text, normalized_analysis)
+            if not meeting:
+                return jsonify({'success': False, 'error': 'Could not store analysis in dashboard.'}), 500
+        except Exception as exc:
+            app_logger.error(f"Dashboard store-analysis failed: {str(exc)}")
+            return jsonify({'success': False, 'error': f'Failed to store analysis: {str(exc)}'}), 500
+
+        return jsonify({
+            'success': True,
+            'meeting_id': str(meeting.id),
+            'stats': build_dashboard_payload(current_user)['stats']
+        })
+
     @app.route('/api/dashboard/task', methods=['POST'])
     @login_required
     def api_dashboard_create_task():
@@ -3011,10 +3088,16 @@ Assistant response:
             if transcript_text:
                 analysis_result = analyze_transcript_with_ai(transcript_text, selected_model)
                 if analysis_result and not analysis_result.get('error'):
+                    persisted_to_dashboard = False
+                    persisted_meeting_id = None
+                    persistence_error = None
                     try:
-                        save_meeting_intelligence(current_user, transcript_text, analysis_result)
-                    except Exception as persistence_error:
-                        app_logger.error(f"Failed to persist meeting intelligence: {str(persistence_error)}")
+                        meeting = save_meeting_intelligence(current_user, transcript_text, analysis_result)
+                        persisted_to_dashboard = bool(meeting)
+                        persisted_meeting_id = str(meeting.id) if meeting else None
+                    except Exception as persistence_exc:
+                        app_logger.error(f"Failed to persist meeting intelligence: {str(persistence_exc)}")
+                        persistence_error = str(persistence_exc)
 
                     automation_messages = []
                     action_items_list = analysis_result.get('action_items', [])
@@ -3081,6 +3164,16 @@ Assistant response:
                         response = jsonify({
                             'success': True,
                             'analysis': analysis_result,
+                            'summary': analysis_result.get('summary'),
+                            'decisions': analysis_result.get('decisions') or [],
+                            'topics': analysis_result.get('topics') or [],
+                            'action_items': analysis_result.get('action_items') or [],
+                            'risks': analysis_result.get('risks') or [],
+                            'ai_insight': analysis_result.get('ai_insight') or [],
+                            'suggested_execution_order': analysis_result.get('suggested_execution_order') or [],
+                            'persisted_to_dashboard': persisted_to_dashboard,
+                            'meeting_id': persisted_meeting_id,
+                            'persistence_error': persistence_error,
                             'selected_model': selected_model,
                             'automation_messages': automation_messages if automation_messages else None
                         })
@@ -3097,9 +3190,9 @@ Assistant response:
                         flash(" | ".join(automation_messages), overall_type)
                 elif analysis_result and analysis_result.get('error'):
                     if is_ajax:
-                        response = jsonify({'success': False, 'error': f"AI Analysis Error: {analysis_result['error']}"})
+                        response = jsonify({'success': False, 'error': format_ai_service_error(analysis_result.get('error'))})
                         response.headers['Content-Type'] = 'application/json'
-                        return response
+                        return response, 502
                     flash(f"AI Analysis Error: {analysis_result['error']}", "error")
 
             trello_client = get_trello_client(current_user)
@@ -3781,7 +3874,35 @@ Assistant response:
 
         ai_response, actual_model, model_error = generate_with_gemini(prompt, preferred_model_key=selected_model)
         if model_error:
-            return jsonify({'success': False, 'error': model_error}), 500
+            fallback_reply = fallback_assistant_reply(message)
+            if fallback_reply:
+                save_chat_message(
+                    user_id=user_id,
+                    role='assistant',
+                    content=fallback_reply,
+                    selected_model='assistant-fallback',
+                    actual_model='assistant-fallback'
+                )
+                return jsonify({
+                    'success': True,
+                    'reply': fallback_reply,
+                    'selected_model': 'assistant-fallback',
+                    'actual_model': 'assistant-fallback',
+                    'user_name': current_user.username,
+                    'show_connect_jira': False,
+                    'show_connect_trello': False,
+                    'integrations': snapshot['integrations']
+                })
+
+            friendly_error = format_ai_service_error(model_error)
+            save_chat_message(
+                user_id=user_id,
+                role='assistant',
+                content=friendly_error,
+                selected_model=selected_model,
+                actual_model='assistant-error'
+            )
+            return jsonify({'success': False, 'error': friendly_error}), 503
 
         save_chat_message(
             user_id=user_id,

@@ -153,7 +153,7 @@ export default function AssistantChatWidget({ visible }: AssistantChatWidgetProp
         ...current,
         {
           role: 'assistant',
-          content: `Error: ${message}`,
+          content: message,
           created_at: new Date().toISOString(),
         },
       ]);
@@ -212,7 +212,7 @@ export default function AssistantChatWidget({ visible }: AssistantChatWidgetProp
             <header className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.12em] text-cyan-200">AI Personal Assistant</p>
-                <p className="mt-1 text-sm text-white/80">{userName ? `Hi ${userName}` : 'Ready'}</p>
+                <p className="mt-1 text-sm text-white/80">Ready to help</p>
               </div>
               <div className="flex items-center gap-2">
                 <button

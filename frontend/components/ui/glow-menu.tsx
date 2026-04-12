@@ -111,6 +111,7 @@ export const MenuBar = React.forwardRef<HTMLElement, MenuBarProps>(
                       style={{
                         transformStyle: "preserve-3d",
                         transformOrigin: "center bottom",
+                        backfaceVisibility: "hidden",
                       }}
                     >
                       <Icon className={cn("h-4 w-4", isActive ? item.iconColor : "text-white/80")} />
@@ -123,12 +124,14 @@ export const MenuBar = React.forwardRef<HTMLElement, MenuBarProps>(
                           ? "text-white"
                           : "text-white/70 group-hover:text-white"
                       )}
+                      aria-hidden="true"
                       variants={backVariants}
                       transition={sharedTransition}
                       style={{
                         transformStyle: "preserve-3d",
                         transformOrigin: "center top",
                         rotateX: 90,
+                        backfaceVisibility: "hidden",
                       }}
                     >
                       <Icon className={cn("h-4 w-4", isActive ? item.iconColor : "text-white/80")} />

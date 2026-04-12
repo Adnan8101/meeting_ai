@@ -52,6 +52,20 @@ type ApiLikeResult = {
   processing_time?: string;
 };
 
+type AnalyseApiResponse = {
+  success?: boolean;
+  error?: string;
+  analysis?: ApiLikeResult;
+  persisted_to_dashboard?: boolean;
+  meeting_id?: string | null;
+};
+
+type StoreAnalysisResponse = {
+  success?: boolean;
+  error?: string;
+  meeting_id?: string;
+};
+
 type ExtractFileResponse = {
   success?: boolean;
   text?: string;
@@ -410,6 +424,34 @@ export default function AnalysePage() {
     [setValidatedFile]
   );
 
+  const persistAnalysisToDashboard = useCallback(
+    async (analysis: AnalysisResult) => {
+      const response = await fetch('/api/dashboard/store-analysis', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          transcript,
+          summary: analysis.executiveSummary,
+          key_points: analysis.keyPoints,
+          action_items: analysis.actionItems,
+          risks: analysis.riskNotes,
+        }),
+      });
+
+      const payload = (await response.json()) as StoreAnalysisResponse;
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.error || `Dashboard sync failed (${response.status})`);
+      }
+
+      return payload.meeting_id || null;
+    },
+    [transcript]
+  );
+
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -459,11 +501,15 @@ export default function AnalysePage() {
         });
 
         const [response] = await Promise.all([responsePromise, wait(1200)]);
+        const contentType = response.headers.get('content-type') || '';
+        const apiPayload = contentType.includes('application/json')
+          ? ((await response.json()) as AnalyseApiResponse)
+          : null;
 
         setStepState('sending_data', 'done');
 
-        if (!response.ok) {
-          throw new Error(`Analysis request failed (${response.status})`);
+        if (!response.ok || (apiPayload && apiPayload.success === false)) {
+          throw new Error(apiPayload?.error || `Analysis request failed (${response.status})`);
         }
 
         setStepState('extracting_data', 'active');
@@ -471,14 +517,12 @@ export default function AnalysePage() {
         appendPipelineLog('Extracting Data: normalizing API response into summary, actions, and risk blocks.');
 
         const elapsed = performance.now() - startedAt;
-        const contentType = response.headers.get('content-type') || '';
 
         let nextResult: AnalysisResult;
-        if (contentType.includes('application/json')) {
-          const payload = (await response.json()) as ApiLikeResult;
-          nextResult = normalizeApiResult(payload, transcript, file, elapsed);
+        if (apiPayload) {
+          const normalizedPayload = apiPayload.analysis || (apiPayload as unknown as ApiLikeResult);
+          nextResult = normalizeApiResult(normalizedPayload, transcript, file, elapsed);
         } else {
-          await response.text();
           nextResult = fallbackFromTranscript(transcript, file, elapsed);
         }
 
@@ -487,8 +531,14 @@ export default function AnalysePage() {
 
         setStepState('sending_dashboard', 'active');
         setProgress(78);
-        appendPipelineLog('Sending To Dashboard: API stored insights and tasks for dashboard sync.');
-        await wait(900);
+        if (apiPayload?.persisted_to_dashboard) {
+          appendPipelineLog('Sending To Dashboard: API stored insights and tasks for dashboard sync.');
+          await wait(700);
+        } else {
+          appendPipelineLog('Sending To Dashboard: API did not persist data. Storing analysis via dashboard endpoint.');
+          await persistAnalysisToDashboard(nextResult);
+          appendPipelineLog('Dashboard sync complete. Meeting summary and tasks saved.');
+        }
         setStepState('sending_dashboard', 'done');
 
         setStepState('building_output', 'active');
@@ -503,25 +553,45 @@ export default function AnalysePage() {
         await wait(320);
         setShowPipelinePopup(false);
         setShowResultPopup(true);
-        pushToast('Analysis complete', 'Executive summary and action signals are ready.', 'success');
-      } catch {
+        pushToast('Analysis complete', 'Executive summary and dashboard data are ready.', 'success');
+      } catch (error) {
         appendPipelineLog('API unavailable. Falling back to local analysis draft while keeping workflow continuity.');
-        setPipelineSteps((current) => current.map((step) => ({ ...step, state: 'done' })));
         const elapsed = performance.now() - startedAt;
         const backup = fallbackFromTranscript(transcript, file, elapsed);
+
+        setStepState('run_function', 'done');
+        setStepState('sending_data', 'done');
+        setStepState('extracting_data', 'done');
+        setStepState('sending_dashboard', 'active');
+        try {
+          await persistAnalysisToDashboard(backup);
+          appendPipelineLog('Fallback summary was stored to dashboard successfully.');
+        } catch (persistError) {
+          const persistMessage =
+            persistError instanceof Error ? persistError.message : 'Could not sync fallback result to dashboard.';
+          appendPipelineLog(`Fallback dashboard sync failed: ${persistMessage}`);
+          pushToast('Dashboard sync failed', persistMessage, 'error');
+        }
+        setStepState('sending_dashboard', 'done');
+
+        setStepState('building_output', 'active');
+        await wait(450);
+        setStepState('building_output', 'done');
+
         setResult(backup);
         setFullReport(buildTypewriterReport(backup));
         setProgress(100);
         await wait(260);
         setShowPipelinePopup(false);
         setShowResultPopup(true);
-        pushToast('API unavailable', 'Showing a local high-confidence draft while server analysis is unavailable.', 'info');
+        const errorMessage = error instanceof Error ? error.message : 'AI service unavailable.';
+        pushToast('API unavailable', `Showing local draft. ${errorMessage}`, 'info');
       } finally {
         window.setTimeout(() => setProgress(0), 700);
         setIsLoading(false);
       }
     },
-    [appendPipelineLog, file, pushToast, resetPipeline, setStepState, transcript]
+    [appendPipelineLog, file, persistAnalysisToDashboard, pushToast, resetPipeline, setStepState, transcript]
   );
 
   const clearAll = useCallback(() => {
