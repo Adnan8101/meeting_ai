@@ -2733,6 +2733,106 @@ Assistant response:
             'meeting_id': meeting_id,
         })
 
+    @app.route('/api/dashboard/meeting/<meeting_id>/send-to-team', methods=['POST'])
+    @login_required
+    def api_dashboard_send_meeting_to_team(meeting_id):
+        """Send a dashboard meeting summary to a chosen team."""
+        payload = request.get_json(silent=True) or {}
+        team_id = (payload.get('team_id') or '').strip()
+
+        if not current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are not in a team.'}), 400
+
+        # Find the meeting (owned by current user or shared with team)
+        meeting = MeetingInsight.objects(id=meeting_id, user_id=str(current_user.id)).first()
+        if not meeting:
+            return jsonify({'success': False, 'error': 'Meeting not found.'}), 404
+
+        # Resolve team
+        if team_id:
+            team = Team.objects(id=team_id).first()
+            if not team or str(team.id) != str(current_user.team_id):
+                return jsonify({'success': False, 'error': 'Team not found or you are not a member.'}), 404
+        else:
+            team = Team.objects(id=current_user.team_id).first()
+            if not team:
+                return jsonify({'success': False, 'error': 'Team not found.'}), 404
+
+        # Attach the meeting to the team so it shows in Teams page
+        meeting.team_id = str(team.id)
+        meeting.save()
+
+        # Email all team members
+        members = list(User.objects(team_id=str(team.id)))
+        recipients = [m.email for m in members if m.email]
+        analysis = {
+            'summary': meeting.summary or '',
+            'decisions': meeting.decisions or [],
+            'action_items': build_team_action_items(str(meeting.id)),
+        }
+        result_message = send_summary_email(recipients, analysis)
+        if result_message.lower().startswith('email creds'):
+            return jsonify({'success': False, 'error': result_message}), 400
+
+        return jsonify({
+            'success': True,
+            'message': f'Summary sent to {team.name} ({len(recipients)} member{"s" if len(recipients) != 1 else ""}).',
+        })
+
+    @app.route('/api/dashboard/meeting/<meeting_id>/send-to-trello', methods=['POST'])
+    @login_required
+    def api_dashboard_send_meeting_to_trello(meeting_id):
+        """Push a dashboard meeting's action items to Trello."""
+        meeting = MeetingInsight.objects(id=meeting_id, user_id=str(current_user.id)).first()
+        if not meeting:
+            # Also accept team-shared meetings the user can see
+            if current_user.team_id:
+                team = Team.objects(id=current_user.team_id).first()
+                if team:
+                    meeting = MeetingInsight.objects(id=meeting_id, team_id=str(team.id)).first()
+        if not meeting:
+            return jsonify({'success': False, 'error': 'Meeting not found.'}), 404
+
+        trello_client = get_trello_client(current_user)
+        if not trello_client:
+            return jsonify({'success': False, 'error': 'Trello is not connected. Please link your Trello account in Integrations.'}), 400
+
+        boards = trello_client.list_boards() if trello_client else []
+        target_board = next((b for b in boards if not getattr(b, 'closed', False)), None) or (boards[0] if boards else None)
+        if not target_board:
+            return jsonify({'success': False, 'error': 'No Trello boards available.'}), 400
+
+        lists = target_board.list_lists()
+        target_list = next((lst for lst in lists if not getattr(lst, 'closed', False)), None) or (lists[0] if lists else None)
+        if not target_list:
+            return jsonify({'success': False, 'error': 'No Trello lists available.'}), 400
+
+        action_items = [
+            {
+                'task': task.task,
+                'assignee': task.assignee or 'Unassigned',
+                'due_date': task.due_date_str or 'Not set',
+            }
+            for task in WorkActionItem.objects(meeting_id=str(meeting.id))
+        ]
+        if not action_items:
+            return jsonify({'success': False, 'error': 'No action items found for this meeting.'}), 400
+
+        result = create_trello_cards(
+            trello_client,
+            target_board.id,
+            target_list.id,
+            action_items,
+            current_user.id,
+        )
+
+        return jsonify({
+            'success': True,
+            'message': result,
+            'board_id': target_board.id,
+            'list_id': target_list.id,
+        })
+
     @app.route('/api/teams/context', methods=['GET'])
     @login_required
     def api_teams_context():
@@ -2873,10 +2973,52 @@ Assistant response:
         if not member:
             return jsonify({'success': False, 'error': 'Member not found in your team.'}), 404
 
+        member_name = member.username
+        member_email = member.email
+        team_name = team.name
+
         member.team_id = None
         member.save()
 
-        return jsonify({'success': True, 'message': 'Member removed successfully.'})
+        # Notify removed member
+        if member_email:
+            try:
+                removed_body = f"""
+                <p style="margin:0 0 18px 0;color:#d4d4d4;font-size:15px;line-height:1.7;">Hello <strong style="color:#ffffff;">{member_name}</strong>,</p>
+                <div style="background:#131313;border:1px solid #2a2a2a;border-radius:12px;padding:16px;">
+                  <p style="margin:0;color:#d6d6d6;font-size:14px;line-height:1.7;">You have been removed from the team <strong style="color:#ffffff;">{team_name}</strong> by the team leader.</p>
+                </div>
+                """
+                from email_service import _render_email_layout
+                removed_html = _render_email_layout(
+                    preheader=f"You have been removed from {team_name}.",
+                    title="Removed from Team",
+                    subtitle="Team membership update.",
+                    body_html=removed_body,
+                )
+                send_email(member_email, f"You have been removed from {team_name}", removed_html)
+            except Exception:
+                pass
+
+        return jsonify({'success': True, 'message': f'{member_name} has been removed from the team.'})
+
+    @app.route('/api/teams/my-teams', methods=['GET'])
+    @login_required
+    def api_teams_my_teams():
+        """Return teams the current user belongs to (for dashboard 'send to team' selector)."""
+        if not current_user.team_id:
+            return jsonify({'success': True, 'teams': []})
+        team = Team.objects(id=current_user.team_id).first()
+        if not team:
+            return jsonify({'success': True, 'teams': []})
+        return jsonify({
+            'success': True,
+            'teams': [{
+                'id': str(team.id),
+                'name': team.name,
+                'is_owner': str(current_user.id) == str(team.owner_id),
+            }]
+        })
 
     @app.route('/api/teams/leave', methods=['DELETE'])
     @login_required
@@ -3044,6 +3186,31 @@ Assistant response:
         task.assignee = assignee[:150]
         task.updated_at = datetime.utcnow()
         task.save()
+
+        # Email the assigned member
+        assigned_member = User.objects(username=assignee, team_id=str(team.id)).first()
+        if assigned_member and assigned_member.email:
+            try:
+                from email_service import _render_email_layout
+                task_body = f"""
+                <p style="margin:0 0 18px 0;color:#d4d4d4;font-size:15px;line-height:1.7;">Hello <strong style="color:#ffffff;">{assignee}</strong>,</p>
+                <div style="background:#131313;border:1px solid #2a2a2a;border-radius:12px;padding:16px;">
+                  <p style="margin:0 0 8px 0;color:#d6d6d6;font-size:14px;line-height:1.7;">A task has been assigned to you by <strong style="color:#ffffff;">{current_user.username}</strong>:</p>
+                  <p style="margin:0;color:#ffffff;font-size:15px;font-weight:600;">{task.task}</p>
+                  <p style="margin:8px 0 0 0;color:#a7a7a7;font-size:13px;">Due: {task.due_date_str or 'Not set'} | Priority: {task.priority or 'Medium'}</p>
+                </div>
+                """
+                task_html = _render_email_layout(
+                    preheader=f"New task assigned: {task.task[:60]}",
+                    title="Task Assigned",
+                    subtitle=f"You have a new task from {team.name}.",
+                    body_html=task_body,
+                    cta_text="View Tasks",
+                    cta_url=f"{os.environ.get('APP_URL', 'http://localhost:5001').rstrip('/')}/teams",
+                )
+                send_email(assigned_member.email, f"Task assigned: {task.task[:80]}", task_html)
+            except Exception:
+                pass
 
         return jsonify({'success': True, 'task': serialize_team_task(task)})
 

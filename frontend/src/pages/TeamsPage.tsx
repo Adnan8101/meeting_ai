@@ -4,9 +4,10 @@ import {
   CheckCircle2,
   Copy,
   LoaderCircle,
-  PencilLine,
+  LogOut,
   Send,
   Trash2,
+  UserMinus,
   Users,
   X,
 } from 'lucide-react';
@@ -340,6 +341,78 @@ export default function TeamsPage() {
 
   const memberOptions = useMemo(() => members.map((member) => member.username), [members]);
 
+  const leaveTeam = useCallback(async () => {
+    if (!window.confirm('Are you sure you want to leave this team?')) return;
+    setMutationLoading(true);
+    try {
+      const response = await fetch('/api/teams/leave', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      });
+      const payload = (await response.json()) as { success?: boolean; error?: string };
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error || `Leave failed (${response.status})`);
+      }
+      pushToast('Left team', 'You have left the team.', 'info');
+      await refreshTeamContext();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Could not leave team.';
+      pushToast('Leave failed', message, 'error');
+    } finally {
+      setMutationLoading(false);
+    }
+  }, [pushToast, refreshTeamContext]);
+
+  const deleteTeam = useCallback(async () => {
+    if (!window.confirm('Are you sure you want to delete this team? All shared data will be removed.')) return;
+    setMutationLoading(true);
+    try {
+      const response = await fetch('/api/teams/delete', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      });
+      const payload = (await response.json()) as { success?: boolean; error?: string };
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error || `Delete failed (${response.status})`);
+      }
+      pushToast('Team deleted', 'The team has been permanently deleted.', 'info');
+      await refreshTeamContext();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Could not delete team.';
+      pushToast('Delete failed', message, 'error');
+    } finally {
+      setMutationLoading(false);
+    }
+  }, [pushToast, refreshTeamContext]);
+
+  const removeMember = useCallback(
+    async (userId: string, username: string) => {
+      if (!window.confirm(`Remove ${username} from the team?`)) return;
+      setMutationLoading(true);
+      try {
+        const response = await fetch(`/api/teams/member/${userId}/remove`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
+        });
+        const payload = (await response.json()) as { success?: boolean; error?: string; message?: string };
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error || `Remove failed (${response.status})`);
+        }
+        pushToast('Removed', payload.message || `${username} removed.`, 'info');
+        await refreshTeamContext();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Could not remove member.';
+        pushToast('Remove failed', message, 'error');
+      } finally {
+        setMutationLoading(false);
+      }
+    },
+    [pushToast, refreshTeamContext]
+  );
+
   return (
     <>
       <main className="relative overflow-hidden px-6 py-10 md:px-8 md:py-12">
@@ -403,6 +476,29 @@ export default function TeamsPage() {
                     </button>
                   </div>
                   <p className="mt-3 text-sm text-white/60">Share this code to invite teammates.</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {team.is_owner ? (
+                      <button
+                        type="button"
+                        onClick={deleteTeam}
+                        className="inline-flex items-center gap-2 rounded-xl border border-rose-300/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-100 transition hover:bg-rose-500/20"
+                        disabled={mutationLoading}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Team
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={leaveTeam}
+                        className="inline-flex items-center gap-2 rounded-xl border border-amber-300/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100 transition hover:bg-amber-500/20"
+                        disabled={mutationLoading}
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Leave Team
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="rounded-3xl border border-white/15 bg-white/[0.04] p-6">
@@ -414,11 +510,23 @@ export default function TeamsPage() {
                           <p className="text-sm font-semibold text-white">{member.username}</p>
                           <p className="text-xs text-white/60">{member.email}</p>
                         </div>
-                        {team.owner_id === member.id ? (
-                          <span className="rounded-full border border-amber-300/30 bg-amber-500/15 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-amber-100">
-                            Leader
-                          </span>
-                        ) : null}
+                        <div className="flex items-center gap-2">
+                          {team.owner_id === member.id ? (
+                            <span className="rounded-full border border-amber-300/30 bg-amber-500/15 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-amber-100">
+                              Leader
+                            </span>
+                          ) : team.is_owner ? (
+                            <button
+                              type="button"
+                              onClick={() => removeMember(member.id, member.username)}
+                              className="inline-flex items-center gap-1.5 rounded-full border border-rose-300/25 px-3 py-1 text-[11px] text-rose-200 transition hover:bg-rose-500/15"
+                              disabled={mutationLoading}
+                            >
+                              <UserMinus className="h-3 w-3" />
+                              Remove
+                            </button>
+                          ) : null}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -458,40 +566,9 @@ export default function TeamsPage() {
                     ) : (
                       summaries.map((summary) => (
                         <div key={summary.id} className="rounded-3xl border border-white/10 bg-black/45 p-5">
-                          <div className="flex flex-wrap items-start justify-between gap-3">
-                            <div>
-                              <p className="text-sm uppercase tracking-[0.14em] text-white/50">{formatTimestamp(summary.created_at)}</p>
-                              <h3 className="mt-2 text-lg font-semibold text-white">{summary.title}</h3>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              <button
-                                type="button"
-                                onClick={() => sendSummaryToTeam(summary.id)}
-                                className="inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-100"
-                                disabled={mutationLoading}
-                              >
-                                <Send className="h-3.5 w-3.5" />
-                                Send to team
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => openEditSummary(summary)}
-                                className="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1.5 text-xs text-white/80"
-                                disabled={mutationLoading}
-                              >
-                                <PencilLine className="h-3.5 w-3.5" />
-                                Edit
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => deleteSummary(summary.id)}
-                                className="inline-flex items-center gap-2 rounded-full border border-rose-300/30 bg-rose-500/10 px-3 py-1.5 text-xs text-rose-100"
-                                disabled={mutationLoading}
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                                Delete
-                              </button>
-                            </div>
+                          <div>
+                            <p className="text-sm uppercase tracking-[0.14em] text-white/50">{formatTimestamp(summary.created_at)}</p>
+                            <h3 className="mt-2 text-lg font-semibold text-white">{summary.title}</h3>
                           </div>
                           <p className="mt-3 text-sm leading-7 text-white/70">{summary.summary}</p>
                         </div>
