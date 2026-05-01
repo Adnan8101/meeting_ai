@@ -465,3 +465,165 @@ def build_meeting_summary_email(analysis):
         text_lines.append("- No action items captured.")
 
     return html_body, "\n".join(text_lines)
+
+def send_team_creation_email(user_email, username, team_name, join_code):
+    """Send email after successful team creation"""
+    email_logger.info(f"Sending team creation email to: {username} ({user_email})")
+    safe_user = _safe(username)
+    safe_team = _safe(team_name)
+    safe_code = _safe(join_code)
+    subject = f"Your team '{team_name}' is ready"
+
+    body_html = f"""
+    <p style=\"margin:0 0 18px 0;color:#d4d4d4;font-size:15px;line-height:1.7;\">Hello <strong style=\"color:#ffffff;\">{safe_user}</strong>, your team <strong style=\"color:#ffffff;\">{safe_team}</strong> has been successfully created.</p>
+    <div style=\"background:#131313;border:1px solid #2a2a2a;border-radius:12px;padding:16px;\">
+      <p style=\"margin:0 0 10px 0;color:#d6d6d6;font-size:14px;line-height:1.7;\">Share this join code with your colleagues to invite them to your team workspace:</p>
+      <div style=\"font-size:28px;letter-spacing:6px;font-weight:700;color:#f5f5f5;font-family:'Courier New',monospace;text-align:center;\">{safe_code}</div>
+    </div>
+    """
+
+    html_body = _render_email_layout(
+        preheader=f"Team '{team_name}' created successfully.",
+        title="Team Workspace Ready",
+        subtitle="Start collaborating and executing on your meeting insights.",
+        body_html=body_html,
+        cta_text="Go to Team Settings",
+        cta_url=f"{APP_URL.rstrip('/')}/settings",
+    )
+
+    text_body = (
+        f"Hello {username},\n\n"
+        f"Your team '{team_name}' has been successfully created.\n\n"
+        "Share this join code with your colleagues to invite them:\n"
+        f"{join_code}\n\n"
+        f"Go to team settings: {APP_URL.rstrip('/')}/settings"
+    )
+
+    return send_email(user_email, subject, html_body, text_body)
+
+def send_team_join_member_email(user_email, username, team_name, leader_name):
+    """Send email to the user who just joined a team"""
+    email_logger.info(f"Sending team join (member) email to: {username} ({user_email})")
+    safe_user = _safe(username)
+    safe_team = _safe(team_name)
+    safe_leader = _safe(leader_name)
+    subject = f"You've joined {team_name}"
+
+    body_html = f"""
+    <p style=\"margin:0 0 18px 0;color:#d4d4d4;font-size:15px;line-height:1.7;\">Hello <strong style=\"color:#ffffff;\">{safe_user}</strong>, you are now a member of <strong style=\"color:#ffffff;\">{safe_team}</strong>.</p>
+    <div style=\"background:#131313;border:1px solid #2a2a2a;border-radius:12px;padding:16px;\">
+      <p style=\"margin:0;color:#d6d6d6;font-size:14px;line-height:1.7;\">You will now see team meetings, insights, and shared tasks. {safe_leader} is the team leader.</p>
+    </div>
+    """
+
+    html_body = _render_email_layout(
+        preheader=f"You successfully joined {team_name}.",
+        title="Welcome to the Team",
+        subtitle="Your collaborative workspace is ready.",
+        body_html=body_html,
+        cta_text="View Team Dashboard",
+        cta_url=f"{APP_URL.rstrip('/')}/dashboard",
+    )
+
+    text_body = (
+        f"Hello {username},\n\n"
+        f"You are now a member of {team_name}, led by {leader_name}.\n"
+        "You will now see team meetings, insights, and shared tasks.\n\n"
+        f"View team dashboard: {APP_URL.rstrip('/')}/dashboard"
+    )
+
+    return send_email(user_email, subject, html_body, text_body)
+
+def send_team_join_leader_email(leader_email, leader_name, team_name, joiner_name):
+    """Send email to the team leader when a new member joins"""
+    email_logger.info(f"Sending team join (leader) email to: {leader_name} ({leader_email})")
+    safe_leader = _safe(leader_name)
+    safe_team = _safe(team_name)
+    safe_joiner = _safe(joiner_name)
+    subject = f"New team member in {team_name}"
+
+    body_html = f"""
+    <p style=\"margin:0 0 18px 0;color:#d4d4d4;font-size:15px;line-height:1.7;\">Hello <strong style=\"color:#ffffff;\">{safe_leader}</strong>, a new member has joined your team <strong style=\"color:#ffffff;\">{safe_team}</strong>.</p>
+    <div style=\"background:#131313;border:1px solid #2a2a2a;border-radius:12px;padding:16px;\">
+      <p style=\"margin:0;color:#d6d6d6;font-size:14px;line-height:1.7;\"><strong style=\"color:#ffffff;\">{safe_joiner}</strong> is now a member and can view shared team meetings and tasks.</p>
+    </div>
+    """
+
+    html_body = _render_email_layout(
+        preheader=f"{joiner_name} just joined your team.",
+        title="New Team Member",
+        subtitle="Your team is growing.",
+        body_html=body_html,
+        cta_text="Manage Team",
+        cta_url=f"{APP_URL.rstrip('/')}/settings",
+    )
+
+    text_body = (
+        f"Hello {leader_name},\n\n"
+        f"A new member, {joiner_name}, has joined your team {team_name}.\n"
+        "They can now view shared team meetings and tasks.\n\n"
+        f"Manage team: {APP_URL.rstrip('/')}/settings"
+    )
+
+    return send_email(leader_email, subject, html_body, text_body)
+
+def send_password_changed_email(user_email, username):
+    """Send email confirming password has been changed successfully"""
+    email_logger.info(f"Sending password changed confirmation to: {username} ({user_email})")
+    safe_user = _safe(username)
+    subject = "Password Changed Successfully"
+
+    body_html = f"""
+    <p style="margin:0 0 18px 0;color:#d4d4d4;font-size:15px;line-height:1.7;">Hello <strong style="color:#ffffff;">{safe_user}</strong>, the password for your AI Meeting Agent account has been successfully changed.</p>
+    <div style="background:#131313;border:1px solid #2a2a2a;border-radius:12px;padding:16px;">
+      <p style="margin:0;color:#d6d6d6;font-size:14px;line-height:1.7;">If you did not make this change, please contact support immediately to secure your account.</p>
+    </div>
+    """
+
+    html_body = _render_email_layout(
+        preheader="Your password was recently changed.",
+        title="Password Update",
+        subtitle="Security notification for your account.",
+        body_html=body_html,
+        cta_text="Login to your account",
+        cta_url=f"{APP_URL.rstrip('/')}/login",
+    )
+
+    text_body = (
+        f"Hello {username},\n\n"
+        "The password for your AI Meeting Agent account has been successfully changed.\n"
+        "If you did not make this change, please contact support immediately.\n\n"
+        f"Login: {APP_URL.rstrip('/')}/login"
+    )
+
+    return send_email(user_email, subject, html_body, text_body)
+
+def send_team_leave_email(leader_email, leader_name, leaver_name, team_name):
+    """Notify the team leader when a member leaves"""
+    email_logger.info(f"Sending team leave notification to leader: {leader_name} ({leader_email})")
+    
+    subject = "A member has left your team"
+    
+    body_html = f"""
+    <p style="margin:0 0 18px 0;color:#d4d4d4;font-size:15px;line-height:1.7;">Hello <strong style="color:#ffffff;">{_safe(leader_name)}</strong>,</p>
+    <div style="background:#131313;border:1px solid #2a2a2a;border-radius:12px;padding:16px;">
+      <p style="margin:0;color:#d6d6d6;font-size:14px;line-height:1.7;"><strong>{_safe(leaver_name)}</strong> has left your team <strong>{_safe(team_name)}</strong>.</p>
+    </div>
+    """
+    
+    html_body = _render_email_layout(
+        preheader="Team member update.",
+        title="Member Departure",
+        subtitle="Someone left your workspace.",
+        body_html=body_html,
+        cta_text="View Team",
+        cta_url=f"{APP_URL.rstrip('/')}/teams",
+    )
+    
+    text_body = (
+        f"Hello {leader_name},\n\n"
+        f"A member, {leaver_name}, has left your team {team_name}.\n\n"
+        f"View team: {APP_URL.rstrip('/')}/teams"
+    )
+    
+    return send_email(leader_email, subject, html_body, text_body)

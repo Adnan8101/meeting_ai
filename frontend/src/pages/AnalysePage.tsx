@@ -278,6 +278,11 @@ export default function AnalysePage() {
   const [fullReport, setFullReport] = useState('');
   const [pipelineSteps, setPipelineSteps] = useState<PipelineStep[]>(() => buildPipelineSteps());
   const [pipelineLogs, setPipelineLogs] = useState<string[]>([]);
+  const [lastMeetingId, setLastMeetingId] = useState<string | null>(null);
+  const [showTeamSendPopup, setShowTeamSendPopup] = useState(false);
+  const [showTrelloPopup, setShowTrelloPopup] = useState(false);
+  const [teamSendLoading, setTeamSendLoading] = useState(false);
+  const [trelloSendLoading, setTrelloSendLoading] = useState(false);
 
   const words = useMemo(() => transcript.trim().split(/\s+/).filter(Boolean).length, [transcript]);
 
@@ -532,12 +537,14 @@ export default function AnalysePage() {
 
         setStepState('sending_dashboard', 'active');
         setProgress(78);
+        let meetingId: string | null = null;
         if (apiPayload?.persisted_to_dashboard) {
           appendPipelineLog('Sending To Dashboard: API stored insights and tasks for dashboard sync.');
+          meetingId = apiPayload.meeting_id || null;
           await wait(700);
         } else {
           appendPipelineLog('Sending To Dashboard: API did not persist data. Storing analysis via dashboard endpoint.');
-          await persistAnalysisToDashboard(nextResult, apiPayload?.analysis);
+          meetingId = await persistAnalysisToDashboard(nextResult, apiPayload?.analysis);
           appendPipelineLog('Dashboard sync complete. Meeting summary and tasks saved.');
         }
         setStepState('sending_dashboard', 'done');
@@ -549,6 +556,7 @@ export default function AnalysePage() {
         setStepState('building_output', 'done');
 
         setResult(nextResult);
+        setLastMeetingId(meetingId);
         setFullReport(buildTypewriterReport(nextResult));
         setProgress(100);
         await wait(320);
@@ -565,7 +573,8 @@ export default function AnalysePage() {
         setStepState('extracting_data', 'done');
         setStepState('sending_dashboard', 'active');
         try {
-          await persistAnalysisToDashboard(backup);
+          const meetingId = await persistAnalysisToDashboard(backup);
+          setLastMeetingId(meetingId);
           appendPipelineLog('Fallback summary was stored to dashboard successfully.');
         } catch (persistError) {
           const persistMessage =
@@ -599,9 +608,65 @@ export default function AnalysePage() {
     setTranscript('');
     setFile(null);
     setResult(null);
+    setLastMeetingId(null);
     setShowClearPopup(false);
     pushToast('Cleared', 'Transcript and attachment were removed.', 'info');
   }, [pushToast]);
+
+  const sendSummaryToTeam = useCallback(async () => {
+    if (!lastMeetingId) {
+      pushToast('Missing summary', 'Run analysis first to send a team summary.', 'error');
+      return;
+    }
+
+    setTeamSendLoading(true);
+    try {
+      const response = await fetch(`/api/teams/meeting/${lastMeetingId}/send`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      });
+      const payload = (await response.json()) as { success?: boolean; error?: string; message?: string };
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.error || `Send failed (${response.status})`);
+      }
+      pushToast('Sent', payload.message || 'Summary delivered to team.', 'success');
+      setShowTeamSendPopup(false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to send summary.';
+      pushToast('Send failed', message, 'error');
+    } finally {
+      setTeamSendLoading(false);
+    }
+  }, [lastMeetingId, pushToast]);
+
+  const sendTasksToTrello = useCallback(async () => {
+    if (!lastMeetingId) {
+      pushToast('Missing summary', 'Run analysis first to send tasks to Trello.', 'error');
+      return;
+    }
+
+    setTrelloSendLoading(true);
+    try {
+      const response = await fetch('/api/trello/send-meeting-tasks', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ meeting_id: lastMeetingId }),
+      });
+      const payload = (await response.json()) as { success?: boolean; error?: string; message?: string };
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.error || `Trello send failed (${response.status})`);
+      }
+      pushToast('Trello updated', payload.message || 'Cards created in Trello.', 'success');
+      setShowTrelloPopup(false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to send to Trello.';
+      pushToast('Trello failed', message, 'error');
+    } finally {
+      setTrelloSendLoading(false);
+    }
+  }, [lastMeetingId, pushToast]);
 
   return (
     <>
@@ -902,6 +967,146 @@ export default function AnalysePage() {
                     </div>
                   </div>
                 </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowTeamSendPopup(true)}
+                    className="rounded-xl border border-emerald-300/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-100"
+                    disabled={!lastMeetingId}
+                  >
+                    Send to team
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowTrelloPopup(true)}
+                    className="rounded-xl border border-cyan-300/30 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-100"
+                    disabled={!lastMeetingId}
+                  >
+                    Send to Trello
+                  </button>
+                  {!lastMeetingId ? (
+                    <span className="self-center text-xs text-white/60">Run analysis to enable team delivery.</span>
+                  ) : null}
+                </div>
+              </div>
+            </motion.section>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showTeamSendPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[82] flex items-center justify-center bg-black/70 p-5 backdrop-blur"
+          >
+            <motion.section
+              initial={{ scale: 0.98, y: 12, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.98, y: 12, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+              className="w-full max-w-lg rounded-3xl border border-white/15 bg-[#0d0d12] p-6"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.16em] text-emerald-200">Send to team</p>
+                  <h3 className="mt-2 text-lg font-semibold text-white">Share this summary</h3>
+                  <p className="mt-2 text-sm text-white/70">Everyone on your team will receive an email update.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowTeamSendPopup(false)}
+                  className="rounded-lg border border-white/20 p-2 text-white/70"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="mt-5 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowTeamSendPopup(false)}
+                  className="rounded-xl border border-white/20 px-4 py-2 text-sm text-white/80"
+                  disabled={teamSendLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={sendSummaryToTeam}
+                  className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black"
+                  disabled={teamSendLoading}
+                >
+                  {teamSendLoading ? 'Sending...' : 'Send now'}
+                </button>
+              </div>
+            </motion.section>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showTrelloPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[82] flex items-center justify-center bg-black/70 p-5 backdrop-blur"
+          >
+            <motion.section
+              initial={{ scale: 0.98, y: 12, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.98, y: 12, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+              className="w-full max-w-lg rounded-3xl border border-white/15 bg-[#0d0d12] p-6"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">Send to Trello</p>
+                  <h3 className="mt-2 text-lg font-semibold text-white">Create cards from tasks</h3>
+                  <p className="mt-2 text-sm text-white/70">Cards will be added to your default Trello list.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowTrelloPopup(false)}
+                  className="rounded-lg border border-white/20 p-2 text-white/70"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="mt-4 max-h-48 space-y-2 overflow-y-auto rounded-2xl border border-white/10 bg-black/40 p-3 text-sm text-white/75">
+                {result?.actionItems?.length ? (
+                  result.actionItems.map((item) => (
+                    <div key={item} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                      {item}
+                    </div>
+                  ))
+                ) : (
+                  <p>No action items captured.</p>
+                )}
+              </div>
+
+              <div className="mt-5 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowTrelloPopup(false)}
+                  className="rounded-xl border border-white/20 px-4 py-2 text-sm text-white/80"
+                  disabled={trelloSendLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={sendTasksToTrello}
+                  className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black"
+                  disabled={trelloSendLoading}
+                >
+                  {trelloSendLoading ? 'Sending...' : 'Send to Trello'}
+                </button>
               </div>
             </motion.section>
           </motion.div>

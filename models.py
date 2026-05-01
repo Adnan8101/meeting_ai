@@ -209,6 +209,7 @@ class Team(BaseModel):
 
     name = db.Column(db.String(100), nullable=False)
     owner_id = db.Column(db.String(24), nullable=False, index=True)
+    join_code = db.Column(db.String(12), unique=True, nullable=True, index=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     slack_webhook_url = db.Column(db.String(500), nullable=True)
 

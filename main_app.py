@@ -4,6 +4,9 @@ import json
 import logging
 import importlib.util
 import traceback
+import html
+import secrets
+import string
 from difflib import SequenceMatcher
 import requests
 from io import BytesIO
@@ -26,6 +29,11 @@ from email_service import (
     send_email_verification,
     send_email,
     build_meeting_summary_email,
+    send_team_creation_email,
+    send_team_join_member_email,
+    send_team_join_leader_email,
+    send_password_changed_email,
+    send_team_leave_email,
 )
 from dotenv import load_dotenv
 
@@ -2073,6 +2081,60 @@ Assistant response:
             log_error(integration_logger, e)
             return None
 
+    def generate_team_join_code():
+        charset = string.ascii_uppercase + string.digits
+        for _ in range(10):
+            code = "".join(secrets.choice(charset) for _ in range(6))
+            if not Team.objects(join_code=code).first():
+                return code
+        return None
+
+    def serialize_team_member(member):
+        return {
+            'id': str(member.id),
+            'username': member.username,
+            'email': member.email,
+        }
+
+    def serialize_team_summary(meeting):
+        return {
+            'id': str(meeting.id),
+            'title': meeting.title,
+            'summary': meeting.summary,
+            'topics': meeting.topics or [],
+            'decisions': meeting.decisions or [],
+            'created_at': meeting.created_at.isoformat() if meeting.created_at else None,
+            'owner_id': meeting.user_id,
+        }
+
+    def serialize_team_task(task):
+        return {
+            'id': str(task.id),
+            'meeting_id': task.meeting_id,
+            'task': task.task,
+            'assignee': task.assignee or '',
+            'due_date_str': task.due_date_str or '',
+            'priority': task.priority or 'medium',
+            'status': task.status or 'pending',
+            'context_notes': task.context_notes or '',
+            'source': task.source or 'meeting_ai',
+            'created_at': task.created_at.isoformat() if task.created_at else None,
+            'updated_at': task.updated_at.isoformat() if task.updated_at else None,
+        }
+
+    def build_team_action_items(meeting_id):
+        tasks = WorkActionItem.query.filter(WorkActionItem.meeting_id == meeting_id).order_by(WorkActionItem.created_at.asc()).all()
+        return [
+            {
+                'task': task.task,
+                'assignee': task.assignee or 'Unassigned',
+                'due_date': task.due_date_str or 'Not set',
+            }
+            for task in tasks
+        ]
+
+
+
     def send_summary_email(recipients, analysis):
         if not EMAIL_CONFIGURED:
             return "Email creds not configured."
@@ -2669,6 +2731,372 @@ Assistant response:
             'success': True,
             'message': 'Meeting summary deleted successfully.',
             'meeting_id': meeting_id,
+        })
+
+    @app.route('/api/teams/context', methods=['GET'])
+    @login_required
+    def api_teams_context():
+        if not current_user.team_id:
+            return jsonify({'success': True, 'team': None, 'members': [], 'summaries': [], 'tasks': []})
+
+        team = Team.objects(id=current_user.team_id).first()
+        if not team:
+            return jsonify({'success': False, 'error': 'Team not found.'}), 404
+
+        members = list(User.objects(team_id=str(team.id)).order_by('username'))
+        meetings = list(MeetingInsight.objects(team_id=str(team.id)).order_by('-created_at').limit(50))
+        meeting_ids = [str(meeting.id) for meeting in meetings]
+        tasks = []
+        if meeting_ids:
+            tasks = (
+                WorkActionItem.query
+                .filter(WorkActionItem.meeting_id.in_(meeting_ids))
+                .order_by(WorkActionItem.updated_at.desc(), WorkActionItem.created_at.desc())
+                .limit(200)
+                .all()
+            )
+
+        return jsonify({
+            'success': True,
+            'team': {
+                'id': str(team.id),
+                'name': team.name,
+                'join_code': team.join_code,
+                'owner_id': team.owner_id,
+                'is_owner': str(current_user.id) == str(team.owner_id),
+            },
+            'members': [serialize_team_member(member) for member in members],
+            'summaries': [serialize_team_summary(meeting) for meeting in meetings],
+            'tasks': [serialize_team_task(task) for task in tasks],
+        })
+
+    @app.route('/api/teams/create', methods=['POST'])
+    @login_required
+    def api_teams_create():
+        payload = request.get_json(silent=True) or {}
+        team_name = (payload.get('name') or '').strip()
+        if not team_name:
+            return jsonify({'success': False, 'error': 'Team name is required.'}), 400
+        if current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are already in a team.'}), 400
+
+        join_code = generate_team_join_code()
+        if not join_code:
+            return jsonify({'success': False, 'error': 'Could not generate team code. Try again.'}), 500
+
+        team = Team(name=team_name[:100], owner_id=str(current_user.id), join_code=join_code)
+        team.save()
+        current_user.team_id = str(team.id)
+        current_user.save()
+
+        if current_user.email:
+            send_team_creation_email(current_user.email, current_user.username, team.name, join_code)
+
+        return jsonify({
+            'success': True,
+            'team': {
+                'id': str(team.id),
+                'name': team.name,
+                'join_code': team.join_code,
+                'owner_id': team.owner_id,
+                'is_owner': True,
+            },
+        })
+
+    @app.route('/api/teams/join', methods=['POST'])
+    @login_required
+    def api_teams_join():
+        payload = request.get_json(silent=True) or {}
+        join_code = (payload.get('join_code') or '').strip().upper()
+        if not join_code:
+            return jsonify({'success': False, 'error': 'Join code is required.'}), 400
+        if current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are already in a team.'}), 400
+
+        team = Team.objects(join_code=join_code).first()
+        if not team:
+            return jsonify({'success': False, 'error': 'Invalid team code.'}), 404
+
+        current_user.team_id = str(team.id)
+        current_user.save()
+
+        leader = User.objects(id=team.owner_id).first()
+        email_failures = []
+        
+        if current_user.email:
+            leader_name = leader.username if leader else 'Unknown'
+            success, msg = send_team_join_member_email(
+                current_user.email, current_user.username, team.name, leader_name
+            )
+            if not success:
+                email_failures.append(msg)
+
+        if leader and leader.email:
+            success, msg = send_team_join_leader_email(
+                leader.email, leader.username, team.name, current_user.username
+            )
+            if not success:
+                email_failures.append(msg)
+
+        response = {
+            'success': True,
+            'team': {
+                'id': str(team.id),
+                'name': team.name,
+                'join_code': team.join_code,
+                'owner_id': team.owner_id,
+                'is_owner': False,
+            },
+        }
+        if email_failures:
+            response['warning'] = 'Some emails could not be delivered.'
+
+        return jsonify(response)
+
+    @app.route('/api/teams/member/<user_id>/remove', methods=['DELETE'])
+    @login_required
+    def api_teams_remove_member(user_id):
+        if not current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are not in a team.'}), 400
+
+        team = Team.objects(id=current_user.team_id).first()
+        if not team:
+            return jsonify({'success': False, 'error': 'Team not found.'}), 404
+
+        if str(team.owner_id) != str(current_user.id):
+            return jsonify({'success': False, 'error': 'Only the team leader can remove members.'}), 403
+
+        if str(user_id) == str(current_user.id):
+            return jsonify({'success': False, 'error': 'You cannot remove yourself.'}), 400
+
+        member = User.objects(id=user_id, team_id=str(team.id)).first()
+        if not member:
+            return jsonify({'success': False, 'error': 'Member not found in your team.'}), 404
+
+        member.team_id = None
+        member.save()
+
+        return jsonify({'success': True, 'message': 'Member removed successfully.'})
+
+    @app.route('/api/teams/leave', methods=['DELETE'])
+    @login_required
+    def api_teams_leave():
+        if not current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are not in a team.'}), 400
+
+        team = Team.objects(id=current_user.team_id).first()
+        if not team:
+            return jsonify({'success': False, 'error': 'Team not found.'}), 404
+
+        if str(team.owner_id) == str(current_user.id):
+            return jsonify({'success': False, 'error': 'Team leader cannot leave. You must delete the team.'}), 400
+
+        team_name = team.name
+        leader = User.objects(id=team.owner_id).first()
+        
+        current_user.team_id = None
+        current_user.save()
+
+        if leader and leader.email:
+            send_team_leave_email(leader.email, leader.username, current_user.username, team_name)
+
+        return jsonify({'success': True, 'message': 'You have left the team.'})
+
+    @app.route('/api/teams/delete', methods=['DELETE'])
+    @login_required
+    def api_teams_delete():
+        if not current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are not in a team.'}), 400
+
+        team = Team.objects(id=current_user.team_id).first()
+        if not team:
+            return jsonify({'success': False, 'error': 'Team not found.'}), 404
+
+        if str(team.owner_id) != str(current_user.id):
+            return jsonify({'success': False, 'error': 'Only the team leader can delete the team.'}), 403
+
+        # Update all members
+        members = User.objects(team_id=str(team.id)).all()
+        for member in members:
+            member.team_id = None
+            member.save()
+
+        # Delete all meetings for the team
+        meetings = MeetingInsight.objects(team_id=str(team.id)).all()
+        for meeting in meetings:
+            # Also delete tasks for these meetings
+            WorkActionItem.query.filter(WorkActionItem.meeting_id == str(meeting.id)).delete()
+            meeting.delete()
+        
+        db.session.commit()
+        
+        team.delete()
+
+        return jsonify({'success': True, 'message': 'Team deleted successfully.'})
+
+    @app.route('/api/teams/meeting/<meeting_id>', methods=['PATCH'])
+    @login_required
+    def api_teams_update_meeting(meeting_id):
+        if not current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are not in a team.'}), 400
+
+        team = Team.objects(id=current_user.team_id).first()
+        meeting = MeetingInsight.objects(id=meeting_id, team_id=str(team.id)).first() if team else None
+        if not meeting:
+            return jsonify({'success': False, 'error': 'Meeting summary not found.'}), 404
+
+        is_owner = str(current_user.id) == str(team.owner_id)
+        if not is_owner and str(meeting.user_id) != str(current_user.id):
+            return jsonify({'success': False, 'error': 'You do not have permission to edit this summary.'}), 403
+
+        payload = request.get_json(silent=True) or {}
+        new_title = (payload.get('title') or '').strip()
+        new_summary = (payload.get('summary') or '').strip()
+        if not new_title or not new_summary:
+            return jsonify({'success': False, 'error': 'Title and summary are required.'}), 400
+
+        meeting.title = new_title[:200]
+        meeting.summary = new_summary
+        meeting.save()
+
+        return jsonify({'success': True, 'meeting': serialize_team_summary(meeting)})
+
+    @app.route('/api/teams/meeting/<meeting_id>', methods=['DELETE'])
+    @login_required
+    def api_teams_delete_meeting(meeting_id):
+        if not current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are not in a team.'}), 400
+
+        team = Team.objects(id=current_user.team_id).first()
+        meeting = MeetingInsight.objects(id=meeting_id, team_id=str(team.id)).first() if team else None
+        if not meeting:
+            return jsonify({'success': False, 'error': 'Meeting summary not found.'}), 404
+
+        is_owner = str(current_user.id) == str(team.owner_id)
+        if not is_owner and str(meeting.user_id) != str(current_user.id):
+            return jsonify({'success': False, 'error': 'You do not have permission to delete this summary.'}), 403
+
+        deleted_tasks = WorkActionItem.query.filter(WorkActionItem.meeting_id == meeting_id).count()
+        WorkActionItem.query.filter(WorkActionItem.meeting_id == meeting_id).delete()
+        db.session.commit()
+        meeting.delete()
+
+        return jsonify({
+            'success': True,
+            'meeting_id': meeting_id,
+            'deleted_tasks': deleted_tasks,
+        })
+
+    @app.route('/api/teams/meeting/<meeting_id>/send', methods=['POST'])
+    @login_required
+    def api_teams_send_meeting(meeting_id):
+        if not current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are not in a team.'}), 400
+
+        team = Team.objects(id=current_user.team_id).first()
+        meeting = MeetingInsight.objects(id=meeting_id, team_id=str(team.id)).first() if team else None
+        if not meeting:
+            return jsonify({'success': False, 'error': 'Meeting summary not found.'}), 404
+
+        members = list(User.objects(team_id=str(team.id)))
+        recipients = [member.email for member in members if member.email]
+        analysis = {
+            'summary': meeting.summary,
+            'decisions': meeting.decisions or [],
+            'action_items': build_team_action_items(str(meeting.id)),
+        }
+        result_message = send_summary_email(recipients, analysis)
+        if result_message.lower().startswith('email creds'):
+            return jsonify({'success': False, 'error': result_message}), 400
+
+        response = {
+            'success': True,
+            'message': result_message,
+            'recipients': len(recipients),
+        }
+        if result_message.lower().startswith('failed'):
+            response['warning'] = result_message
+        return jsonify(response)
+
+    @app.route('/api/teams/task/<task_id>/assign', methods=['POST'])
+    @login_required
+    def api_teams_assign_task(task_id):
+        if not current_user.team_id:
+            return jsonify({'success': False, 'error': 'You are not in a team.'}), 400
+
+        team = Team.objects(id=current_user.team_id).first()
+        if not team or str(current_user.id) != str(team.owner_id):
+            return jsonify({'success': False, 'error': 'Only team leader can assign tasks.'}), 403
+
+        payload = request.get_json(silent=True) or {}
+        assignee = (payload.get('assignee') or '').strip()
+        if not assignee:
+            return jsonify({'success': False, 'error': 'Assignee is required.'}), 400
+
+        task = WorkActionItem.objects(id=task_id).first()
+        if not task:
+            return jsonify({'success': False, 'error': 'Task not found.'}), 404
+
+        meeting = MeetingInsight.objects(id=task.meeting_id, team_id=str(team.id)).first() if task.meeting_id else None
+        if not meeting:
+            return jsonify({'success': False, 'error': 'Task does not belong to your team.'}), 403
+
+        task.assignee = assignee[:150]
+        task.updated_at = datetime.utcnow()
+        task.save()
+
+        return jsonify({'success': True, 'task': serialize_team_task(task)})
+
+    @app.route('/api/trello/send-meeting-tasks', methods=['POST'])
+    @login_required
+    def api_trello_send_meeting_tasks():
+        payload = request.get_json(silent=True) or {}
+        meeting_id = (payload.get('meeting_id') or '').strip()
+        if not meeting_id:
+            return jsonify({'success': False, 'error': 'Meeting id is required.'}), 400
+
+        meeting = MeetingInsight.objects(id=meeting_id, user_id=str(current_user.id)).first()
+        if not meeting:
+            return jsonify({'success': False, 'error': 'Meeting not found.'}), 404
+
+        trello_client = get_trello_client(current_user)
+        if not trello_client:
+            return jsonify({'success': False, 'error': 'Trello is not connected.'}), 400
+
+        boards = trello_client.list_boards() if trello_client else []
+        target_board = next((board for board in boards if not getattr(board, 'closed', False)), None) or (boards[0] if boards else None)
+        if not target_board:
+            return jsonify({'success': False, 'error': 'No Trello boards available.'}), 400
+
+        lists = target_board.list_lists()
+        target_list = next((lst for lst in lists if not getattr(lst, 'closed', False)), None) or (lists[0] if lists else None)
+        if not target_list:
+            return jsonify({'success': False, 'error': 'No Trello lists available.'}), 400
+
+        action_items = [
+            {
+                'task': task.task,
+                'assignee': task.assignee or 'Unassigned',
+                'due_date': task.due_date_str or 'Not set',
+            }
+            for task in WorkActionItem.objects(meeting_id=meeting_id, user_id=str(current_user.id))
+        ]
+        if not action_items:
+            return jsonify({'success': False, 'error': 'No action items available for this meeting.'}), 400
+
+        result = create_trello_cards(
+            trello_client,
+            target_board.id,
+            target_list.id,
+            action_items,
+            current_user.id,
+        )
+
+        return jsonify({
+            'success': True,
+            'message': result,
+            'board_id': target_board.id,
+            'list_id': target_list.id,
         })
 
     @app.route('/assistant/task/<task_id>/status', methods=['POST'])
@@ -3755,6 +4183,7 @@ Assistant response:
                     # Update password
                     user.password = new_password  # This will hash the password
                     user.clear_reset_token()
+                    send_password_changed_email(user.email, user.username)
                     flash('Password updated successfully! Please log in with your new password.', 'success')
                     return redirect(url_for('login'))
                 else:
@@ -3779,6 +4208,7 @@ Assistant response:
                 if user and user.verify_reset_token(code):
                     user.password = new_password
                     user.clear_reset_token()
+                    send_password_changed_email(user.email, user.username)
                     flash('Password updated successfully! Please log in with your new password.', 'success')
                     return redirect(url_for('login'))
                 else:
@@ -3814,8 +4244,9 @@ Assistant response:
             if current_user.team_id: 
                 flash('Already in a team.', 'warning')
                 return redirect(url_for('team'))
-            
-            new_team = Team(name=team_name, owner_id=str(current_user.id))
+
+            join_code = generate_team_join_code()
+            new_team = Team(name=team_name, owner_id=str(current_user.id), join_code=join_code)
             new_team.save()
             current_user.team_id = str(new_team.id)
             current_user.save()

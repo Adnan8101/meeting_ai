@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LoaderCircle, PenLine, RefreshCw, Trash2, X } from 'lucide-react';
+import { LoaderCircle, PenLine, RefreshCw, Trash2, X, Send } from 'lucide-react';
 
 type TaskStatus = 'pending' | 'in_progress' | 'done';
 type TaskPriority = 'high' | 'medium' | 'low';
@@ -296,6 +296,30 @@ export default function DashboardPage() {
     [editDraft, editingTask, updateTask]
   );
 
+  const sendSummaryToTeam = useCallback(
+    async (summaryId: string) => {
+      setMeetingMutationLoading(true);
+      try {
+        const response = await fetch(`/api/teams/meeting/${summaryId}/send`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
+        });
+        const payload = (await response.json()) as { success?: boolean; error?: string; message?: string };
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error || `Send failed (${response.status})`);
+        }
+        pushToast('Sent to team', payload.message || 'Summary delivered to team.', 'success');
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Could not send summary.';
+        pushToast('Send failed', message, 'error');
+      } finally {
+        setMeetingMutationLoading(false);
+      }
+    },
+    [pushToast]
+  );
+
   return (
     <>
       <main className="relative overflow-hidden px-6 py-8 md:px-8 md:py-12">
@@ -477,14 +501,25 @@ export default function DashboardPage() {
                       <div key={meeting.id} className="rounded-xl border border-white/10 bg-black/25 p-3">
                         <div className="flex items-start justify-between gap-2">
                           <p className="text-sm font-semibold text-white">{meeting.title}</p>
-                          <button
-                            type="button"
-                            onClick={() => void deleteMeeting(meeting.id)}
-                            className="rounded-md border border-rose-300/35 p-1.5 text-rose-100 transition hover:bg-rose-500/20"
-                            disabled={meetingMutationLoading}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => void sendSummaryToTeam(meeting.id)}
+                              className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/35 px-2 py-1.5 text-xs text-emerald-100 transition hover:bg-emerald-500/20"
+                              disabled={meetingMutationLoading}
+                            >
+                              <Send className="h-3.5 w-3.5" />
+                              Send to team
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void deleteMeeting(meeting.id)}
+                              className="rounded-md border border-rose-300/35 p-1.5 text-rose-100 transition hover:bg-rose-500/20"
+                              disabled={meetingMutationLoading}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
                         </div>
                         <p className="mt-1 text-xs text-white/65">{meeting.summary}</p>
                         {(meeting.topics || []).length > 0 ? (

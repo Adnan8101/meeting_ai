@@ -8,6 +8,7 @@ import {
   LoaderCircle,
   PlugZap,
   Rocket,
+  Users,
 } from 'lucide-react';
 import { BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { MenuItem } from '@/components/ui/glow-menu';
@@ -28,6 +29,7 @@ const AssistantChatWidget = lazy(() => import('@/components/ui/AssistantChatWidg
 const AnalysePage = lazy(() => import('./pages/AnalysePage'));
 const DashboardWorkspacePage = lazy(() => import('./pages/DashboardPage'));
 const IntegrationsPage = lazy(() => import('./pages/IntegrationsPage'));
+const TeamsPage = lazy(() => import('./pages/TeamsPage'));
 
 function AppLoadingShell() {
   return (
@@ -104,6 +106,14 @@ function Shell({ children }: { children: ReactNode }) {
       gradient:
         'radial-gradient(circle, rgba(125,211,252,0.25) 0%, rgba(56,189,248,0.08) 55%, rgba(14,165,233,0) 100%)',
       iconColor: 'text-sky-300',
+    },
+    {
+      icon: Users,
+      label: 'Teams',
+      href: '/teams',
+      gradient:
+        'radial-gradient(circle, rgba(134,239,172,0.2) 0%, rgba(34,197,94,0.08) 55%, rgba(21,128,61,0) 100%)',
+      iconColor: 'text-emerald-300',
     },
     {
       icon: ChartGantt,
@@ -226,6 +236,19 @@ function Shell({ children }: { children: ReactNode }) {
 }
 
 function MarketingPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/auth/status', { credentials: 'include', headers: { Accept: 'application/json' } })
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted) setIsAuthenticated(Boolean(data?.authenticated));
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   return (
     <>
       <main>
@@ -284,20 +307,35 @@ function MarketingPage() {
               </div>
 
               <div className="grid gap-3 rounded-2xl border border-white/12 bg-black/35 p-4">
-                <p className="text-sm text-white/75">Start in under 2 minutes</p>
-                <Link
-                  to="/login"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
-                >
-                  <Rocket className="h-4 w-4" />
-                  Getting Started
-                </Link>
-                <Link
-                  to="/register"
-                  className="inline-flex items-center justify-center rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white transition hover:border-white/50 hover:bg-white/[0.05]"
-                >
-                  Create Account
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <p className="text-sm text-white/75">Your workspace is ready</p>
+                    <Link
+                      to="/dashboard"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
+                    >
+                      <Rocket className="h-4 w-4" />
+                      Go to Dashboard
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-white/75">Start in under 2 minutes</p>
+                    <Link
+                      to="/login"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
+                    >
+                      <Rocket className="h-4 w-4" />
+                      Getting Started
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="inline-flex items-center justify-center rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white transition hover:border-white/50 hover:bg-white/[0.05]"
+                    >
+                      Create Account
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -582,9 +620,10 @@ export default function App() {
           <Route path="/verify_reset_code" element={<VerifyResetCodePage />} />
           <Route path="/verify_reset_code/:email" element={<VerifyResetCodePage />} />
           <Route path="/dashboard" element={<RequireAuth><DashboardWorkspacePage /></RequireAuth>} />
+          <Route path="/teams" element={<RequireAuth><TeamsPage /></RequireAuth>} />
           <Route path="/analyse" element={<RequireAuth><AnalysePage /></RequireAuth>} />
           <Route path="/analyze" element={<RequireAuth><AnalysePage /></RequireAuth>} />
-          <Route path="/team" element={<RequireAuth><StaticPage title="Team Collaboration" subtitle="Create teams, invite members, and assign owners." /></RequireAuth>} />
+          <Route path="/team" element={<RequireAuth><Navigate to="/teams" replace /></RequireAuth>} />
           <Route path="/integrations" element={<RequireAuth><IntegrationsPage /></RequireAuth>} />
           <Route path="/trello/connect" element={<RequireAuth><Navigate to="/integrations" replace /></RequireAuth>} />
           <Route path="/trello/save_token" element={<RequireAuth><Navigate to="/integrations" replace /></RequireAuth>} />
